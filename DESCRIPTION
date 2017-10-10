@@ -15,5 +15,6 @@ Imports:
     stats,
     Rcpp,  
     RcppArmadillo
+URL: http://github.com/kbose28/farmtest
 RoxygenNote: 6.0.1
 LinkingTo: Rcpp, RcppArmadillo
