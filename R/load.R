@@ -31,7 +31,7 @@ NULL
 #' @details
 #' \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 #' @details
-#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \code{X = μ + Bf + Cg + u}, where \code{f} is observed and \code{g} is unobserved. In the first step, the user passes the data \code{{X,f}} into the main function. From the output, let us construct the residuals: \code{Xres = X − B * f}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \code{X = μ + Bf + Cg + u}, where \code{f} is observed and \code{g} is unobserved. In the first step, the user passes the data \code{{X,f}} into the main function. From the output, let us construct the residuals: \code{Xres = X − Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #'@examples
@@ -318,7 +318,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   #plot first n eigenvalues
   grid =seq(1,K.scree)
   graphics::barplot(props[1:K.scree], main="Scree plot of the data",
-          xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
+          xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
   graphics::par(new=T)
   graphics::plot(grid, eig[1:K.scree], type="b", pch=19, axes = FALSE, xlab="", ylab="")
   graphics::axis(1, at=pretty(range(grid)))
@@ -334,9 +334,9 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   #args1 <- list(type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste('Eigenvalue ratio plot:', which.max(ratio), "factor(s) found", sep = " "), ylab = "ratio")
   #inargs <- list(...)
   # args1[names(inargs)] <- inargs
-  graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste('Eigenvalue ratio plot:', which.max(ratio), "factor(s) found", sep = " "))
+  graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
   #do.call(plot, c(list(x=ratio), args1))
-  graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1.5)
+  graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
 }
 
 # ################# rejections using storeys method#################
@@ -362,7 +362,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #'
 #' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{http://github.com/jdstorey/qvalue.}
 #' @export
-farm.FDR<- function(pvalue, alpha, type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
+farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
 smooth.df = 3, smooth.log.pi0 = FALSE){
   if((sum(pvalue<0)!=0)|| (sum(pvalue>1)!=0)) stop("pvalues must be between 0 and 1")
   type = match.arg(type)
