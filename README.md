@@ -53,11 +53,11 @@ output = farm.test(X)
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 2
+#> p = 100, n = 20, nfactors = 3
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  5
+#>  7
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -69,7 +69,7 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 2
+#> p = 100, n = 20, nfactors = 3
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
@@ -79,11 +79,11 @@ names(output)
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     2 1.061207e-34    1.061207e-32
-#> [2,]     1 2.694803e-21    1.347401e-19
-#> [3,]     3 3.370216e-21    1.123405e-19
-#> [4,]     5 4.533881e-19    1.133470e-17
-#> [5,]    25 3.361414e-04    6.722828e-03
+#> [1,]     4 2.338692e-33    2.338692e-31
+#> [2,]     1 3.905596e-15    1.952798e-13
+#> [3,]     5 3.987187e-15    1.329062e-13
+#> [4,]     3 6.647769e-11    1.661942e-09
+#> [5,]     2 4.088676e-10    8.177352e-09
 hist(output$means, 20, main = "Estimated Means", xlab = "")
 ```
 
@@ -92,7 +92,7 @@ hist(output$means, 20, main = "Estimated Means", xlab = "")
 Other functions
 ---------------
 
-The function `farm.scree` makes some informative plots. It is possible to specify teh maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.
+The function `farm.scree` makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.
 
 ``` r
 farm.scree(X, K.factors = 10, K.scree = 10)
