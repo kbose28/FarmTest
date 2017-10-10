@@ -1,4 +1,6 @@
 # include <RcppArmadillo.h>
+#include <algorithm>
+
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
@@ -333,7 +335,7 @@ arma::mat Influence_Huber (arma::mat X, float tau)
 
   for(i=0; i<d; i++){
     v1=as_scalar(eigval_cov[i]);
-    if(fabs(v1)>tau)eigval_phi[i]=eigval_sign[i]*tau;
+    if(std::abs(v1)>tau)eigval_phi[i]=eigval_sign[i]*tau;
 
   }
 
@@ -532,7 +534,7 @@ arma::mat Eigen_Decomp( arma::mat M)
   mat eigall_cov;  eigall_cov.zeros(P,P+1);
 
   eig_sym(eigval_cov, eigvec_cov, M);
-  eigval_cov=sort(eigval_cov,1);
+  eigval_cov=sort(eigval_cov,"descend");
   eigvec_cov=fliplr(eigvec_cov);
   eigall_cov = join_rows(eigvec_cov, eigval_cov);
 
@@ -559,7 +561,7 @@ arma::mat Loading_Sample(int K, arma::mat M)
   mat Lambda_hat;  Lambda_hat.zeros(P,K);
 
   eig_sym(eigval_cov, eigvec_cov, M);
-  eigval_cov=sort(eigval_cov,1);
+  eigval_cov=sort(eigval_cov,"descend");
   eigvec_cov=fliplr(eigvec_cov);
 
   Lambda_hat=eigvec_cov.cols(0,K-1)* sqrt(P);
@@ -590,7 +592,7 @@ arma::mat Loading_Robust(int K, arma::mat M)
   mat Lambda_hat;  Lambda_hat.zeros(P,K);
 
   eig_sym(eigval_cov, eigvec_cov, M);
-  eigval_cov=sort(eigval_cov,1);
+  eigval_cov=sort(eigval_cov,"descend");
   eigvec_cov=fliplr(eigvec_cov);
 
   for(i=0;i<K;i++)Lambda_hat.col(i)=eigvec_cov.col(i)*sqrt(eigval_cov(i));
