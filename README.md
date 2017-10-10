@@ -23,6 +23,11 @@ Getting help
 
 Help on the functions can be accessed by typing "?", followed by function name at the R command prompt.
 
+Issues
+------
+
+If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
+
 Functions
 ---------
 
@@ -53,7 +58,7 @@ output = farm.test(X)
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 20, nfactors = 1
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
@@ -69,21 +74,23 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 20, nfactors = 1
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
-#>  5
+#>  7
 names(output)
 #> [1] "means"    "stderr"   "loadings" "nfactors" "pvalue"   "rejected"
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 2.338692e-33    2.338692e-31
-#> [2,]     1 3.905596e-15    1.952798e-13
-#> [3,]     5 3.987187e-15    1.329062e-13
-#> [4,]     3 6.647769e-11    1.661942e-09
-#> [5,]     2 4.088676e-10    8.177352e-09
+#> [1,]     3 5.159485e-13    2.758225e-11
+#> [2,]     5 8.640041e-12    2.309453e-10
+#> [3,]     1 8.988784e-12    1.601780e-10
+#> [4,]     4 2.762851e-06    3.692503e-05
+#> [5,]     2 9.110027e-05    9.740314e-04
+#> [6,]    81 5.622727e-04    5.009785e-03
+#> [7,]    56 1.175015e-03    8.973637e-03
 hist(output$means, 20, main = "Estimated Means", xlab = "")
 ```
 
