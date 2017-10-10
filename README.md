@@ -28,6 +28,8 @@ Issues
 
 If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
 
+If you are having trouble installing in Rstudio, try installing from R console.
+
 Functions
 ---------
 
@@ -58,7 +60,7 @@ output = farm.test(X)
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 1
+#> p = 100, n = 20, nfactors = 3
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
@@ -74,7 +76,7 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 1
+#> p = 100, n = 20, nfactors = 3
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
@@ -84,13 +86,13 @@ names(output)
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     3 5.159485e-13    2.758225e-11
-#> [2,]     5 8.640041e-12    2.309453e-10
-#> [3,]     1 8.988784e-12    1.601780e-10
-#> [4,]     4 2.762851e-06    3.692503e-05
-#> [5,]     2 9.110027e-05    9.740314e-04
-#> [6,]    81 5.622727e-04    5.009785e-03
-#> [7,]    56 1.175015e-03    8.973637e-03
+#> [1,]     4 2.169341e-30    2.169341e-28
+#> [2,]     2 7.297870e-16    3.648935e-14
+#> [3,]     5 7.749656e-16    2.583219e-14
+#> [4,]     3 2.085544e-14    5.213861e-13
+#> [5,]     1 1.973879e-08    3.947758e-07
+#> [6,]    11 4.603995e-04    7.673326e-03
+#> [7,]    46 5.331887e-04    7.616981e-03
 hist(output$means, 20, main = "Estimated Means", xlab = "")
 ```
 
