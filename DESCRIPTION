@@ -1,0 +1,19 @@
+Package: farmtest
+Title: Factor Adjusted Robust Multiple Testing
+Version: 0.0.0.9000
+Authors@R: person("Koushiki", "Bose", email = "bose@princeton.edu", role = c("aut", "cre"))
+Description: Performs robust multiple testing for means in the presence of known and unknown latent factors.
+             This package is especially suited to high-dimensional, heavy-tailed datasets, where the user suspects there might be some underlying latent factors. 
+             The Huber's loss function is used in place of the usual least-squares loss to robustly estimate parameters.
+Depends: R (>= 3.3.0)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports:
+    graphics,
+		qvalue,
+    stats,
+    Rcpp,  
+    RcppArmadillo
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp, RcppArmadillo

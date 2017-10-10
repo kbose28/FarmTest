@@ -1,0 +1,36 @@
+x = rnorm(100, 1, 0)
+x
+x = rnorm(100, 1, .3)
+x
+y = 2+4*x
+y
+plot(x,y)
+y = 2+4*x+rnorm(100, 0, .1)
+plot(x,y)
+lm(y~x)
+model = lm(y~x)
+summary(model)
+y = y + x
+plot(x,y)
+model = lm(y~x)
+summary(model)
+x
+y = 2+4*x+rnorm(100, 0, .1)
+y
+model = lm(y~x)
+summary(model)
+y=y+x
+y
+x=3*x
+model =lm(y~x)
+summary(model)
+4.96322  /3
+library(devtools)#
+library(roxygen2)#
+setwd("~/Dropbox/JSS/farmtest")
+devtools::load_all()#
+devtools::install()#
+devtools::use_rcpp()#
+#
+devtools::document()
+devtools::check()
