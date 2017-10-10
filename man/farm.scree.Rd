@@ -25,3 +25,12 @@ Given the data, this function  draws a scree plot and a plot of the eigenvalue r
 The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 details User has to hit <Return> to see the second plot.
 }
+\examples{
+p = 100
+n = 20
+epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
+B = matrix(rnorm(p*3,0,1), nrow=p)
+fx = matrix(rnorm(3*n, 0,1), nrow = n)
+X = fx\%*\%t(B)+ epsilon
+farm.scree(X)
+}

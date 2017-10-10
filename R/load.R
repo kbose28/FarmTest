@@ -292,6 +292,16 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' details User has to hit <Return> to see the second plot.
 #' @return
 #' \item{Two plots:}{First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test. }
+#'
+#' @examples
+#' p = 100
+#' n = 20
+#' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
+#' B = matrix(rnorm(p*3,0,1), nrow=p)
+#' fx = matrix(rnorm(3*n, 0,1), nrow = n)
+#' X = fx%*%t(B)+ epsilon
+#' farm.scree(X)
+
 #' @export
 farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   X = t(X)

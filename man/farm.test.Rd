@@ -49,7 +49,7 @@ This function uses the Huber's loss function to carry out regressions.
 \details{
 \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 
-If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \code{X = μ + Bf + Cg + u}, where \code{f} is observed and \code{g} is unobserved. In the first step, the user passes the data \code{{X,f}} into the main function. From the output, let us construct the residuals: \code{Xres = X − B * f}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \code{X = μ + Bf + Cg + u}, where \code{f} is observed and \code{g} is unobserved. In the first step, the user passes the data \code{{X,f}} into the main function. From the output, let us construct the residuals: \code{Xres = X − Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 }

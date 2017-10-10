@@ -4,8 +4,8 @@
 \alias{farm.FDR}
 \title{Control FDR given a list of pvalues}
 \usage{
-farm.FDR(pvalue, alpha, type = c("mBH", "BH"), lambda = seq(0.05, 0.95,
-  0.05), pi0.method = c("smoother", "bootstrap"), smooth.df = 3,
+farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
+  0.95, 0.05), pi0.method = c("smoother", "bootstrap"), smooth.df = 3,
   smooth.log.pi0 = FALSE)
 }
 \arguments{
