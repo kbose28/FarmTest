@@ -18,6 +18,11 @@ You can install farmtest from github with:
 devtools::install_github("kbose28/farmtest")
 ```
 
+Getting help
+------------
+
+Help on the functions can be accessed by typing "?", followed by function name at the R command prompt.
+
 Functions
 ---------
 
@@ -48,11 +53,11 @@ output = farm.test(X)
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 20, nfactors = 2
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  10
+#>  5
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -64,22 +69,21 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 20, nfactors = 2
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
-#>  6
+#>  5
 names(output)
 #> [1] "means"    "stderr"   "loadings" "nfactors" "pvalue"   "rejected"
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 4.734888e-22    4.734888e-20
-#> [2,]     1 3.495966e-13    1.747983e-11
-#> [3,]     2 5.209121e-10    1.736374e-08
-#> [4,]     5 2.672957e-08    6.682393e-07
-#> [5,]     3 1.097734e-07    2.195467e-06
-#> [6,]    27 3.172874e-04    5.288123e-03
+#> [1,]     2 1.061207e-34    1.061207e-32
+#> [2,]     1 2.694803e-21    1.347401e-19
+#> [3,]     3 3.370216e-21    1.123405e-19
+#> [4,]     5 4.533881e-19    1.133470e-17
+#> [5,]    25 3.361414e-04    6.722828e-03
 hist(output$means, 20, main = "Estimated Means", xlab = "")
 ```
 
@@ -113,10 +117,10 @@ output$rejected
 Notes
 -----
 
--   If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *X**r**e**s* = *X* − *B**f*. Now pass *X**r**e**s* into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *Y* = *X* − *B**f*. Now pass *Y* into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
--   Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
+2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
--   The farm.FDR function uses the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
+3.  The farm.FDR function uses the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
 
 Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <http://github.com/jdstorey/qvalue>.
