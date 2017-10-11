@@ -64,7 +64,7 @@ output = farm.test(X)
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  7
+#>  5
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -80,19 +80,17 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
-#>  7
+#>  5
 names(output)
 #> [1] "means"    "stderr"   "loadings" "nfactors" "pvalue"   "rejected"
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 2.169341e-30    2.169341e-28
-#> [2,]     2 7.297870e-16    3.648935e-14
-#> [3,]     5 7.749656e-16    2.583219e-14
-#> [4,]     3 2.085544e-14    5.213861e-13
-#> [5,]     1 1.973879e-08    3.947758e-07
-#> [6,]    11 4.603995e-04    7.673326e-03
-#> [7,]    46 5.331887e-04    7.616981e-03
+#> [1,]     4 2.227166e-22    1.726104e-20
+#> [2,]     1 1.359204e-17    5.267068e-16
+#> [3,]     2 7.955975e-15    2.055353e-13
+#> [4,]     5 2.576529e-09    4.992169e-08
+#> [5,]     3 1.247069e-05    1.933013e-04
 hist(output$means, 20, main = "Estimated Means", xlab = "")
 ```
 
@@ -130,6 +128,6 @@ Notes
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
-3.  The farm.FDR function uses the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
+3.  The farm.FDR function uses code from the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
 
 Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <http://github.com/jdstorey/qvalue>.
