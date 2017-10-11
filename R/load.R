@@ -307,7 +307,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   X = t(X)
   n = NCOL(X)
   p = NROW(X)
-  if(min(n,p) <=4) stop('n and p must be at least 3')
+  if(min(n,p) <=3) stop('n and p must be at least 3')
   K.scree <- if (is.null(K.scree)) min(n,p) else K.scree
   K.factors <- if (is.null(K.factors)) (min(n,p)/2) else K.factors
   if(K.factors>=min(n,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
