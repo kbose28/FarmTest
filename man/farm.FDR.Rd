@@ -28,16 +28,15 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
 }
 \description{
-Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated. Based on the \code{\link[qvalue]{pi0est}} function to estimate this proportion. See Storey(2015).
+Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated. Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
 }
 \examples{
-X = rnorm( 1000, 0,1)
-X = matrix( X, 100)
-pval = apply(X,1, function(x) t.test(x)$p.value)
+Y = matrix(rnorm(100, 0, 1),10)
+pval = apply(Y, 1, function(x) t.test(x)$p.value)
 farm.FDR(pval, 0.05)
 farm.FDR(pval, 0.01, type = "BH")
 
 }
 \references{
-Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{http://github.com/jdstorey/qvalue.}
+Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue.}
 }

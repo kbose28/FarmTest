@@ -1,5 +1,7 @@
 #' @useDynLib farmtest
 #' @importFrom  Rcpp sourceCpp
+#' @importFrom  graphics mtext plot points axis par barplot
+
 NULL
 ###################################################################################
 ## This is the main function that condusts the statistical test given the data
@@ -35,7 +37,7 @@ NULL
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #'@examples
-#' p = 100
+#' p = 50
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
@@ -294,7 +296,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' \item{Two plots:}{First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test. }
 #'
 #' @examples
-#' p = 100
+#' p = 50
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
@@ -336,23 +338,19 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   graphics::mtext("Eigenvalues",side=4,col="black",line=3)
   oldpar = graphics::par(ask = TRUE)
   on.exit(graphics::par(oldpar))
-  #eigenvalue ratio test for the first n-2 eigenvalues, or K.factors eigenvalues (if supplied)
+  #eigenvalue ratio test
   ratio=c()
   for(i in 1:K.factors)
     ratio=append(ratio, eig[i]/eig[i+1])
   ratio = ratio[is.finite(ratio)]
-  #args1 <- list(type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste('Eigenvalue ratio plot:', which.max(ratio), "factor(s) found", sep = " "), ylab = "ratio")
-  #inargs <- list(...)
-  # args1[names(inargs)] <- inargs
-  graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
-  #do.call(plot, c(list(x=ratio), args1))
+    graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
   graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
 }
 
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
 #'
-#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated. Based on the \code{\link[qvalue]{pi0est}} function to estimate this proportion. See Storey(2015).
+#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated. Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
 #' @param pvalue a vector of p-values obtained from multiple testing
 #' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05.
 #' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH").
@@ -364,13 +362,12 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
 #' @examples
-#' X = rnorm( 1000, 0,1)
-#' X = matrix( X, 100)
-#' pval = apply(X,1, function(x) t.test(x)$p.value)
+#' Y = matrix(rnorm(100, 0, 1),10)
+#' pval = apply(Y, 1, function(x) t.test(x)$p.value)
 #' farm.FDR(pval, 0.05)
 #' farm.FDR(pval, 0.01, type = "BH")
 #'
-#' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{http://github.com/jdstorey/qvalue.}
+#' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue.}
 #' @export
 farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
 smooth.df = 3, smooth.log.pi0 = FALSE){
@@ -378,6 +375,8 @@ smooth.df = 3, smooth.log.pi0 = FALSE){
   type = match.arg(type)
   alpha <- if (is.null(alpha)) 0.05 else alpha
   if(alpha <0|| alpha>1) stop("alpha must be between 0 and 1")
+  if(lambda <0|| lambda>1) stop("lambda must be between 0 and 1")
+
   if (type == "BH"){
     p = length(pvalue)
     pvalue_adj = stats::p.adjust(pvalue, method = "BH")
@@ -441,17 +440,17 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                         if (pi0.method == "smoother") {
                           if (smooth.log.pi0) {
                             pi0 <- log(pi0)
-                            spi0 <- smooth.spline(lambda, pi0, df = smooth.df)
-                            pi0Smooth <- exp(predict(spi0, x = lambda)$y)
+                            spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
+                            pi0Smooth <- exp(stats::predict(spi0, x = lambda)$y)
                             pi0 <- min(pi0Smooth[ll], 1)
                           } else {
-                            spi0 <- smooth.spline(lambda, pi0, df = smooth.df)
-                            pi0Smooth <- predict(spi0, x = lambda)$y
+                            spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
+                            pi0Smooth <- stats::predict(spi0, x = lambda)$y
                             pi0 <- min(pi0Smooth[ll], 1)
                           }
                         } else if (pi0.method == "bootstrap") {
                           # Bootstrap method closed form solution by David Robinson
-                          minpi0 <- quantile(pi0, prob = 0.1)
+                          minpi0 <- stats::quantile(pi0, prob = 0.1)
                           W <- sapply(lambda, function(l) sum(p >= l))
                           mse <- (W / (m ^ 2 * (1 - lambda) ^ 2)) * (1 - W / m) + (pi0 - minpi0) ^ 2
                           pi0 <- min(pi0[mse == min(mse)], 1)

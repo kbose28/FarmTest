@@ -33,6 +33,9 @@ There are three functions available.
 * `farm.FDR`: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in [@storey2015].
 * `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated. 
 
+##Getting help
+
+* For help on the functions type `?farm.test`, `?farm.FDR`, or `?farm.scree`. 
 ## Simple hypotheses testing example 
 
 Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means. 
@@ -60,10 +63,10 @@ hist(output$means, 20, main = "Estimated Means", xlab = "")
 
 The function ``farm.scree`` makes some informative plots. It is possible to specify teh maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test. 
 ```{r}
-farm.scree(X, K.factors = 10, K.scree = 10)
+farm.scree(X, K.factors = 15, K.scree = 10)
 ```
 
-We see a warning telling us that it is not a good idea to calcualate 10 eigenvalues from a dataset that has only 10 samples. 
+We see a warning telling us that it is not a good idea to calcualate 15 eigenvalues from a dataset that has only 10 samples. 
 
 Let us generate data from a Gaussain distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 

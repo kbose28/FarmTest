@@ -4,8 +4,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
-// This file contains all the C++ functions used
 
+// This file contains all the C++ functions used
 
 ///////////////////////////////////////////////////////////////////////////
 //              Huber estimator for entry-wise Cov Matrix               //
@@ -359,7 +359,6 @@ arma::mat Influence_Huber (arma::mat X, float tau)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////
 //            Robust estimate of mu                                     //
 //////////////////////////////////////////////////////////////////////////
@@ -427,12 +426,9 @@ arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
  return mu_hat;
 
 }
-
-
 ///////////////////////////////////////////////////////////////////////////
 //       Entry-wise Huber robust eatimaiton of covariance matrix        //
 //////////////////////////////////////////////////////////////////////////
-
 //Input: Data matrix X, estimated mean mu_hat, constant term of the tuning parameter C_tau
 //Output: Estimated cov matrix Sigma_hat
 // [[Rcpp::export]]
