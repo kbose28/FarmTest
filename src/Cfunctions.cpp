@@ -18,11 +18,11 @@ using namespace Rcpp;
 arma::mat Huber_loss (arma::mat Vi, arma::mat Vj, float Z, float CT)
 {
   using namespace arma;
-  int t, T;       float v1;
+  int t;       float v1;
   mat Loss;    Loss.zeros(1,1);
   mat Huber;   Huber.zeros(1,1);
   mat M1;      M1.zeros(1,1);
-  T=Vi.n_cols;
+  int T=Vi.n_cols;
 
 
   for(t=0; t<T; t++){
@@ -74,10 +74,9 @@ float Huber_descent (arma::mat Vi, arma::mat Vj, float Z, float CT)
 {
   using namespace arma;
 
-  int k, T;    float v1=0, v2=0;
+  int k;    float v1=0, v2=0;
   float Z_1=Z, Z_2=0;
   mat test; test.zeros(1,1);
-  T=Vi.n_cols;
   for(k=1; k<500; k++){
     v1= as_scalar(Huber_loss (Vi, Vj, Z_1, CT));
     test=Huber_gradient (Vi, Vj, Z_1, CT);
@@ -99,7 +98,7 @@ float Huber_descent (arma::mat Vi, arma::mat Vj, float Z, float CT)
 float Robust_CV (arma::mat Vi, arma::mat Vj)
 {
   using namespace arma;
-  int i,k,T, T_train=0, T_vali=0;
+  int i,k,T, T_vali=0;
   float Z=0, Z_hat=0, MSE_vali, MSE_small, ct_o=5, ct, range;;
 
 
@@ -107,7 +106,7 @@ float Robust_CV (arma::mat Vi, arma::mat Vj)
   T=Vi.n_cols;
   //Z=as_scalar(mean(vx,1));
   Z=0;
-  T_vali=T/5;     T_train=T-T_vali;
+  T_vali=T/5;
 
   mat Vi_1;      mat Vi_2;
   mat Vi_train;  mat Vi_vali;
@@ -256,9 +255,9 @@ arma::mat Huber_descent_F (arma::mat X, arma::mat phi, arma::mat B, float CT)
 float Robust_CV_F (arma::mat vx, arma::mat phi)
 {
   using namespace arma;
-  int i,k,T=phi.n_rows, J=phi.n_cols, T_train=0, T_vali=0;
+  int i,k,T=phi.n_rows, J=phi.n_cols, T_vali=0;
   float MSE_vali, MSE_small, ct_o=5, ct;
-  T_vali=T/5;     T_train=T-T_vali;
+  T_vali=T/5;
 
   mat vx_1;      mat vx_2;
   mat vx_train;  mat vx_vali;    mat vx_hat;

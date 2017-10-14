@@ -3,6 +3,7 @@
 export(farm.FDR)
 export(farm.scree)
 export(farm.test)
+importFrom(Rcpp,evalCpp)
 importFrom(Rcpp,sourceCpp)
 importFrom(graphics,axis)
 importFrom(graphics,barplot)

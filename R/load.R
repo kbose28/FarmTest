@@ -1,5 +1,6 @@
 #' @useDynLib farmtest
 #' @importFrom  Rcpp sourceCpp
+#' @importFrom Rcpp evalCpp
 #' @importFrom  graphics mtext plot points axis par barplot
 
 NULL
