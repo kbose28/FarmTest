@@ -88,7 +88,7 @@ hist(output$means, 10, main = "Estimated Means", xlab = "")
 
 The function ``farm.scree`` makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test. 
 ```{r}
-farm.scree(X, K.factors = 15, K.scree = 10)
+output = farm.scree(X, K.factors = 15, K.scree = 10)
 ```
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples. 

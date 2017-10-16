@@ -36,13 +36,13 @@ details User has to hit <Return> to see the second plot.
 }
 \examples{
 set.seed(100)
-p = 50
+p = 100
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 B = matrix(rnorm(p*3,0,1), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 X = fx\%*\%t(B)+ epsilon
-farm.scree(X)
+ouput = farm.scree(X)
 
 }
 \references{

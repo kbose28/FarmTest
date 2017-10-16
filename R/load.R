@@ -310,7 +310,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
-#' farm.scree(X)
+#' ouput = farm.scree(X)
 #'
 #' @references Ahn, S. C., and A. R. Horenstein (2013): “Eigenvalue Ratio Test for the Number of Factors,” Econometrica, 81 (3), 1203–1227.
 #' @export
