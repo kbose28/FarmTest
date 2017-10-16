@@ -82,9 +82,9 @@ output$rejected
 
 ## Notes 
 
-* If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data $X = \mu + Bf + Cg + u$, where $f$ is observed and $g$ is unobserved. In the first step, the user passes the data $\{X,f\}$ into the main function. From the output, let us construct the residuals: $Xres = X − Bf$. Now pass $Xres$ into the main function, without any factors. The output in this step is the final answer to the testing problem.
+* If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{{X,f}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 * Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
-* The farm.FDR function uses the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est)
+* The farm.FDR function uses code from the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est)
  package [@storey2015] to estimate the number of true null hypotheses, and inherits all the options from `pi0est`. 

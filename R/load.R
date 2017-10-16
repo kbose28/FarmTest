@@ -1,6 +1,11 @@
 #' @useDynLib farmtest
 #' @importFrom  Rcpp sourceCpp
 #' @importFrom  graphics mtext plot points axis par barplot
+#' @import methods
+#' @import utils
+#' @import RcppArmadillo
+#' @import grDevices
+#' @import stats
 
 NULL
 ###################################################################################
@@ -9,7 +14,7 @@ NULL
 #' Factor-adjusted robust test for means
 #'
 #' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for factors.
-#' This function uses the Huber's loss function to carry out regressions.
+#' It uses the Huber's loss function to robustly estimate data parameters.
 #' @param X a n x p data matrix with each row being a sample.
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
 #' @param H0 an \emph{optional} p x 1 vector of the true value of the means (or difference in means if you are performing a two sample test). The default is the zero.
@@ -33,10 +38,11 @@ NULL
 #' @details
 #' \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 #' @details
-#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \code{X = μ + Bf + Cg + u}, where \code{f} is observed and \code{g} is unobserved. In the first step, the user passes the data \code{{X,f}} into the main function. From the output, let us construct the residuals: \code{Xres = X − Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{{X,f}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
-#'@examples
+#' @details For details about multiple comparison correction, see \code{\link{farm.FDR}}.
+#' @examples
 #' set.seed(100)
 #' p = 100
 #' n = 20
@@ -289,10 +295,11 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' The eignevalue ratio test is used to estimate the number of factors. See Ahn and Horenstein(2013).
 #' @param X an n x p data matrix with each row being a sample.
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
-#' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is (min(n,p)/2)
+#' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
 #' @param robust a logical indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
-#' details User has to hit <Return> to see the second plot.
+#' @details User has to hit <Return> to see the second plot.
+#' @details All the data used in the plots are output as a list.
 #' @return
 #' Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
 #' @return A list with the data used for the plots:
@@ -360,8 +367,8 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
 #'
-#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated.
-#' Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
+#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{pi_0} is estimated.
+#' This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{https://github.com/jdstorey/qvalue}{qvalue} package. See Storey(2015).
 #' @param pvalue a vector of p-values obtained from multiple testing
 #' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05.
 #' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH").
@@ -379,7 +386,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' farm.FDR(pval, 0.05)
 #' farm.FDR(pval, 0.01, type = "BH")
 #'
-#' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue.}
+#' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
 #' @export
 farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
 smooth.df = 3, smooth.log.pi0 = FALSE){

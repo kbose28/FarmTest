@@ -11,7 +11,7 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
 
 \item{K.scree}{an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).}
 
-\item{K.factors}{an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is (min(n,p)/2)}
+\item{K.factors}{an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.}
 
 \item{robust}{a logical indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
 }
@@ -32,7 +32,10 @@ The eignevalue ratio test is used to estimate the number of factors. See Ahn and
 }
 \details{
 The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
-details User has to hit <Return> to see the second plot.
+
+User has to hit <Return> to see the second plot.
+
+All the data used in the plots are output as a list.
 }
 \examples{
 set.seed(100)

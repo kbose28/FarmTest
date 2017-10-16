@@ -126,7 +126,7 @@ output$rejected
 Notes
 -----
 
-1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *Y* = *X* − *B**f*. Now pass *Y* into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data , where is observed and is unobserved. In the first step, the user passes the data into the main function. From the output, let us construct the residuals: . Now pass into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 

@@ -106,7 +106,8 @@ output$rejected
 
 ## Notes 
 
-1. If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data $X = \mu + Bf + Cg + u$, where $f$ is observed and $g$ is unobserved. In the first step, the user passes the data $\{X,f\}$ into the main function. From the output, let us construct the residuals: $Y = X − Bf$. Now pass $Y$ into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1. If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{{X,f}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+
 
 2. Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
