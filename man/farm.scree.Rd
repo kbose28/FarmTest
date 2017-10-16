@@ -16,10 +16,19 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
 \item{robust}{a logical indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
 }
 \value{
-\item{Two plots:}{First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test. }
+Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
+
+A list with the data used for the plots:
+\itemize{
+ \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
+ \item{\code{proportions} }{Proportion of variance explained by the principal components}
+ \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue}
+ \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
+}
 }
 \description{
-Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios .
+Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios.
+The eignevalue ratio test is used to estimate the number of factors. See Ahn and Horenstein(2013).
 }
 \details{
 The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
@@ -33,4 +42,8 @@ B = matrix(rnorm(p*3,0,1), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 X = fx\%*\%t(B)+ epsilon
 farm.scree(X)
+
+}
+\references{
+Ahn, S. C., and A. R. Horenstein (2013): “Eigenvalue Ratio Test for the Number of Factors,” Econometrica, 81 (3), 1203–1227.
 }

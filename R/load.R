@@ -1,6 +1,5 @@
 #' @useDynLib farmtest
 #' @importFrom  Rcpp sourceCpp
-#' @importFrom Rcpp evalCpp
 #' @importFrom  graphics mtext plot points axis par barplot
 
 NULL
@@ -282,11 +281,11 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 }
 
 
-
 # ################# #################
 #' Diagnostic plots needed to determine the number of underlying factors
 #'
-#' Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios .
+#' Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios.
+#' The eignevalue ratio test is used to estimate the number of factors. See Ahn and Horenstein(2013).
 #' @param X an n x p data matrix with each row being a sample.
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is (min(n,p)/2)
@@ -294,8 +293,14 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 #' details User has to hit <Return> to see the second plot.
 #' @return
-#' \item{Two plots:}{First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test. }
-#'
+#' Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
+#' @return A list with the data used for the plots:
+#' \itemize{
+#'  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
+#'  \item{\code{proportions} }{Proportion of variance explained by the principal components}
+#'  \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue}
+#'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
+#' }
 #' @examples
 #' p = 50
 #' n = 20
@@ -304,7 +309,8 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
 #' farm.scree(X)
-
+#'
+#' @references Ahn, S. C., and A. R. Horenstein (2013): “Eigenvalue Ratio Test for the Number of Factors,” Econometrica, 81 (3), 1203–1227.
 #' @export
 farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   X = t(X)
@@ -346,12 +352,14 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   ratio = ratio[is.finite(ratio)]
     graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
   graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
-}
+  list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+  }
 
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
 #'
-#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated. Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
+#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls is estimated.
+#' Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
 #' @param pvalue a vector of p-values obtained from multiple testing
 #' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05.
 #' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH").
@@ -466,5 +474,6 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                       return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
                                   lambda = lambda, pi0.smooth = pi0Smooth))
       }
+
 
 
