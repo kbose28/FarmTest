@@ -46,6 +46,7 @@ Here we generate data from a factor model with 3 factors. We have 20 samples of 
 
 ``` r
 library(farmtest)
+set.seed(100)
 p = 100
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -64,7 +65,7 @@ output = farm.test(X)
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  5
+#>  6
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -86,12 +87,12 @@ names(output)
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 2.227166e-22    1.726104e-20
-#> [2,]     1 1.359204e-17    5.267068e-16
-#> [3,]     2 7.955975e-15    2.055353e-13
-#> [4,]     5 2.576529e-09    4.992169e-08
-#> [5,]     3 1.247069e-05    1.933013e-04
-hist(output$means, 20, main = "Estimated Means", xlab = "")
+#> [1,]     4 4.252076e-22    4.252076e-20
+#> [2,]     2 5.822415e-09    2.911208e-07
+#> [3,]     3 6.759935e-08    2.253312e-06
+#> [4,]     1 2.681754e-06    6.704385e-05
+#> [5,]     5 3.159253e-05    6.318506e-04
+hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
 ![](README-unnamed-chunk-3-1.png)
@@ -102,21 +103,42 @@ Other functions
 The function `farm.scree` makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.
 
 ``` r
-farm.scree(X, K.factors = 10, K.scree = 10)
-#> Warning in farm.scree(X, K.factors = 10, K.scree = 10): Number of factors
-#> supplied is >= min(n,p)/2. May cause numerical inconsistencies
+farm.scree(X, K.factors = 15, K.scree = 10)
+#> Warning in farm.scree(X, K.factors = 15, K.scree = 10): Number of factors
+#> supplied is > min(n,p)/2. May cause numerical inconsistencies
 ```
 
 ![](README-unnamed-chunk-4-1.png)![](README-unnamed-chunk-4-2.png)
 
-We see a warning telling us that it is not a good idea to calcualate 10 eigenvalues from a dataset that has only 10 samples.
+    #> $eigenvalues
+    #>  [1] 6.50238024 4.87638067 3.64276647 1.06956254 0.57037119 0.53553838
+    #>  [7] 0.42046122 0.39845125 0.30379338 0.29469998 0.22634805 0.19909889
+    #> [13] 0.18701784 0.15710758 0.14715761 0.12800982 0.10881258 0.08994920
+    #> [19] 0.07382755 0.06826555
+    #> 
+    #> $proportions
+    #>  [1] 0.325119012 0.243819034 0.182138324 0.053478127 0.028518559
+    #>  [6] 0.026776919 0.021023061 0.019922562 0.015189669 0.014734999
+    #> [11] 0.011317402 0.009954945 0.009350892 0.007855379 0.007357881
+    #> [16] 0.006400491 0.005440629 0.004497460 0.003691378 0.003413278
+    #> 
+    #> $eigenvalue.ratios
+    #>  [1] 1.333444 1.338648 3.405847 1.875204 1.065043 1.273693 1.055239
+    #>  [8] 1.311586 1.030856 1.301977 1.136862 1.064598 1.190381 1.067614
+    #> [15] 1.149581
+    #> 
+    #> $nfactors
+    #> [1] 3
+
+We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
 
 Let us generate data from a Gaussain distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 
 ``` r
-Y = matrix(rnorm(1000, 0, 1),100)
-pvalues = apply(Y, 1, function(x) t.test(x)$p.value)
-output = farm.FDR(pvalues)
+set.seed(100)
+Y = matrix(rnorm(1000, 0, 1),10)
+pval = apply(Y, 1, function(x) t.test(x)$p.value)
+output = farm.FDR(pval)
 output$rejected
 #> [1] "no hypotheses rejected"
 ```
@@ -130,4 +152,4 @@ Notes
 
 3.  The farm.FDR function uses code from the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
 
-Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <http://github.com/jdstorey/qvalue>.
+Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <https://github.com/jdstorey/qvalue>.

@@ -38,7 +38,7 @@ NULL
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #'@examples
 #' set.seed(100)
-#' p = 50
+#' p = 100
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
@@ -304,7 +304,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' }
 #' @examples
 #' set.seed(100)
-#' p = 50
+#' p = 100
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
