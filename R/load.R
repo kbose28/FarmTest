@@ -319,7 +319,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   if(min(n,p) <=3) stop('n and p must be at least 3')
   K.scree <- if (is.null(K.scree)) min(n,p) else K.scree
   K.factors <- if (is.null(K.factors)) (min(n,p)/2) else K.factors
-  if(K.factors>=min(n,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+  if(K.factors>min(n,p)/2) warning('Number of factors supplied is > min(n,p)/2. May cause numerical inconsistencies')
   if (robust){
     muhatx = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
     covx = Cov_Huber(0.6,  X, muhatx)
