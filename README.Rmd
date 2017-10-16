@@ -65,6 +65,7 @@ Here we generate data from a factor model with 3 factors. We have 20 samples of 
 
 ```{r}
 library(farmtest)
+set.seed(100)
 p = 50
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -95,7 +96,8 @@ We see a warning telling us that it is not a good idea to calculate 15 eigenvalu
 Let us generate data from a Gaussain distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 
 ```{r}
-Y = matrix(rnorm(100, 0, 1),10)
+set.seed(100)
+Y = matrix(rnorm(1000, 0, 1),10)
 pval = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pval)
 output$rejected

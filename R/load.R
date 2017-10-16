@@ -37,6 +37,7 @@ NULL
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #'@examples
+#' set.seed(100)
 #' p = 50
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -302,6 +303,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 #' }
 #' @examples
+#' set.seed(100)
 #' p = 50
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -371,7 +373,8 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
 #' @examples
-#' Y = matrix(rnorm(100, 0, 1),10)
+#' set.seed(100)
+#' Y = matrix(rnorm(1000, 0, 1),10)
 #' pval = apply(Y, 1, function(x) t.test(x)$p.value)
 #' farm.FDR(pval, 0.05)
 #' farm.FDR(pval, 0.01, type = "BH")

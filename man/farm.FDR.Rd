@@ -32,7 +32,8 @@ Given a list of p-values, this function conducts multiple testing and outputs th
 Based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function to estimate this proportion. See Storey(2015).
 }
 \examples{
-Y = matrix(rnorm(100, 0, 1),10)
+set.seed(100)
+Y = matrix(rnorm(1000, 0, 1),10)
 pval = apply(Y, 1, function(x) t.test(x)$p.value)
 farm.FDR(pval, 0.05)
 farm.FDR(pval, 0.01, type = "BH")

@@ -41,7 +41,8 @@ There are three functions available.
 Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means. 
 ```{r}
 library(farmtest)
-p = 100
+set.seed(100)
+p = 50
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 B = matrix(rnorm(p*3,0,1), nrow=p)
@@ -71,6 +72,7 @@ We see a warning telling us that it is not a good idea to calcualate 15 eigenval
 Let us generate data from a Gaussain distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 
 ```{r}
+set.seed(100)
 Y = matrix(rnorm(1000, 0, 1),100)
 pvalues = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pvalues)

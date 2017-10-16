@@ -35,6 +35,7 @@ The maximum eigenvalue ratio is marked differently on the plot.  The index of th
 details User has to hit <Return> to see the second plot.
 }
 \examples{
+set.seed(100)
 p = 50
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)

@@ -54,6 +54,7 @@ If some of the underlying factors are known but it is suspected that there are m
 Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 }
 \examples{
+set.seed(100)
 p = 50
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
