@@ -6,7 +6,7 @@ Authors@R: c(person("Koushiki", "Bose", email = "bose@princeton.edu", role = c("
 Description: Performs robust multiple testing for means in the presence of known and unknown latent factors.
              It implements a robust procedure to estimate distribution parameters using the Huber's loss function and accounts for strong dependence among coordinates via an approximate factor model. 
              This method is particularly suitable for high-dimensional data when there are many variables but only a small number of observations available. 
-             Moreover, the method is tailored to cases when the underlying distribution far deviates from Gaussianity, which is commonly assumed in the literature.
+             Moreover, the method is tailored to cases when the underlying distribution far deviates from Gaussian, which is commonly assumed in the literature.
 Depends: R (>= 3.3.0)
 License: GPL-2
 Encoding: UTF-8
@@ -15,7 +15,6 @@ Imports:
     graphics,
     stats,
     Rcpp,
-    RcppArmadillo,
     grDevices,
     utils, 
     methods

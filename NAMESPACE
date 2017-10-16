@@ -3,7 +3,6 @@
 export(farm.FDR)
 export(farm.scree)
 export(farm.test)
-import(RcppArmadillo)
 import(grDevices)
 import(methods)
 import(stats)

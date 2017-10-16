@@ -3,7 +3,6 @@
 #' @importFrom  graphics mtext plot points axis par barplot
 #' @import methods
 #' @import utils
-#' @import RcppArmadillo
 #' @import grDevices
 #' @import stats
 
@@ -44,8 +43,8 @@ NULL
 #' @details For details about multiple comparison correction, see \code{\link{farm.FDR}}.
 #' @examples
 #' set.seed(100)
-#' p = 100
-#' n = 20
+#' p = 75
+#' n = 15
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
