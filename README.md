@@ -6,7 +6,7 @@ farmtest: Factor Adjusted Robust Multiple Testing
 Goal of the package
 -------------------
 
-This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution far deviates from Gaussianity, which is commonly assumed in the literature.
+This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.
 
 Installation
 ------------
@@ -95,7 +95,7 @@ print(output$rejected)
 hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
-![](README-unnamed-chunk-3-1.png)
+![](man/figures/README-unnamed-chunk-3-1.png)
 
 Other functions
 ---------------
@@ -108,7 +108,7 @@ output = farm.scree(X, K.factors = 15, K.scree = 10)
 #> supplied is > min(n,p)/2. May cause numerical inconsistencies
 ```
 
-![](README-unnamed-chunk-4-1.png)![](README-unnamed-chunk-4-2.png)
+![](man/figures/README-unnamed-chunk-4-1.png)![](man/figures/README-unnamed-chunk-4-2.png)
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
 
