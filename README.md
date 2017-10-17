@@ -8,7 +8,7 @@ Goal of the package
 
 This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.
 
-The observed data *X* is assumed to follow a factor model *X* = *μ* + *B**f* + *u*, where *f* are the underlying factors, *B* are the factors lodings, *u* are the errrors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
+The observed data *X* is assumed to follow a factor model ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20+%20Bf%20+%20u), where *f* are the underlying factors, *B* are the factors loadings, *u* are the errors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
 
 Installation
 ------------
@@ -30,7 +30,7 @@ Issues
 
 -   Error: "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
 
--   Error includes: "... .rdb':No such file or directory", try devtools::install\_github("kbose28/farmtest", dependencies=TRUE)
+-   Error includes: "... .rdb': No such file or directory", try devtools::install\_github("kbose28/farmtest", dependencies=TRUE)
 
 -   Error in RStudio even after installing XCode: "Could not find tools necessary to build farmtest." This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.
 
@@ -57,7 +57,7 @@ There are three functions available.
 -   `farm.FDR`: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in (Storey 2015).
 -   `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated.
 
-Simple hypotheses testing example
+Simple hypothesis testing example
 ---------------------------------
 
 Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.
@@ -130,7 +130,7 @@ output = farm.scree(X, K.factors = 15, K.scree = 10)
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
 
-Let us generate data from a Gaussain distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
+Let us generate data from a Gaussian distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 
 ``` r
 set.seed(100)
@@ -144,7 +144,7 @@ output$rejected
 Notes
 -----
 
-1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *X**r**e**s* = *X* − *B**f*. Now pass *X**r**e**s* into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20+%20Bf%20+%20Cg%20+%20u), where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: ![equation](https://latex.codecogs.com/gif.latex?Xres%20%3D%20X%20-%20Bf). Now pass ![equation](https://latex.codecogs.com/gif.latex?Xres) into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 

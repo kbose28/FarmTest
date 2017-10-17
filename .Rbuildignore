@@ -6,4 +6,6 @@
 ^cran-comments\.Rmd$
 ^\.travis\.yml$
 ^\_config\.yml$
+^README\.md$
+
 
