@@ -4,7 +4,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
-
 // This file contains all the C++ functions used
 
 ///////////////////////////////////////////////////////////////////////////
