@@ -8,6 +8,8 @@ Goal of the package
 
 This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.
 
+The observed data is assumed to follow a factor model , where are the underlying factors, are the factors lodings, are the errrors, and is the mean effect to be tested. We assume the data is of dimension and the smaple size is , leading to hypothesis tests.
+
 Installation
 ------------
 
@@ -29,6 +31,16 @@ Issues
 If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
 
 If you are having trouble installing in Rstudio, try installing from R console.
+
+If you get an error: library not found for -lgfortran, it means your lgfortran binaries are out of date.
+
+In R 3.0.0 - R 3.3.0 open terminal and type
+
+curl -O <http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2> sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C / rm -rf gfortran-4.8.2-darwin13.tar.bz2
+
+For &gt;= R 3.4.\* download the following and simply run the installer:
+
+<http://coudert.name/software/gfortran-6.1-ElCapitan.dmg>
 
 Functions
 ---------
@@ -130,6 +142,8 @@ Notes
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
-3.  The farm.FDR function uses code from the [`pi0est`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) function in the [`qvalue`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
+3.  The farm.FDR function uses code from the [`pi0est`](https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est) function in the [`qvalue`](http://bioconductor.org/packages/release/bioc/html/qvalue.html) package (Storey 2015) to estimate the number of true null hypotheses, and inherits all the options from `pi0est`.
+
+4.  See individual function documentation for detailed description of methods and their references.
 
 Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <https://github.com/jdstorey/qvalue>.
