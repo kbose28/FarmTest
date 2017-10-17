@@ -8,7 +8,7 @@ Goal of the package
 
 This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.
 
-The observed data *X* is assumed to follow a factor model *X* = *μ* + *B**f* + *u*, where *f* are the underlying factors, *B* are the factors lodings, *u* are the errrors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the smaple size is *n*, leading to *p* hypothesis tests.
+The observed data *X* is assumed to follow a factor model *X* = *μ* + *B**f* + *u*, where *f* are the underlying factors, *B* are the factors lodings, *u* are the errrors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
 
 Installation
 ------------
@@ -28,11 +28,13 @@ Help on the functions can be accessed by typing "?", followed by function name a
 Issues
 ------
 
--   If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
+-   Error: "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
 
--   If you are having trouble installing in Rstudio, try installing from R console.
+-   Error includes: "... .rdb':No such file or directory", try devtools::install\_github("kbose28/farmtest", dependencies=TRUE)
 
--   If you get an error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue.
+-   Error in RStudio even after installing XCode: "Could not find tools necessary to build farmtest." This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.
+
+-   Error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue.
 
 In R 3.0.0 - R 3.3.0 open terminal and type
 
