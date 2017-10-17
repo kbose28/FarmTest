@@ -11,17 +11,17 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 \arguments{
 \item{pvalue}{a vector of p-values obtained from multiple testing}
 
-\item{alpha}{an \emph{optional} significance level for testing (in decimals). Default is 0.05.}
+\item{alpha}{an \emph{optional} significance level for testing (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
-\item{type}{an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH").}
+\item{type}{an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH"). See Benjamini and Hochberg (1995).}
 
-\item{lambda}{an \emph{optional} threshold for estimating the proportion of true null hypotheses pi_0. Must be in [0,1).}
+\item{lambda}{an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{pi_0}. Must be in \eqn{[0,1)}.}
 
-\item{pi0.method}{Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of pi_0, the proportion of true null hypotheses. Optional.}
+\item{pi0.method}{Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{pi_0}, the proportion of true null hypotheses. Optional.}
 
-\item{smooth.df}{Number of degrees-of-freedom to use when estimating pi_0 with a smoother. Optional.}
+\item{smooth.df}{Number of degrees-of-freedom to use when estimating \eqn{pi_0} with a smoother. Optional.}
 
-\item{smooth.log.pi0}{If TRUE and pi0.method = "smoother", pi_0 will be estimated by applying a smoother to a scatterplot of log(pi_0) estimates against the tuning parameter lambda. Optional.}
+\item{smooth.log.pi0}{If TRUE and pi0.method = "smoother", \eqn{pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(pi_0)} estimates against the tuning parameter lambda. Optional.}
 }
 \value{
 \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
@@ -29,7 +29,10 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 }
 \description{
 Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{pi_0} is estimated.
-This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{https://github.com/jdstorey/qvalue}{qvalue} package. See Storey(2015).
+This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{http://bioconductor.org/packages/release/bioc/html/qvalue.html}{qvalue} package. See Storey(2015).
+}
+\details{
+The "mBH" procedure is simply the regular Benjamini-Hochberg pocedure, but in the rejection threshold the denominator \eqn{p} is replaced by  \eqn{pi_0 * p}. This is a less conservative approach. See Storey (2002).
 }
 \examples{
 set.seed(100)
@@ -40,5 +43,9 @@ farm.FDR(pval, 0.01, type = "BH")
 
 }
 \references{
-Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+Benjamini Y and Hochberg Y (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
+
+Storey JD (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+
+Storey JD (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
 }

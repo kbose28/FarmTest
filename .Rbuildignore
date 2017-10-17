@@ -3,5 +3,5 @@
 ^README\.Rmd$
 ^README\.html$
 ^cran-comments\.md$
-
-
+^cran-comments\.Rmd$
+^\.travis\.yml$

@@ -49,5 +49,5 @@ ouput = farm.scree(X)
 
 }
 \references{
-Ahn, S. C., and A. R. Horenstein (2013): “Eigenvalue Ratio Test for the Number of Factors,” Econometrica, 81 (3), 1203–1227.
+Ahn, S. C., and A. R. Horenstein (2013): "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 }

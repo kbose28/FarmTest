@@ -43,8 +43,8 @@ A list with the following items
 \item{nfactors}{if needed, the number of estimated factors}
 }
 \description{
-This function is used to conduct robust statistical test for means of multivariate data, after adjusting for factors.
-It uses the Huber's loss function to robustly estimate data parameters.
+This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
+It uses the Huber's loss function (HUber (1964)) to robustly estimate data parameters. See
 }
 \details{
 \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
@@ -67,4 +67,8 @@ mu[1:5] = 2
 X = rep(1,n)\%*\%t(mu)+fx\%*\%t(B)+ epsilon
 output1 = farm.test(X)
 output = farm.test(X, alpha = 0.01,alternative = "greater")
+
+}
+\references{
+Huber PJ (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 }

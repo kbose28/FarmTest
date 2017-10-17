@@ -12,8 +12,8 @@ NULL
 ###################################################################################
 #' Factor-adjusted robust test for means
 #'
-#' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for factors.
-#' It uses the Huber's loss function to robustly estimate data parameters.
+#' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
+#' It uses the Huber's loss function (HUber (1964)) to robustly estimate data parameters. See
 #' @param X a n x p data matrix with each row being a sample.
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
 #' @param H0 an \emph{optional} p x 1 vector of the true value of the means (or difference in means if you are performing a two sample test). The default is the zero.
@@ -53,6 +53,8 @@ NULL
 #' X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
 #' output1 = farm.test(X)
 #' output = farm.test(X, alpha = 0.01,alternative = "greater")
+#'
+#' @references Huber PJ (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
 farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "less", "greater"),  alpha=NULL ,verbose=TRUE, ...){
   p = NCOL(X)
@@ -318,7 +320,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' X = fx%*%t(B)+ epsilon
 #' ouput = farm.scree(X)
 #'
-#' @references Ahn, S. C., and A. R. Horenstein (2013): “Eigenvalue Ratio Test for the Number of Factors,” Econometrica, 81 (3), 1203–1227.
+#' @references Ahn, S. C., and A. R. Horenstein (2013): "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 #' @export
 farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   X = t(X)
@@ -367,17 +369,18 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' Control FDR given a list of pvalues
 #'
 #' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{pi_0} is estimated.
-#' This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{https://github.com/jdstorey/qvalue}{qvalue} package. See Storey(2015).
+#' This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{http://bioconductor.org/packages/release/bioc/html/qvalue.html}{qvalue} package. See Storey(2015).
 #' @param pvalue a vector of p-values obtained from multiple testing
-#' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05.
-#' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH").
-#' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses pi_0. Must be in [0,1).
-#' @param pi0.method Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of pi_0, the proportion of true null hypotheses. Optional.
-#' @param smooth.df Number of degrees-of-freedom to use when estimating pi_0 with a smoother. Optional.
-#' @param smooth.log.pi0 If TRUE and pi0.method = "smoother", pi_0 will be estimated by applying a smoother to a scatterplot of log(pi_0) estimates against the tuning parameter lambda. Optional.
+#' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
+#' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH"). See Benjamini and Hochberg (1995).
+#' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{pi_0}. Must be in \eqn{[0,1)}.
+#' @param pi0.method Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{pi_0}, the proportion of true null hypotheses. Optional.
+#' @param smooth.df Number of degrees-of-freedom to use when estimating \eqn{pi_0} with a smoother. Optional.
+#' @param smooth.log.pi0 If TRUE and pi0.method = "smoother", \eqn{pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(pi_0)} estimates against the tuning parameter lambda. Optional.
 #' @return
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
+#' @details The "mBH" procedure is simply the regular Benjamini-Hochberg pocedure, but in the rejection threshold the denominator \eqn{p} is replaced by  \eqn{pi_0 * p}. This is a less conservative approach. See Storey (2002).
 #' @examples
 #' set.seed(100)
 #' Y = matrix(rnorm(1000, 0, 1),10)
@@ -385,7 +388,10 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' farm.FDR(pval, 0.05)
 #' farm.FDR(pval, 0.01, type = "BH")
 #'
-#' @references Storey JD (2015). qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+#' @references Benjamini Y and Hochberg Y (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
+#' @references Storey JD (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+#' @references Storey JD (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
+
 #' @export
 farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
 smooth.df = 3, smooth.log.pi0 = FALSE){
