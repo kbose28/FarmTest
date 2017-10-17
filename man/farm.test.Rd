@@ -44,7 +44,7 @@ A list with the following items
 }
 \description{
 This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
-It uses the Huber's loss function (HUber (1964)) to robustly estimate data parameters. See
+It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters. See
 }
 \details{
 \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.

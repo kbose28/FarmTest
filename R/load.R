@@ -13,7 +13,7 @@ NULL
 #' Factor-adjusted robust test for means
 #'
 #' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
-#' It uses the Huber's loss function (HUber (1964)) to robustly estimate data parameters. See
+#' It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters. See
 #' @param X a n x p data matrix with each row being a sample.
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
 #' @param H0 an \emph{optional} p x 1 vector of the true value of the means (or difference in means if you are performing a two sample test). The default is the zero.

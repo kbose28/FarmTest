@@ -51,7 +51,9 @@ Help on the functions can be accessed by typing "?", followed by function name a
 In R 3.0.0 - R 3.3.0 open terminal and type
 
 curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
+
 sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+
 rm -rf gfortran-4.8.2-darwin13.tar.bz2
 
 For >= R 3.4.* download the following and simply run the installer: 

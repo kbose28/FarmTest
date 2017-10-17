@@ -28,15 +28,19 @@ Help on the functions can be accessed by typing "?", followed by function name a
 Issues
 ------
 
-If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
+-   If you get the error "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites>).
 
-If you are having trouble installing in Rstudio, try installing from R console.
+-   If you are having trouble installing in Rstudio, try installing from R console.
 
-If you get an error: library not found for -lgfortran, it means your lgfortran binaries are out of date.
+-   If you get an error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue.
 
 In R 3.0.0 - R 3.3.0 open terminal and type
 
-curl -O <http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2> sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C / rm -rf gfortran-4.8.2-darwin13.tar.bz2
+curl -O <http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2>
+
+sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+
+rm -rf gfortran-4.8.2-darwin13.tar.bz2
 
 For &gt;= R 3.4.\* download the following and simply run the installer:
 
