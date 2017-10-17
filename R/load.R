@@ -403,6 +403,7 @@ smooth.df = 3, smooth.log.pi0 = FALSE){
 
   if (type == "BH"){
     p = length(pvalue)
+    index = order(pvalue)
     pvalue_adj = stats::p.adjust(pvalue, method = "BH")
     alldata  = cbind(1:p, pvalue, pvalue_adj)
   }
