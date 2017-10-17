@@ -8,7 +8,7 @@ Goal of the package
 
 This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.
 
-The observed data is assumed to follow a factor model , where are the underlying factors, are the factors lodings, are the errrors, and is the mean effect to be tested. We assume the data is of dimension and the smaple size is , leading to hypothesis tests.
+The observed data *X* is assumed to follow a factor model *X* = *μ* + *B**f* + *u*, where *f* are the underlying factors, *B* are the factors lodings, *u* are the errrors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the smaple size is *n*, leading to *p* hypothesis tests.
 
 Installation
 ------------
@@ -142,7 +142,7 @@ output$rejected
 Notes
 -----
 
-1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data , where is observed and is unobserved. In the first step, the user passes the data into the main function. From the output, let us construct the residuals: . Now pass into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *X**r**e**s* = *X* − *B**f*. Now pass *X**r**e**s* into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
