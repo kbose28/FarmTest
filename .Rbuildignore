@@ -1,12 +1,12 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+.Rprofile
 ^README\.Rmd$
 ^README\.html$
 ^cran-comments\.md$
 ^cran-comments\.Rmd$
 ^\.travis\.yml$
 ^\_config\.yml$
-^README\.md$
 ^cran-comments\.html$
 ^revdep$
 
