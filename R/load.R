@@ -399,8 +399,6 @@ smooth.df = 3, smooth.log.pi0 = FALSE){
   type = match.arg(type)
   alpha <- if (is.null(alpha)) 0.05 else alpha
   if(alpha <0|| alpha>1) stop("alpha must be between 0 and 1")
-  if(lambda <0|| lambda>1) stop("lambda must be between 0 and 1")
-
   if (type == "BH"){
     p = length(pvalue)
     index = order(pvalue)

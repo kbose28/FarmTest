@@ -1,19 +1,16 @@
+---
+output: md_document
+---
+
+
 ## Test environments
 * local OS X install, R 3.3.2
 * Ubuntu 14.04 (on Travis-CI), R 3.3.2
 * win-builder (devel and release)
-* rhub: 
 
 ## R CMD check results
 
-On OS X and ubuntu there were no NOTEs, ERRORs or WARNINGs 
-
-Using win-builder, there was one NOTE, which I believe is usual. 
-    
-    * checking CRAN incoming feasibility ... NOTE
-      Maintainer: 'Koushiki Bose <email>'
-
-      New submission
+No NOTES, ERRORs or WARNINGs 
 
 ## Downstream dependencies
 I have also run R CMD check on downstream dependencies using devtools::revdep_check(). 

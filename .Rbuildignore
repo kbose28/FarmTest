@@ -8,6 +8,5 @@
 ^\_config\.yml$
 ^README\.md$
 ^cran-comments\.html$
-
-
+^revdep$
 
