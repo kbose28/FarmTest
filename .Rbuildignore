@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-.Rprofile
 ^README\.Rmd$
 ^README\.html$
 ^cran-comments\.md$
@@ -9,4 +8,5 @@
 ^\_config\.yml$
 ^cran-comments\.html$
 ^revdep$
+
 
