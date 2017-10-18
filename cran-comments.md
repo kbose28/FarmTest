@@ -14,4 +14,7 @@ Downstream dependencies
 -----------------------
 
 I have also run R CMD check on downstream dependencies using
-devtools::revdep\_check(). All packages passed.
+devtools::revdep\_check() followed by
+devtools::revdep\_check\_save\_summary(). Results at
+<https://github.com/kbose28/farmtest/blob/master/revdep/problems.md>.
+There were no problems.

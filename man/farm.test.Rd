@@ -57,11 +57,11 @@ For details about multiple comparison correction, see \code{\link{farm.FDR}}.
 }
 \examples{
 set.seed(100)
-p = 75
-n = 15
+p = 20
+n = 10
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
-B = matrix(rnorm(p*3,0,1), nrow=p)
-fx = matrix(rnorm(3*n, 0,1), nrow = n)
+B = matrix(rnorm(p,0,1), nrow=p)
+fx = matrix(rnorm(n, 0,1), nrow = n)
 mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)\%*\%t(mu)+fx\%*\%t(B)+ epsilon
