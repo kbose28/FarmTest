@@ -1,6 +1,7 @@
 ## ----gh-installation, eval = FALSE---------------------------------------
-#  # install.packages("devtools")
+#  install.packages("devtools")
 #  devtools::install_github("kbose28/farmtest")
+#  library(farmtest)
 
 ## ------------------------------------------------------------------------
 library(farmtest)

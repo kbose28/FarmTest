@@ -16,8 +16,9 @@ Installation
 You can install farmtest from github with:
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("kbose28/farmtest")
+library(farmtest)
 ```
 
 Getting help

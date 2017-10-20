@@ -83,8 +83,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>You can install farmtest from github with:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages(&quot;devtools&quot;)</span>
-devtools::<span class="kw">install_github</span>(<span class="st">&quot;kbose28/farmtest&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
+devtools::<span class="kw">install_github</span>(<span class="st">&quot;kbose28/farmtest&quot;</span>)
+<span class="kw">library</span>(farmtest)</code></pre></div>
 </div>
 <div id="getting-help" class="section level2">
 <h2>Getting help</h2>
@@ -93,17 +94,15 @@ devtools::<span class="kw">install_github</span>(<span class="st">&quot;kbose28/
 <div id="issues" class="section level2">
 <h2>Issues</h2>
 <ul>
-<li><p>Error: “Installation failed: Could not find build tools necessary to build farmtest”. This means that you do not have command line tools installed. Since <code>farmtest</code> relies on <code>C++</code> code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<a href="https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites" class="uri">https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites</a>).</p></li>
-<li><p>Error includes: “… .rdb’: No such file or directory”, try devtools::install_github(“kbose28/farmtest”, dependencies=TRUE)</p></li>
-<li><p>Error in RStudio even after installing XCode: “Could not find tools necessary to build farmtest.” This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.</p></li>
-<li><p>Error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue.</p></li>
+<li><p>Error: “…could not find build tools necessary to build farmtest”: Since <code>farmtest</code> relies on <code>C++</code> code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<a href="https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites" class="uri">https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites</a>).</p></li>
+<li><p>Error: “library not found for -lgfortran/-lquadmath”: It means your gfortran binaries are out of date. This is a common environment specific issue.</p>
+<ol style="list-style-type: decimal">
+<li><p>In R 3.0.0 - R 3.3.0: Upgrading to R 3.4 is strongly recommended. Then go to the next step. Alternatively, you can try the instructions here: <a href="http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/" class="uri">http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/</a>.</p></li>
+<li><p>For &gt;= R 3.4.* : download the installer from the here: <a href="https://gcc.gnu.org/wiki/GFortranBinaries#MacOS" class="uri">https://gcc.gnu.org/wiki/GFortranBinaries#MacOS</a>. Now simply run the installer. (If installer is not available for your version of OS, use the latest one.)</p></li>
+</ol></li>
+<li><p>Error: “… .rdb’: No such file or directory” Try devtools::install_github(“kbose28/farmtest”, dependencies=TRUE)</p></li>
+<li><p>Error in RStudio even after installing XCode: “Could not find tools necessary to build farmtest”: This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.</p></li>
 </ul>
-<p>In R 3.0.0 - R 3.3.0 open terminal and type</p>
-<p>curl -O <a href="http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2" class="uri">http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2</a></p>
-<p>sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /</p>
-<p>rm -rf gfortran-4.8.2-darwin13.tar.bz2</p>
-<p>For &gt;= R 3.4.* download the following and simply run the installer:</p>
-<p><a href="http://coudert.name/software/gfortran-6.1-ElCapitan.dmg" class="uri">http://coudert.name/software/gfortran-6.1-ElCapitan.dmg</a></p>
 </div>
 <div id="functions" class="section level2">
 <h2>Functions</h2>
