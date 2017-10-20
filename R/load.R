@@ -212,7 +212,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
     ratio = ratio[is.finite(ratio)]
     Kx = which.min(ratio)} else {Kx}
   if(Kx>=min(nx,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
-  if(Kx>=max(nx,p)) stop('Number of factors cannot be larger than n or p')
+  if(Kx>max(nx,p)) stop('Number of factors cannot be larger than n or p')
 
   Bx = matrix(NA, p, Kx)
   for (k in 1:Kx){
@@ -245,7 +245,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
     ratio = ratio[is.finite(ratio)]
     Ky = which.min(ratio)} else {Ky}
   if(Ky>=min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
-  if(Ky>=max(ny,p)) stop('Number of factors cannot be larger than n or p')
+  if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
 
   By = matrix(NA, p, Ky)
   for (k in 1:Ky){
@@ -483,7 +483,7 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                         }
                       }
                       if (pi0 <= 0) {
-                        stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda.")
+                        stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda. Alternatively, try type = \"BH\".")
                       }
                       return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
                                   lambda = lambda, pi0.smooth = pi0Smooth))
