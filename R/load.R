@@ -13,7 +13,7 @@ NULL
 #' Factor-adjusted robust test for means
 #'
 #' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
-#' It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters. See
+#' It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters.
 #' @param X a n x p data matrix with each row being a sample.
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
 #' @param H0 an \emph{optional} p x 1 vector of the true value of the means (or difference in means if you are performing a two sample test). The default is the zero.
@@ -37,7 +37,7 @@ NULL
 #' @details
 #' \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 #' @details
-#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{{X,f}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #' @details For details about multiple comparison correction, see \code{\link{farm.FDR}}.
@@ -61,7 +61,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
   H0 <- if(is.null(H0)) rep(0,p ) else H0
   if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
   alpha <- if(is.null(alpha)) 0.05 else alpha
-  if(alpha>1 || alpha <0) stop('alpha should be between 0 and 1')
+  if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
 
   if (!is.null(fx)){
     if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
@@ -368,19 +368,19 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
 #'
-#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{pi_0} is estimated.
+#' Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{\pi_0} is estimated.
 #' This estimation is done based on the \href{https://www.rdocumentation.org/packages/qvalue/versions/2.4.2/topics/pi0est}{pi0est} function in the \href{http://bioconductor.org/packages/release/bioc/html/qvalue.html}{qvalue} package. See Storey(2015).
 #' @param pvalue a vector of p-values obtained from multiple testing
 #' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
 #' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH"). See Benjamini and Hochberg (1995).
-#' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{pi_0}. Must be in \eqn{[0,1)}.
-#' @param pi0.method Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{pi_0}, the proportion of true null hypotheses. Optional.
-#' @param smooth.df Number of degrees-of-freedom to use when estimating \eqn{pi_0} with a smoother. Optional.
-#' @param smooth.log.pi0 If TRUE and pi0.method = "smoother", \eqn{pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(pi_0)} estimates against the tuning parameter lambda. Optional.
+#' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{\pi_0}. Must be in \eqn{[0,1)}.
+#' @param pi0.method Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses. Optional.
+#' @param smooth.df Number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother. Optional.
+#' @param smooth.log.pi0 If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Optional.
 #' @return
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
-#' @details The "mBH" procedure is simply the regular Benjamini-Hochberg pocedure, but in the rejection threshold the denominator \eqn{p} is replaced by  \eqn{pi_0 * p}. This is a less conservative approach. See Storey (2002).
+#' @details The "mBH" procedure is simply the regular Benjamini-Hochberg pocedure, but in the rejection threshold the denominator \eqn{p} is replaced by  \eqn{\pi_0 * p}. This is a less conservative approach. See Storey (2002).
 #' @examples
 #' set.seed(100)
 #' Y = matrix(rnorm(1000, 0, 1),10)
@@ -398,7 +398,7 @@ smooth.df = 3, smooth.log.pi0 = FALSE){
   if((sum(pvalue<0)!=0)|| (sum(pvalue>1)!=0)) stop("pvalues must be between 0 and 1")
   type = match.arg(type)
   alpha <- if (is.null(alpha)) 0.05 else alpha
-  if(alpha <0|| alpha>1) stop("alpha must be between 0 and 1")
+  if(alpha <=0|| alpha>=1) stop("alpha must be between 0 and 1")
   if (type == "BH"){
     p = length(pvalue)
     index = order(pvalue)
@@ -483,7 +483,7 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                         }
                       }
                       if (pi0 <= 0) {
-                        stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda. Alternatively, try type = \"BH\".")
+                        stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda. Alternatively, to not estimate pi0, use type = \"BH\".")
                       }
                       return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
                                   lambda = lambda, pi0.smooth = pi0Smooth))

@@ -44,12 +44,12 @@ A list with the following items
 }
 \description{
 This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
-It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters. See
+It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters.
 }
 \details{
 \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 
-If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{{X,f}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \code{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 

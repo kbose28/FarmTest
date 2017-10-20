@@ -48,25 +48,17 @@ Help on the functions can be accessed by typing "?", followed by function name a
 
 ##Issues
 
-* Error: "Installation failed: Could not find build tools necessary to build farmtest", this means that you do not have command line tools installed. Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites). 
+* Error: "...could not find build tools necessary to build farmtest": Since `farmtest` relies on `C++` code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites). 
 
-* Error includes: "... .rdb': No such file or directory", try devtools::install_github("kbose28/farmtest", dependencies=TRUE)
+* Error: "library not found for -lgfortran/-lquadmath": It means your gfortran binaries are out of date. This is a common environment specific issue. 
 
-* Error in RStudio even after installing XCode: "Could not find tools necessary to build farmtest." This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.
+    1. In R 3.0.0 - R 3.3.0: Upgrading to R 3.4 is strongly recommended. Then go to the next step. Alternatively, you can try the instructions here: http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/. 
 
-* Error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue. 
+    2. For >= R 3.4.* : download the installer from the here: https://gcc.gnu.org/wiki/GFortranBinaries#MacOS. Now simply run the installer. (If installer is not available for your version of OS, use the latest one.)
 
-In R 3.0.0 - R 3.3.0 open terminal and type
+* Error: "... .rdb': No such file or directory" Try devtools::install_github("kbose28/farmtest", dependencies=TRUE)
 
-curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-
-sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
-
-rm -rf gfortran-4.8.2-darwin13.tar.bz2
-
-For >= R 3.4.* download the following and simply run the installer: 
-
-http://coudert.name/software/gfortran-6.1-ElCapitan.dmg
+* Error in RStudio even after installing XCode: "Could not find tools necessary to build farmtest": This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.
 
 
 ##Functions

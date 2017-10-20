@@ -12,7 +12,7 @@
 
 <meta name="author" content="Koushiki Bose" />
 
-<meta name="date" content="2017-10-18" />
+<meta name="date" content="2017-10-20" />
 
 <title>farmtest: Factor Adjusted Robust Multiple Testing</title>
 
@@ -70,14 +70,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">farmtest: Factor Adjusted Robust Multiple Testing</h1>
 <h4 class="author"><em>Koushiki Bose</em></h4>
-<h4 class="date"><em>2017-10-18</em></h4>
+<h4 class="date"><em>2017-10-20</em></h4>
 
 
 
 <hr />
 <div id="goal-of-the-package" class="section level2">
 <h2>Goal of the package</h2>
-<p>This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature.</p>
+<p>This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See</p>
 <p>The observed data <span class="math inline">\(X\)</span> is assumed to follow a factor model <span class="math inline">\(X = \mu + Bf + u\)</span>, where <span class="math inline">\(f\)</span> are the underlying factors, <span class="math inline">\(B\)</span> are the factors loadings, <span class="math inline">\(u\)</span> are the errors, and <span class="math inline">\(\mu\)</span> is the mean effect to be tested. We assume the data is of dimension <span class="math inline">\(p\)</span> and the sample size is <span class="math inline">\(n\)</span>, leading to <span class="math inline">\(p\)</span> hypothesis tests.</p>
 </div>
 <div id="installation" class="section level2">
@@ -93,7 +93,7 @@ devtools::<span class="kw">install_github</span>(<span class="st">&quot;kbose28/
 <div id="issues" class="section level2">
 <h2>Issues</h2>
 <ul>
-<li><p>Error: “Installation failed: Could not find build tools necessary to build farmtest”, this means that you do not have command line tools installed. Since <code>farmtest</code> relies on <code>C++</code> code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<a href="https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites" class="uri">https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites</a>).</p></li>
+<li><p>Error: “Installation failed: Could not find build tools necessary to build farmtest”. This means that you do not have command line tools installed. Since <code>farmtest</code> relies on <code>C++</code> code, command line tools need to be installed to compile the code. For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See (<a href="https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites" class="uri">https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites</a>).</p></li>
 <li><p>Error includes: “… .rdb’: No such file or directory”, try devtools::install_github(“kbose28/farmtest”, dependencies=TRUE)</p></li>
 <li><p>Error in RStudio even after installing XCode: “Could not find tools necessary to build farmtest.” This is a known bug in RStudio. Try options(buildtools.check=function(action) TRUE) in RStudio to prevent RStudio from validating build tools.</p></li>
 <li><p>Error: library not found for -lgfortran, it means your gfortran binaries are out of date. This is an environment specific issue.</p></li>
@@ -117,8 +117,11 @@ devtools::<span class="kw">install_github</span>(<span class="st">&quot;kbose28/
 <div id="getting-help-1" class="section level2">
 <h2>Getting help</h2>
 <ul>
-<li>For help on the functions type <code>?farm.test</code>, <code>?farm.FDR</code>, or <code>?farm.scree</code>. ## Simple hypothesis testing example</li>
+<li>For help on the functions type <code>?farm.test</code>, <code>?farm.FDR</code>, or <code>?farm.scree</code>.</li>
 </ul>
+</div>
+<div id="simple-hypothesis-testing-example" class="section level2">
+<h2>Simple hypothesis testing example</h2>
 <p>Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(farmtest)
 <span class="kw">set.seed</span>(<span class="dv">100</span>)
@@ -168,7 +171,7 @@ output =<span class="st"> </span><span class="kw">farm.test</span>(X)</code></pr
 </div>
 <div id="other-functions" class="section level2">
 <h2>Other functions</h2>
-<p>The function <code>farm.scree</code> makes some informative plots. It is possible to specify teh maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.</p>
+<p>The function <code>farm.scree</code> makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">output =<span class="st"> </span><span class="kw">farm.scree</span>(X, <span class="dt">K.factors =</span> <span class="dv">15</span>, <span class="dt">K.scree =</span> <span class="dv">10</span>)</code></pre></div>
 <pre><code>## Warning in farm.scree(X, K.factors = 15, K.scree = 10): Number of factors
 ## supplied is &gt; min(n,p)/2. May cause numerical inconsistencies</code></pre>
