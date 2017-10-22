@@ -1,4 +1,4 @@
-#' @useDynLib farmtest
+#' @useDynLib FarmTest
 #' @importFrom  Rcpp sourceCpp
 #' @importFrom  graphics mtext plot points axis par barplot
 #' @import methods

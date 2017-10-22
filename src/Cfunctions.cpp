@@ -381,6 +381,7 @@ arma::mat mu_robust(float C_tau, arma::mat X)
 
 
   for(i=0;i<P;i++){
+      Rcpp::checkUserInterrupt();
     Xi=X.row(i);
     //Un-comment the following line if you want to choose Tau via 5 fold CV
     Tau= Robust_CV ((Xi),trans(mu_one));
@@ -415,6 +416,7 @@ arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
   mat mu_hat; mu_hat.zeros(K,P);
 
   for(i=0;i<P;i++){
+      Rcpp::checkUserInterrupt();
    Xi=X.row(i);
     F_H_0=solve(phi,trans(Xi));
     //Un-comment the following line if you want to choose Tau via 5 fold CV
@@ -449,6 +451,7 @@ arma::mat Cov_Huber(float C_tau, arma::mat X, arma::mat mu_hat)
 
   //Entry-wise Huber method
   for(i=0;i<P;i++){
+      Rcpp::checkUserInterrupt();
     for(j=0;j<=i;j++){
       Xi=X.row(i); Xj=X.row(j);
       //Un-comment the following line if you want to choose Tau via 5 fold CV

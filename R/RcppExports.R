@@ -2,70 +2,70 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 Huber_loss <- function(Vi, Vj, Z, CT) {
-    .Call('_farmtest_Huber_loss', PACKAGE = 'farmtest', Vi, Vj, Z, CT)
+    .Call('_FarmTest_Huber_loss', PACKAGE = 'FarmTest', Vi, Vj, Z, CT)
 }
 
 Huber_gradient <- function(Vi, Vj, Z, CT) {
-    .Call('_farmtest_Huber_gradient', PACKAGE = 'farmtest', Vi, Vj, Z, CT)
+    .Call('_FarmTest_Huber_gradient', PACKAGE = 'FarmTest', Vi, Vj, Z, CT)
 }
 
 Huber_descent <- function(Vi, Vj, Z, CT) {
-    .Call('_farmtest_Huber_descent', PACKAGE = 'farmtest', Vi, Vj, Z, CT)
+    .Call('_FarmTest_Huber_descent', PACKAGE = 'FarmTest', Vi, Vj, Z, CT)
 }
 
 Robust_CV <- function(Vi, Vj) {
-    .Call('_farmtest_Robust_CV', PACKAGE = 'farmtest', Vi, Vj)
+    .Call('_FarmTest_Robust_CV', PACKAGE = 'FarmTest', Vi, Vj)
 }
 
 Huber_loss_F <- function(X, phi, B, CT, T) {
-    .Call('_farmtest_Huber_loss_F', PACKAGE = 'farmtest', X, phi, B, CT, T)
+    .Call('_FarmTest_Huber_loss_F', PACKAGE = 'FarmTest', X, phi, B, CT, T)
 }
 
 Huber_gradient_F <- function(X, phi, B, CT, T) {
-    .Call('_farmtest_Huber_gradient_F', PACKAGE = 'farmtest', X, phi, B, CT, T)
+    .Call('_FarmTest_Huber_gradient_F', PACKAGE = 'FarmTest', X, phi, B, CT, T)
 }
 
 Huber_descent_F <- function(X, phi, B, CT) {
-    .Call('_farmtest_Huber_descent_F', PACKAGE = 'farmtest', X, phi, B, CT)
+    .Call('_FarmTest_Huber_descent_F', PACKAGE = 'FarmTest', X, phi, B, CT)
 }
 
 Robust_CV_F <- function(vx, phi) {
-    .Call('_farmtest_Robust_CV_F', PACKAGE = 'farmtest', vx, phi)
+    .Call('_FarmTest_Robust_CV_F', PACKAGE = 'FarmTest', vx, phi)
 }
 
 Influence_Huber <- function(X, tau) {
-    .Call('_farmtest_Influence_Huber', PACKAGE = 'farmtest', X, tau)
+    .Call('_FarmTest_Influence_Huber', PACKAGE = 'FarmTest', X, tau)
 }
 
 mu_robust <- function(C_tau, X) {
-    .Call('_farmtest_mu_robust', PACKAGE = 'farmtest', C_tau, X)
+    .Call('_FarmTest_mu_robust', PACKAGE = 'FarmTest', C_tau, X)
 }
 
 mu_robust_F <- function(C_tau, X, phi) {
-    .Call('_farmtest_mu_robust_F', PACKAGE = 'farmtest', C_tau, X, phi)
+    .Call('_FarmTest_mu_robust_F', PACKAGE = 'FarmTest', C_tau, X, phi)
 }
 
 Cov_Huber <- function(C_tau, X, mu_hat) {
-    .Call('_farmtest_Cov_Huber', PACKAGE = 'farmtest', C_tau, X, mu_hat)
+    .Call('_FarmTest_Cov_Huber', PACKAGE = 'FarmTest', C_tau, X, mu_hat)
 }
 
 Cov_U <- function(C_tau, X) {
-    .Call('_farmtest_Cov_U', PACKAGE = 'farmtest', C_tau, X)
+    .Call('_FarmTest_Cov_U', PACKAGE = 'FarmTest', C_tau, X)
 }
 
 Eigen_Decomp <- function(M) {
-    .Call('_farmtest_Eigen_Decomp', PACKAGE = 'farmtest', M)
+    .Call('_FarmTest_Eigen_Decomp', PACKAGE = 'FarmTest', M)
 }
 
 Loading_Sample <- function(K, M) {
-    .Call('_farmtest_Loading_Sample', PACKAGE = 'farmtest', K, M)
+    .Call('_FarmTest_Loading_Sample', PACKAGE = 'FarmTest', K, M)
 }
 
 Loading_Robust <- function(K, M) {
-    .Call('_farmtest_Loading_Robust', PACKAGE = 'farmtest', K, M)
+    .Call('_FarmTest_Loading_Robust', PACKAGE = 'FarmTest', K, M)
 }
 
 FDP_Oracle <- function(P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null) {
-    .Call('_farmtest_FDP_Oracle', PACKAGE = 'farmtest', P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null)
+    .Call('_FarmTest_FDP_Oracle', PACKAGE = 'FarmTest', P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null)
 }
 

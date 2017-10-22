@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // Huber_loss
 arma::mat Huber_loss(arma::mat Vi, arma::mat Vj, float Z, float CT);
-RcppExport SEXP _farmtest_Huber_loss(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
+RcppExport SEXP _FarmTest_Huber_loss(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // Huber_gradient
 arma::mat Huber_gradient(arma::mat Vi, arma::mat Vj, float Z, float CT);
-RcppExport SEXP _farmtest_Huber_gradient(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
+RcppExport SEXP _FarmTest_Huber_gradient(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +36,7 @@ END_RCPP
 }
 // Huber_descent
 float Huber_descent(arma::mat Vi, arma::mat Vj, float Z, float CT);
-RcppExport SEXP _farmtest_Huber_descent(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
+RcppExport SEXP _FarmTest_Huber_descent(SEXP ViSEXP, SEXP VjSEXP, SEXP ZSEXP, SEXP CTSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ END_RCPP
 }
 // Robust_CV
 float Robust_CV(arma::mat Vi, arma::mat Vj);
-RcppExport SEXP _farmtest_Robust_CV(SEXP ViSEXP, SEXP VjSEXP) {
+RcppExport SEXP _FarmTest_Robust_CV(SEXP ViSEXP, SEXP VjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -62,7 +62,7 @@ END_RCPP
 }
 // Huber_loss_F
 arma::mat Huber_loss_F(arma::mat X, arma::mat phi, arma::mat B, float CT, int T);
-RcppExport SEXP _farmtest_Huber_loss_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP, SEXP TSEXP) {
+RcppExport SEXP _FarmTest_Huber_loss_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP, SEXP TSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -77,7 +77,7 @@ END_RCPP
 }
 // Huber_gradient_F
 arma::mat Huber_gradient_F(arma::mat X, arma::mat phi, arma::mat B, float CT, int T);
-RcppExport SEXP _farmtest_Huber_gradient_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP, SEXP TSEXP) {
+RcppExport SEXP _FarmTest_Huber_gradient_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP, SEXP TSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -92,7 +92,7 @@ END_RCPP
 }
 // Huber_descent_F
 arma::mat Huber_descent_F(arma::mat X, arma::mat phi, arma::mat B, float CT);
-RcppExport SEXP _farmtest_Huber_descent_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP) {
+RcppExport SEXP _FarmTest_Huber_descent_F(SEXP XSEXP, SEXP phiSEXP, SEXP BSEXP, SEXP CTSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,7 +106,7 @@ END_RCPP
 }
 // Robust_CV_F
 float Robust_CV_F(arma::mat vx, arma::mat phi);
-RcppExport SEXP _farmtest_Robust_CV_F(SEXP vxSEXP, SEXP phiSEXP) {
+RcppExport SEXP _FarmTest_Robust_CV_F(SEXP vxSEXP, SEXP phiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -118,7 +118,7 @@ END_RCPP
 }
 // Influence_Huber
 arma::mat Influence_Huber(arma::mat X, float tau);
-RcppExport SEXP _farmtest_Influence_Huber(SEXP XSEXP, SEXP tauSEXP) {
+RcppExport SEXP _FarmTest_Influence_Huber(SEXP XSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -130,7 +130,7 @@ END_RCPP
 }
 // mu_robust
 arma::mat mu_robust(float C_tau, arma::mat X);
-RcppExport SEXP _farmtest_mu_robust(SEXP C_tauSEXP, SEXP XSEXP) {
+RcppExport SEXP _FarmTest_mu_robust(SEXP C_tauSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -142,7 +142,7 @@ END_RCPP
 }
 // mu_robust_F
 arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi);
-RcppExport SEXP _farmtest_mu_robust_F(SEXP C_tauSEXP, SEXP XSEXP, SEXP phiSEXP) {
+RcppExport SEXP _FarmTest_mu_robust_F(SEXP C_tauSEXP, SEXP XSEXP, SEXP phiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -155,7 +155,7 @@ END_RCPP
 }
 // Cov_Huber
 arma::mat Cov_Huber(float C_tau, arma::mat X, arma::mat mu_hat);
-RcppExport SEXP _farmtest_Cov_Huber(SEXP C_tauSEXP, SEXP XSEXP, SEXP mu_hatSEXP) {
+RcppExport SEXP _FarmTest_Cov_Huber(SEXP C_tauSEXP, SEXP XSEXP, SEXP mu_hatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -168,7 +168,7 @@ END_RCPP
 }
 // Cov_U
 arma::mat Cov_U(float C_tau, arma::mat X);
-RcppExport SEXP _farmtest_Cov_U(SEXP C_tauSEXP, SEXP XSEXP) {
+RcppExport SEXP _FarmTest_Cov_U(SEXP C_tauSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -180,7 +180,7 @@ END_RCPP
 }
 // Eigen_Decomp
 arma::mat Eigen_Decomp(arma::mat M);
-RcppExport SEXP _farmtest_Eigen_Decomp(SEXP MSEXP) {
+RcppExport SEXP _FarmTest_Eigen_Decomp(SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -191,7 +191,7 @@ END_RCPP
 }
 // Loading_Sample
 arma::mat Loading_Sample(int K, arma::mat M);
-RcppExport SEXP _farmtest_Loading_Sample(SEXP KSEXP, SEXP MSEXP) {
+RcppExport SEXP _FarmTest_Loading_Sample(SEXP KSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -203,7 +203,7 @@ END_RCPP
 }
 // Loading_Robust
 arma::mat Loading_Robust(int K, arma::mat M);
-RcppExport SEXP _farmtest_Loading_Robust(SEXP KSEXP, SEXP MSEXP) {
+RcppExport SEXP _FarmTest_Loading_Robust(SEXP KSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -215,7 +215,7 @@ END_RCPP
 }
 // FDP_Oracle
 float FDP_Oracle(int P, int N, float sigma_e_true, arma::mat mu_hat, arma::mat Lambda, arma::mat F, float t, float l, int P_null);
-RcppExport SEXP _farmtest_FDP_Oracle(SEXP PSEXP, SEXP NSEXP, SEXP sigma_e_trueSEXP, SEXP mu_hatSEXP, SEXP LambdaSEXP, SEXP FSEXP, SEXP tSEXP, SEXP lSEXP, SEXP P_nullSEXP) {
+RcppExport SEXP _FarmTest_FDP_Oracle(SEXP PSEXP, SEXP NSEXP, SEXP sigma_e_trueSEXP, SEXP mu_hatSEXP, SEXP LambdaSEXP, SEXP FSEXP, SEXP tSEXP, SEXP lSEXP, SEXP P_nullSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -234,27 +234,27 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_farmtest_Huber_loss", (DL_FUNC) &_farmtest_Huber_loss, 4},
-    {"_farmtest_Huber_gradient", (DL_FUNC) &_farmtest_Huber_gradient, 4},
-    {"_farmtest_Huber_descent", (DL_FUNC) &_farmtest_Huber_descent, 4},
-    {"_farmtest_Robust_CV", (DL_FUNC) &_farmtest_Robust_CV, 2},
-    {"_farmtest_Huber_loss_F", (DL_FUNC) &_farmtest_Huber_loss_F, 5},
-    {"_farmtest_Huber_gradient_F", (DL_FUNC) &_farmtest_Huber_gradient_F, 5},
-    {"_farmtest_Huber_descent_F", (DL_FUNC) &_farmtest_Huber_descent_F, 4},
-    {"_farmtest_Robust_CV_F", (DL_FUNC) &_farmtest_Robust_CV_F, 2},
-    {"_farmtest_Influence_Huber", (DL_FUNC) &_farmtest_Influence_Huber, 2},
-    {"_farmtest_mu_robust", (DL_FUNC) &_farmtest_mu_robust, 2},
-    {"_farmtest_mu_robust_F", (DL_FUNC) &_farmtest_mu_robust_F, 3},
-    {"_farmtest_Cov_Huber", (DL_FUNC) &_farmtest_Cov_Huber, 3},
-    {"_farmtest_Cov_U", (DL_FUNC) &_farmtest_Cov_U, 2},
-    {"_farmtest_Eigen_Decomp", (DL_FUNC) &_farmtest_Eigen_Decomp, 1},
-    {"_farmtest_Loading_Sample", (DL_FUNC) &_farmtest_Loading_Sample, 2},
-    {"_farmtest_Loading_Robust", (DL_FUNC) &_farmtest_Loading_Robust, 2},
-    {"_farmtest_FDP_Oracle", (DL_FUNC) &_farmtest_FDP_Oracle, 9},
+    {"_FarmTest_Huber_loss", (DL_FUNC) &_FarmTest_Huber_loss, 4},
+    {"_FarmTest_Huber_gradient", (DL_FUNC) &_FarmTest_Huber_gradient, 4},
+    {"_FarmTest_Huber_descent", (DL_FUNC) &_FarmTest_Huber_descent, 4},
+    {"_FarmTest_Robust_CV", (DL_FUNC) &_FarmTest_Robust_CV, 2},
+    {"_FarmTest_Huber_loss_F", (DL_FUNC) &_FarmTest_Huber_loss_F, 5},
+    {"_FarmTest_Huber_gradient_F", (DL_FUNC) &_FarmTest_Huber_gradient_F, 5},
+    {"_FarmTest_Huber_descent_F", (DL_FUNC) &_FarmTest_Huber_descent_F, 4},
+    {"_FarmTest_Robust_CV_F", (DL_FUNC) &_FarmTest_Robust_CV_F, 2},
+    {"_FarmTest_Influence_Huber", (DL_FUNC) &_FarmTest_Influence_Huber, 2},
+    {"_FarmTest_mu_robust", (DL_FUNC) &_FarmTest_mu_robust, 2},
+    {"_FarmTest_mu_robust_F", (DL_FUNC) &_FarmTest_mu_robust_F, 3},
+    {"_FarmTest_Cov_Huber", (DL_FUNC) &_FarmTest_Cov_Huber, 3},
+    {"_FarmTest_Cov_U", (DL_FUNC) &_FarmTest_Cov_U, 2},
+    {"_FarmTest_Eigen_Decomp", (DL_FUNC) &_FarmTest_Eigen_Decomp, 1},
+    {"_FarmTest_Loading_Sample", (DL_FUNC) &_FarmTest_Loading_Sample, 2},
+    {"_FarmTest_Loading_Robust", (DL_FUNC) &_FarmTest_Loading_Robust, 2},
+    {"_FarmTest_FDP_Oracle", (DL_FUNC) &_FarmTest_FDP_Oracle, 9},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_farmtest(DllInfo *dll) {
+RcppExport void R_init_FarmTest(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

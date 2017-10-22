@@ -1,10 +1,10 @@
 ## ----gh-installation, eval = FALSE---------------------------------------
 #  install.packages("devtools")
-#  devtools::install_github("kbose28/farmtest")
-#  library(farmtest)
+#  devtools::install_github("kbose28/FarmTest")
+#  library(FarmTest)
 
 ## ------------------------------------------------------------------------
-library(farmtest)
+library(FarmTest)
 set.seed(100)
 p = 100
 n = 20
