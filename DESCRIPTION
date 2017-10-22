@@ -14,7 +14,7 @@ Imports:
     grDevices,
     utils, 
     methods
-URL: https://kbose28.github.io/farmtest/
+URL: https://kbose28.github.io/FarmTest/
 RoxygenNote: 6.0.1
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes

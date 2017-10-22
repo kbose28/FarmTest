@@ -106,7 +106,7 @@ print(output$rejected)
 hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
-![](man/figures/README-unnamed-chunk-3-1.png)
+![](README-unnamed-chunk-3-1.png)
 
 Other functions
 ---------------
@@ -119,7 +119,7 @@ output = farm.scree(X, K.factors = 15, K.scree = 10)
 #> supplied is > min(n,p)/2. May cause numerical inconsistencies
 ```
 
-![](man/figures/README-unnamed-chunk-4-1.png)![](man/figures/README-unnamed-chunk-4-2.png)
+![](README-unnamed-chunk-4-1.png)![](README-unnamed-chunk-4-2.png)
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
 

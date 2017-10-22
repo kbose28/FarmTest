@@ -10,7 +10,7 @@ R CMD check results
 
 There were NO ERRORs or WARNINGs
 
-2 NOTEs
+1 NOTEs
 
 -   checking CRAN incoming feasibility ... NOTE Maintainer: 'Koushiki
     Bose <bose@princeton.edu>'
@@ -18,11 +18,6 @@ There were NO ERRORs or WARNINGs
 New submission
 
 I believe this is usual for new submissions.
-
--   Possibly mis-spelled words in DESCRIPTION: Storey (5:814) Zhou
-    (5:870) al (5:878)
-
-These are correctly spelled.
 
 Downstream dependencies
 -----------------------
