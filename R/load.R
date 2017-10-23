@@ -23,7 +23,7 @@ NULL
 #' @param fy an \emph{optional} factor matrix with each column being a factor for \code{Y}.  Same number of rows as \code{Y}. Only used for a two sample test.
 #' @param Ky a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.
 #' @param alternative	an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
-#' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05.
+#' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
 #' @param verbose a logical indicating whether to print summary of the run to console. Default is TRUE.
 #' @param \dots Arguments passed to the \code{\link{farm.FDR}} function.
 #' @return A list with the following items
@@ -374,9 +374,9 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' @param alpha an \emph{optional} significance level for testing (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
 #' @param type an \emph{optional} character string specifying the type of test. The default is the modified BH procedure (type = "mBH"). The usual BH procedure is also available (type = "BH"). See Benjamini and Hochberg (1995).
 #' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{\pi_0}. Must be in \eqn{[0,1)}.
-#' @param pi0.method Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses. Optional.
-#' @param smooth.df Number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother. Optional.
-#' @param smooth.log.pi0 If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Optional.
+#' @param pi0.method \emph{optional}, either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses.
+#' @param smooth.df an \emph{optional} number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother.
+#' @param smooth.log.pi0 an \emph{optional} logical. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.
 #' @return
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}

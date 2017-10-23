@@ -2,7 +2,7 @@
 % Please edit documentation in R/load.R
 \name{farm.test}
 \alias{farm.test}
-\title{Factor-adjusted robust test for means}
+\title{Main function performing factor-adjusted robust test for means}
 \usage{
 farm.test(X, H0 = NULL, fx = NULL, Kx = NULL, Y = NULL, fy = NULL,
   Ky = NULL, alternative = c("two.sided", "less", "greater"),
@@ -26,7 +26,7 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{alternative}{an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.}
 
-\item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05.}
+\item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
 \item{verbose}{a logical indicating whether to print summary of the run to console. Default is TRUE.}
 

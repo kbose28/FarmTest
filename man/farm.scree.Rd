@@ -2,7 +2,7 @@
 % Please edit documentation in R/load.R
 \name{farm.scree}
 \alias{farm.scree}
-\title{Diagnostic plots needed to determine the number of underlying factors}
+\title{Diagnostic plots and quantities arising from estimating the number of underlying factors}
 \usage{
 farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
 }
@@ -22,7 +22,7 @@ A list with the data used for the plots:
 \itemize{
  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
  \item{\code{proportions} }{Proportion of variance explained by the principal components}
- \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue}
+ \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue ratio test}
  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 }
 }

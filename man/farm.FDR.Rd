@@ -17,11 +17,11 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 
 \item{lambda}{an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{\pi_0}. Must be in \eqn{[0,1)}.}
 
-\item{pi0.method}{Either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses. Optional.}
+\item{pi0.method}{\emph{optional}, either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses.}
 
-\item{smooth.df}{Number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother. Optional.}
+\item{smooth.df}{an \emph{optional} number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother.}
 
-\item{smooth.log.pi0}{If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Optional.}
+\item{smooth.log.pi0}{an \emph{optional} logical. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.}
 }
 \value{
 \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
