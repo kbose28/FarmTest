@@ -70,5 +70,5 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 
 }
 \references{
-Huber PJ (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 }

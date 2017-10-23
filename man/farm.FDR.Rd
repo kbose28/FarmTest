@@ -43,9 +43,9 @@ farm.FDR(pval, 0.01, type = "BH")
 
 }
 \references{
-Benjamini Y and Hochberg Y (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
+Benjamini, Y. and Hochberg, Y. (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
 
-Storey JD (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+Storey, J.D. (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
 
-Storey JD (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
+Storey, J.D. (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
 }

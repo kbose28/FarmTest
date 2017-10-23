@@ -54,7 +54,7 @@ NULL
 #' output1 = farm.test(X)
 #' output = farm.test(X, alpha = 0.01,alternative = "greater")
 #'
-#' @references Huber PJ (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
 farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "less", "greater"),  alpha=NULL ,verbose=TRUE, ...){
   p = NCOL(X)
@@ -307,7 +307,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' \itemize{
 #'  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
 #'  \item{\code{proportions} }{Proportion of variance explained by the principal components}
-#'  \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue ratio test}
+#'  \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
 #'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 #' }
 #' @examples
@@ -320,7 +320,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' X = fx%*%t(B)+ epsilon
 #' ouput = farm.scree(X)
 #'
-#' @references Ahn, S. C., and A. R. Horenstein (2013): "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
+#' @references Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 #' @export
 farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   X = t(X)
@@ -388,9 +388,9 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' farm.FDR(pval, 0.05)
 #' farm.FDR(pval, 0.01, type = "BH")
 #'
-#' @references Benjamini Y and Hochberg Y (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
-#' @references Storey JD (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
-#' @references Storey JD (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
+#' @references Benjamini, Y. and Hochberg, Y. (1995). "Controlling the False Discovery Rate: A Practical and PowerfulApproach to Multiple Testing." Journal of the Royal Statistical Society B, 51, 289–300.
+#' @references Storey, J.D. (2015). "qvalue: Q-value estimation for false discovery rate control. R package version 2.8.0, \url{https://github.com/jdstorey/qvalue}.
+#' @references Storey, J.D. (2002). " Direct Approach to False Discovery Rates." Journal of the Royal Statistical Society B, 64(3), 479–498.
 
 #' @export
 farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),

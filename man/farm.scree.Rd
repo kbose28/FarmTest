@@ -22,7 +22,7 @@ A list with the data used for the plots:
 \itemize{
  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
  \item{\code{proportions} }{Proportion of variance explained by the principal components}
- \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue ratio test}
+ \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 }
 }
@@ -49,5 +49,5 @@ ouput = farm.scree(X)
 
 }
 \references{
-Ahn, S. C., and A. R. Horenstein (2013): "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
+Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 }
