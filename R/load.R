@@ -10,7 +10,7 @@ NULL
 ###################################################################################
 ## This is the main function that condusts the statistical test given the data
 ###################################################################################
-#' Factor-adjusted robust test for means
+#' Main function performing factor-adjusted robust test for means
 #'
 #' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
 #' It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters.
@@ -290,7 +290,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 
 
 # ################# #################
-#' Diagnostic plots needed to determine the number of underlying factors
+#' Diagnostic plots and quantities arising from estimating the number of underlying factors
 #'
 #' Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios.
 #' The eignevalue ratio test is used to estimate the number of factors. See Ahn and Horenstein(2013).
@@ -307,7 +307,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' \itemize{
 #'  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
 #'  \item{\code{proportions} }{Proportion of variance explained by the principal components}
-#'  \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue}
+#'  \item{\code{eigenvalue.ratios} }{Ratios calcualted in the eigenvalue ratio test}
 #'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 #' }
 #' @examples
