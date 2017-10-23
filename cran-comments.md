@@ -10,13 +10,19 @@ R CMD check results
 
 There were NO ERRORs or WARNINGs
 
-There was 1 NOTE, which I believe is usual for new submissions.
+There was 1 NOTE:
 
 * checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Koushiki Bose <bose@princeton.edu>’
+Maintainer: 'Koushiki Bose <bose@princeton.edu>'
 
 New submission
 
+Possibly mis-spelled words in DESCRIPTION:
+  Zhou (5:906)
+  al (5:914)
+  et (5:911)
+  
+This a new submission. The words are correctly spelled. 
 
 Downstream dependencies
 -----------------------
