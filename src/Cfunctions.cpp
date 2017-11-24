@@ -28,10 +28,10 @@ arma::mat Huber_loss (arma::mat Vi, arma::mat Vj, float Z, float CT)
     M1=(Vi(t)*Vj(t)-Z);
     v1=fabs(M1(0));
 
-    if(v1> fabs(CT)) {Huber(0)=2*CT*v1-CT;}
+    if(v1> fabs(CT)) {Huber(0)=CT*(2*M1(0)-CT);}
     else {Huber(0)= M1(0)*M1(0);}
     //printf("\n v1=%f  ct=%f Huber=%f", v1, fabs(CT), Huber(0));
-    Loss+=Huber(0)/(T-1);
+    Loss+=Huber(0)/T;
   }
 
   return Loss;
@@ -58,7 +58,7 @@ arma::mat Huber_gradient (arma::mat Vi, arma::mat Vj, float Z, float CT)
     else if (v1 < -1*fabs(CT)) {Huber_dot(0)= -2*CT;}
     else {Huber_dot(0)=2*M1(0);}
     //printf("\n x=%f   Huber_dot=%f", M1(0), Huber_dot(0));
-    Grad-= 1*Huber_dot(0)/(T-1);
+    Grad-= 1*Huber_dot(0)/T;
   }
 
   return Grad;
@@ -79,10 +79,9 @@ float Huber_descent (arma::mat Vi, arma::mat Vj, float Z, float CT)
   for(k=1; k<500; k++){
     v1= as_scalar(Huber_loss (Vi, Vj, Z_1, CT));
     test=Huber_gradient (Vi, Vj, Z_1, CT);
-    Z_2=Z_1;      Z_1-=0.5* test(0)/sqrt(k);
+    Z_2=Z_1;      Z_1-=0.5* test(0)/sqrt(static_cast<double>(k));
     v2=as_scalar(Huber_loss (Vi, Vj, Z_1, CT));
     //printf("\n %dth v1=%f    v2=%f   A1=%f    A2=%f    \n", k, v1, v2,fabs(v1-v2));
-    //if(fabs(v1-v2)<1.0e-10 || v1<v2+1.0e-8)k=500;
     if(fabs(v1-v2)<1.0e-8 )k=500;
   }
 
@@ -113,7 +112,6 @@ float Robust_CV (arma::mat Vi, arma::mat Vj)
   mat Vj_train;  mat Vj_vali;
   mat validation;
 
-  //range=as_scalar(sqrt(T*cov(Vi%Vi)/2));
   range=as_scalar(sqrt(T*cov(Vi)/2));
 
 
@@ -186,7 +184,7 @@ arma::mat Huber_loss_F (arma::mat X, arma::mat phi, arma::mat B, float CT, int T
   for(t=0; t<T; t++){
     M1=X(t)-phi.row(t)*B;
     v1=fabs(M1(0));
-    if(v1> fabs(CT)) {Huber(0)=CT*2*M1(0)-CT;}
+    if(v1> fabs(CT)) {Huber(0)=CT*(2*M1(0)-CT);}
     else {Huber(0)= M1(0)*M1(0);}
     Loss+=Huber/T;
   }
@@ -237,7 +235,7 @@ arma::mat Huber_descent_F (arma::mat X, arma::mat phi, arma::mat B, float CT)
   for(k=1; k<500; k++){
     v1= as_scalar(Huber_loss_F (X, phi, b_1, CT, T));
     test=Huber_gradient_F (X, phi, b_1, CT, T);
-    b_2=b_1;      b_1-=0.5* test/sqrt(k);
+    b_2=b_1;      b_1-=0.5* test/sqrt(static_cast<double>(k));
     v2=as_scalar(Huber_loss_F (X, phi, b_1, CT, T));
 
     if(fabs(v1-v2)<1.0e-10 || v1<v2+1.0e-8)k=500;
@@ -373,7 +371,7 @@ arma::mat mu_robust(float C_tau, arma::mat X)
 
   float Z=0.5;
   //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(N/log(N*P));
+  float Tau=C_tau*sqrt(static_cast<double>(N/log(static_cast<double>(N*P))));
 
   mat Xi;
   mat mu_hat; mu_hat.zeros(P);
@@ -409,17 +407,16 @@ arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
   P=X.n_rows;    N=X.n_cols;
   K=phi.n_cols;
   //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(N/log(N*P));
+  float Tau=C_tau*sqrt(static_cast<double>(N/log(static_cast<double>(N*P))));
   mat F_H_0; F_H_0.ones(K);
 
   mat Xi;
   mat mu_hat; mu_hat.zeros(K,P);
 
   for(i=0;i<P;i++){
-      Rcpp::checkUserInterrupt();
-   Xi=X.row(i);
+    Rcpp::checkUserInterrupt();
+    Xi=X.row(i);
     F_H_0=solve(phi,trans(Xi));
-    //Un-comment the following line if you want to choose Tau via 5 fold CV
     Tau= Robust_CV_F (trans(Xi),(phi));
    mu_hat.col(i)=Huber_descent_F(Xi, phi, F_H_0, Tau);
   }
@@ -442,7 +439,7 @@ arma::mat Cov_Huber(float C_tau, arma::mat X, arma::mat mu_hat)
 
   //Tuning parameter
   //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(N/log(N*P*P));
+  float Tau=C_tau*sqrt(   static_cast<double>(N/log(static_cast<double>(N*P*P))));
 
   //Define the matrices
   mat Xi, Xj;
@@ -484,7 +481,7 @@ arma::mat Cov_U(float C_tau, arma::mat X)
   using namespace arma;
   int i, j, P=X.n_rows, N=X.n_cols;
   float v1=0, v2=0, v3=0;
-  float Tau=C_tau*P*sqrt(N/log(N));
+  float Tau=C_tau*P*sqrt( static_cast<double>(N/log(static_cast<double>(N))));
   //Define the matrices
   mat A, B;
   mat Sigma_U; Sigma_U.zeros(P,P);
@@ -561,7 +558,7 @@ arma::mat Loading_Sample(int K, arma::mat M)
   eigval_cov=sort(eigval_cov,"descend");
   eigvec_cov=fliplr(eigvec_cov);
 
-  Lambda_hat=eigvec_cov.cols(0,K-1)* sqrt(P);
+  Lambda_hat=eigvec_cov.cols(0,K-1)*sqrt(static_cast<double>(P));
 
 
 
@@ -623,7 +620,7 @@ float FDP_Oracle(int P, int N, float sigma_e_true, arma::mat mu_hat, arma::mat L
     mat T_j; T_j.zeros(P);
 
     for(i=0;i<P;i++){
-        v1=sqrt(N)/sqrt(sigma_e_true);
+        v1=sqrt(N)/sqrt(static_cast<double>(sigma_e_true));
         v2=as_scalar(mu_hat(i)-Lambda.row(i)* F);
         T_j(i)=v1*v2;
     }

@@ -28,7 +28,7 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
-\item{verbose}{a logical indicating whether to print summary of the run to console. Default is TRUE.}
+\item{verbose}{a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.}
 
 \item{\dots}{Arguments passed to the \code{\link{farm.FDR}} function.}
 }

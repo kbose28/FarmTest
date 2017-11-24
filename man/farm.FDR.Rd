@@ -21,7 +21,7 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 
 \item{smooth.df}{an \emph{optional} number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother.}
 
-\item{smooth.log.pi0}{an \emph{optional} logical. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.}
+\item{smooth.log.pi0}{an \emph{optional} TRUE/FALSE. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.}
 }
 \value{
 \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}

@@ -13,7 +13,7 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
 
 \item{K.factors}{an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.}
 
-\item{robust}{a logical indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
+\item{robust}{a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
 }
 \value{
 Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.

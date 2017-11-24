@@ -24,7 +24,7 @@ NULL
 #' @param Ky a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.
 #' @param alternative	an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
 #' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
-#' @param verbose a logical indicating whether to print summary of the run to console. Default is TRUE.
+#' @param verbose a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.
 #' @param \dots Arguments passed to the \code{\link{farm.FDR}} function.
 #' @return A list with the following items
 #' \item{means}{the vector of estimated means}
@@ -297,7 +297,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' @param X an n x p data matrix with each row being a sample.
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
-#' @param robust a logical indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
+#' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 #' @details User has to hit <Return> to see the second plot.
 #' @details All the data used in the plots are output as a list.
@@ -376,7 +376,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 #' @param lambda an \emph{optional} threshold for estimating the proportion of true null hypotheses \eqn{\pi_0}. Must be in \eqn{[0,1)}.
 #' @param pi0.method \emph{optional}, either "smoother" or "bootstrap"; the method for automatically choosing tuning parameter in the estimation of \eqn{\pi_0}, the proportion of true null hypotheses.
 #' @param smooth.df an \emph{optional} number of degrees-of-freedom to use when estimating \eqn{\pi_0} with a smoother.
-#' @param smooth.log.pi0 an \emph{optional} logical. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.
+#' @param smooth.log.pi0 an \emph{optional} TRUE/FALSE. If TRUE and pi0.method = "smoother", \eqn{\pi_0} will be estimated by applying a smoother to a scatterplot of \eqn{\log(\pi_0)} estimates against the tuning parameter lambda. Default is FALSE.
 #' @return
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
@@ -488,6 +488,3 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                       return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
                                   lambda = lambda, pi0.smooth = pi0Smooth))
       }
-
-
-
