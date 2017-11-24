@@ -49,10 +49,6 @@ Cov_Huber <- function(C_tau, X, mu_hat) {
     .Call('_FarmTest_Cov_Huber', PACKAGE = 'FarmTest', C_tau, X, mu_hat)
 }
 
-Cov_U <- function(C_tau, X) {
-    .Call('_FarmTest_Cov_U', PACKAGE = 'FarmTest', C_tau, X)
-}
-
 Eigen_Decomp <- function(M) {
     .Call('_FarmTest_Eigen_Decomp', PACKAGE = 'FarmTest', M)
 }
@@ -63,9 +59,5 @@ Loading_Sample <- function(K, M) {
 
 Loading_Robust <- function(K, M) {
     .Call('_FarmTest_Loading_Robust', PACKAGE = 'FarmTest', K, M)
-}
-
-FDP_Oracle <- function(P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null) {
-    .Call('_FarmTest_FDP_Oracle', PACKAGE = 'FarmTest', P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null)
 }
 

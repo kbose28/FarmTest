@@ -371,7 +371,7 @@ arma::mat mu_robust(float C_tau, arma::mat X)
 
   float Z=0.5;
   //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(static_cast<double>(N/log(static_cast<double>(N*P))));
+  float Tau;
 
   mat Xi;
   mat mu_hat; mu_hat.zeros(P);
@@ -407,7 +407,7 @@ arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
   P=X.n_rows;    N=X.n_cols;
   K=phi.n_cols;
   //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(static_cast<double>(N/log(static_cast<double>(N*P))));
+  float Tau;
   mat F_H_0; F_H_0.ones(K);
 
   mat Xi;
@@ -432,14 +432,13 @@ arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
 arma::mat Cov_Huber(float C_tau, arma::mat X, arma::mat mu_hat)
 {
   using namespace arma;
-  int i, j, P=X.n_rows, N=X.n_cols;
+  int i, j, P=X.n_rows;
 
   //Initial value of Huber descent
   float Z=0.5;
 
   //Tuning parameter
-  //The order of Tau see Theorem 2.7
-  float Tau=C_tau*sqrt(   static_cast<double>(N/log(static_cast<double>(N*P*P))));
+  float Tau;
 
   //Define the matrices
   mat Xi, Xj;
@@ -467,47 +466,6 @@ arma::mat Cov_Huber(float C_tau, arma::mat X, arma::mat mu_hat)
 
 
 
-
-
-///////////////////////////////////////////////////////////////////////////
-//            U-type robust eatimaiton of covariance matrix             //
-//////////////////////////////////////////////////////////////////////////
-
-//Input: Data matrix X and tuning parameter Tau
-//Output: Estimated cov matrix Sigma_U
-// [[Rcpp::export]]
-arma::mat Cov_U(float C_tau, arma::mat X)
-{
-  using namespace arma;
-  int i, j, P=X.n_rows, N=X.n_cols;
-  float v1=0, v2=0, v3=0;
-  float Tau=C_tau*P*sqrt( static_cast<double>(N/log(static_cast<double>(N))));
-  //Define the matrices
-  mat A, B;
-  mat Sigma_U; Sigma_U.zeros(P,P);
-
-
-  //U-type COV estimate method
-  for(i=1;i<N;i++){
-    for(j=0;j<i;j++){
-      // printf("\n i=%d,  j=%d", i,j);
-      A=X.col(j)-X.col(i);
-      B=A*A.t();
-      //Sigma_U+=Influence_Huber(B, tau);
-      v1=as_scalar(A.t()*A);
-      v2=v1/2;
-      if(v2>Tau)v2=Tau;
-      v3=v2/v1/2;
-      Sigma_U+=v3*B;
-    }
-  }
-
-  Sigma_U=Sigma_U/N/(N-1);
-
-
-  return Sigma_U;
-
-}
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -597,41 +555,5 @@ arma::mat Loading_Robust(int K, arma::mat M)
 }
 
 
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//                           Estimate Oracle FDP                                //
-//////////////////////////////////////////////////////////////////////////
-
-//Input:  Covariance matrix Sigma_hat, mean mu_hat, loadings Lambda and factors F
-//        l is the Z table value of a given threshold t and N_null is the size of true null
-//Output: return Oracle FDP
-// [[Rcpp::export]]
-float FDP_Oracle(int P, int N, float sigma_e_true, arma::mat mu_hat, arma::mat Lambda, arma::mat F,
-                 float t, float l, int P_null)
-{
-    using namespace arma;
-
-    int i;
-    float v1=0, v2=0;
-
-    //Calculate Oracle test statistic \hat{T}_j^o from equation (2.7)
-    mat T_j; T_j.zeros(P);
-
-    for(i=0;i<P;i++){
-        v1=sqrt(N)/sqrt(static_cast<double>(sigma_e_true));
-        v2=as_scalar(mu_hat(i)-Lambda.row(i)* F);
-        T_j(i)=v1*v2;
-    }
-
-    //Estimate Oracle FDP from equation (2.8)
-    float R=as_scalar(sum((abs(T_j) >= l)));
-    float FDP_O=2*(P-P_null)*t/R;
-
-
-    return FDP_O;
-
-}
 
 

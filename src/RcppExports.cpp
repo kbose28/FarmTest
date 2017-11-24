@@ -166,18 +166,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Cov_U
-arma::mat Cov_U(float C_tau, arma::mat X);
-RcppExport SEXP _FarmTest_Cov_U(SEXP C_tauSEXP, SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< float >::type C_tau(C_tauSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Cov_U(C_tau, X));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Eigen_Decomp
 arma::mat Eigen_Decomp(arma::mat M);
 RcppExport SEXP _FarmTest_Eigen_Decomp(SEXP MSEXP) {
@@ -213,25 +201,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// FDP_Oracle
-float FDP_Oracle(int P, int N, float sigma_e_true, arma::mat mu_hat, arma::mat Lambda, arma::mat F, float t, float l, int P_null);
-RcppExport SEXP _FarmTest_FDP_Oracle(SEXP PSEXP, SEXP NSEXP, SEXP sigma_e_trueSEXP, SEXP mu_hatSEXP, SEXP LambdaSEXP, SEXP FSEXP, SEXP tSEXP, SEXP lSEXP, SEXP P_nullSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type P(PSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< float >::type sigma_e_true(sigma_e_trueSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type mu_hat(mu_hatSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Lambda(LambdaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type F(FSEXP);
-    Rcpp::traits::input_parameter< float >::type t(tSEXP);
-    Rcpp::traits::input_parameter< float >::type l(lSEXP);
-    Rcpp::traits::input_parameter< int >::type P_null(P_nullSEXP);
-    rcpp_result_gen = Rcpp::wrap(FDP_Oracle(P, N, sigma_e_true, mu_hat, Lambda, F, t, l, P_null));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Huber_loss", (DL_FUNC) &_FarmTest_Huber_loss, 4},
@@ -246,11 +215,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_mu_robust", (DL_FUNC) &_FarmTest_mu_robust, 2},
     {"_FarmTest_mu_robust_F", (DL_FUNC) &_FarmTest_mu_robust_F, 3},
     {"_FarmTest_Cov_Huber", (DL_FUNC) &_FarmTest_Cov_Huber, 3},
-    {"_FarmTest_Cov_U", (DL_FUNC) &_FarmTest_Cov_U, 2},
     {"_FarmTest_Eigen_Decomp", (DL_FUNC) &_FarmTest_Eigen_Decomp, 1},
     {"_FarmTest_Loading_Sample", (DL_FUNC) &_FarmTest_Loading_Sample, 2},
     {"_FarmTest_Loading_Robust", (DL_FUNC) &_FarmTest_Loading_Robust, 2},
-    {"_FarmTest_FDP_Oracle", (DL_FUNC) &_FarmTest_FDP_Oracle, 9},
     {NULL, NULL, 0}
 };
 
