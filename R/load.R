@@ -24,7 +24,9 @@ NULL
 #' @param Ky a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.
 #' @param alternative	an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
 #' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
+#' @param robust a TRUE/FALSE indicating whether to use robust estimates of paramters and robust regression. Default is TRUE.
 #' @param verbose a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.
+#'
 #' @param \dots Arguments passed to the \code{\link{farm.FDR}} function.
 #' @return A list with the following items
 #' \item{means}{the vector of estimated means}
@@ -56,7 +58,7 @@ NULL
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "less", "greater"),  alpha=NULL ,verbose=TRUE, ...){
+farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "less", "greater"),  alpha=NULL ,robust = TRUE, verbose=TRUE,...){
   p = NCOL(X)
   H0 <- if(is.null(H0)) rep(0,p ) else H0
   if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
@@ -65,7 +67,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
 
   if (!is.null(fx)){
     if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
-    output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = c("two.sided", "less", "greater"), alpha=alpha,...)
+    output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = c("two.sided", "less", "greater"), alpha=alpha,robust = robust,...)
     if(verbose){output.call = match.call()
     cat("Call:\n")
     print(output.call)
@@ -86,7 +88,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
     }
   }
   else{
-    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative= c("two.sided", "less", "greater"), alpha=alpha, ...)
+    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative= c("two.sided", "less", "greater"), alpha=alpha, robust = robust,...)
     if(verbose){output.call = match.call()
     cat("Call:\n")
     print(output.call)
@@ -109,17 +111,24 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
 ###################################################################################
 ## main function (KNOWN FACTORS)
 ###################################################################################
-farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "less", "greater") , alpha,  ...){
+farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "less", "greater") , alpha,robust,  ...){
   alternative <- match.arg(alternative)
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
   Zx <- cbind(matrix(1, nx, 1) , fx)
   Kx = NCOL(Zx)
+  if(robust==TRUE){
   coefx = mu_robust_F(0.5,matrix(X, p, nx), matrix(Zx, nx, Kx))
   muhatx = coefx[1,]
   bhatx = coefx[-1,]
   thetax = mu_robust(0.5,matrix(X^2, p, nx))
+  }else{
+    coefx= apply((X), 1, function(x) lm(x~Zx-1)$coefficients)
+    muhatx = coefx[1,]
+    bhatx = coefx[-1,]
+    thetax = rowMeans(X^2)
+  }
   varhatx=NULL
   if(is.null( dim(bhatx))){for (j in 1:p){rvar = (thetax[j] - muhatx[j]^2)*(thetax[j] >muhatx[j]^2)+ (thetax[j])*(thetax[j]<=muhatx[j]^2)
       varf = bhatx[j] %*% stats::cov(fx) %*% bhatx[j]
@@ -137,12 +146,20 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
         ny = NCOL(Y)
         Zy <- cbind(matrix(1, ny, 1) , fy)
         Ky = NCOL(Zy)
-        coefy= mu_robust_F(0.5,matrix(Y, p, ny), matrix(Zy, ny, Ky))
-        muhaty = coefy[1,]
-        bhaty = coefy[-1,]
-        thetay = mu_robust(0.5,matrix(Y^2, p, ny))
+
+        if(robust==TRUE){
+          coefy= mu_robust_F(0.5,matrix(Y, p, ny), matrix(Zy, ny, Ky))
+          muhaty = coefy[1,]
+          bhaty = coefy[-1,]
+          thetay = mu_robust(0.5,matrix(Y^2, p, ny))
+        }else{
+          coefy= apply((Y), 1, function(y) lm(y~Zy-1)$coefficients)
+          muhaty = coefy[1,]
+          bhaty = coefy[-1,]
+          thetay = rowMeans(Y^2)
+        }
         varhaty=NULL
-        if(is.null( dim(bhatx))){for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
+        if(is.null( dim(bhaty))){for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
             varf = bhaty[j] %*% stats::cov(fy) %*% bhaty[j]
             varhaty[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
             }
@@ -189,7 +206,7 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
 # ## main function (UNKNOWN FACTORS)
 # ###################################################################################
 
-farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "less", "greater"), alpha,... ){
+farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "less", "greater"), alpha,robust, ... ){
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
@@ -198,8 +215,13 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   alternative <- match.arg(alternative)
 
   #for X
-  muhatx = mu_robust(0.5, matrix(X, p, nx))#the first term is redundant, using CV
-  covx = Cov_Huber(0.6,  X, muhatx)
+  if(robust==TRUE){
+    muhatx = mu_robust(0.5, matrix(X, p, nx))#the first term is redundant, using CV
+    covx = Cov_Huber(0.6,  X, muhatx)
+  }else{
+    muhatx = rowMeans(X)
+   covx = cov(t(X))
+  }
   eigs = Eigen_Decomp( covx)
   values = eigs[,p+1]
   vectors = eigs[,1:p]
@@ -219,20 +241,32 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
     Bx[,k] = sqrt(values[k])*vectors[,k]
   }
   Bx2 = apply(Bx,1, function(y) sum(y^2))
+  if(robust==TRUE){
   thetax = mu_robust(0.5, matrix(X^2, p, nx))#the first term is redundant, using CV
+  }else{
+    thetax = rowMeans(X^2)
+  }
   varhatx_0 = ( thetax - muhatx^2)* ( thetax > muhatx^2) +(thetax)* ( thetax <=muhatx^2)
   varhatx = (varhatx_0 - Bx2)* (varhatx_0 > Bx2) +(varhatx_0)* ( varhatx_0 <=Bx2)
   sehatx = sqrt(varhatx/nx)
+  if(robust == TRUE){
   fx = mu_robust_F(0.5, matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
-
+  }else{
+    fx = coef(lm(rowMeans(X)~Bx-1))
+  }
 
   #for Y
   if (!is.null(Y)){
   Y = t(Y)
   ny = NCOL(Y)
   if(min(ny,p)<=4) stop('n and p must be at least 4')
-  muhaty = mu_robust(0.5, matrix(Y, p, ny))#the first term is redundant, using CV
-  covy = Cov_Huber(0.6,  Y, muhaty)
+  if(robust==TRUE){
+    muhaty = mu_robust(0.5, matrix(Y, p, ny))#the first term is redundant, using CV
+    covy = Cov_Huber(0.6,  Y, muhaty)
+  }else{
+    muhaty = rowMeans(Y)
+    covy = cov(t(Y))
+  }
   eigs = Eigen_Decomp( covy)
   values = eigs[,p+1]
   vectors = eigs[,1:p]
@@ -248,16 +282,27 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
 
   By = matrix(NA, p, Ky)
+
   for (k in 1:Ky){
     By[,k] = sqrt(values[k])*vectors[,k]
   }
   By2 = apply(By,1, function(y) sum(y^2))
-  thetay = mu_robust(0.5, matrix(Y^2, p, ny))#the first term is redundant, using CV
+  if(robust==TRUE){
+    thetay = mu_robust(0.5, matrix(Y^2, p, ny))#the first term is redundant, using CV
+  }else{
+    thetay = rowMeans(Y^2)
+  }
   varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
   varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
   sehaty = sqrt(varhaty/ny)
-  fy = mu_robust_F(0.5, matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
+  if(robust == TRUE){
+    fy = mu_robust_F(0.5, matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
+  }else{
+    fy = coef(lm(rowMeans(Y)~By-1))
   }
+
+  }
+
   #test statistics
   if (is.null(Y)){
     stat=(muhatx-Bx%*%fx-H0)/sehatx

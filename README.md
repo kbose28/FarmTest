@@ -76,7 +76,7 @@ output = farm.test(X)
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  6
+#>  7
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -98,11 +98,11 @@ names(output)
 #> [7] "alldata"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 4.252076e-22    4.252076e-20
-#> [2,]     2 5.822415e-09    2.911208e-07
-#> [3,]     3 6.759935e-08    2.253312e-06
-#> [4,]     1 2.681754e-06    6.704385e-05
-#> [5,]     5 3.159253e-05    6.318506e-04
+#> [1,]     4 1.877161e-24    1.877161e-22
+#> [2,]     1 4.194009e-18    2.097004e-16
+#> [3,]     2 8.731807e-17    2.910602e-15
+#> [4,]     5 5.166529e-11    1.291632e-09
+#> [5,]     3 6.609598e-11    1.321920e-09
 hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 

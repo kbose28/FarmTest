@@ -6,7 +6,7 @@
 \usage{
 farm.test(X, H0 = NULL, fx = NULL, Kx = NULL, Y = NULL, fy = NULL,
   Ky = NULL, alternative = c("two.sided", "less", "greater"),
-  alpha = NULL, verbose = TRUE, ...)
+  alpha = NULL, robust = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 \item{X}{a n x p data matrix with each row being a sample.
@@ -27,6 +27,8 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 \item{alternative}{an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.}
 
 \item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
+
+\item{robust}{a TRUE/FALSE indicating whether to use robust estimates of paramters and robust regression. Default is TRUE.}
 
 \item{verbose}{a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.}
 

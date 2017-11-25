@@ -1,28 +1,21 @@
+This is an update fixing C++ problems revealed on Solaris
+---------------------------------------------------------
+
+-   sqrt function was previously applied to int. This is now corrected.
+-   log function was previously applied to int. This is now corrected.
+
 Test environments
 -----------------
 
 -   local OS X install, R 3.3.2
 -   Ubuntu 14.04 (on Travis-CI), R 3.3.2
--   win-builder (devel and release)
+-   win\_builder (devel and release)
+-   Oracle Solaris 10 x86 (using Solaris VMware)
 
 R CMD check results
 -------------------
 
-There were NO ERRORs or WARNINGs
-
-There was 1 NOTE:
-
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Koushiki Bose <bose@princeton.edu>'
-
-New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  Zhou (5:906)
-  al (5:914)
-  et (5:911)
-  
-This a new submission. The words are correctly spelled. 
+There were NO ERRORs, WARNINGs, or NOTEs
 
 Downstream dependencies
 -----------------------
