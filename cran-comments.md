@@ -1,16 +1,16 @@
 This is an update fixing C++ problems revealed on Solaris
 ---------------------------------------------------------
 
--   sqrt function was previously applied to int. This is now corrected.
--   log function was previously applied to int. This is now corrected.
+-   sqrt and log functions were previously applied to int. This is
+    now corrected.
 
 Test environments
 -----------------
 
 -   local OS X install, R 3.3.2
+-   Oracle Solaris 10 x86 (using Solaris VMware)
 -   Ubuntu 14.04 (on Travis-CI), R 3.3.2
 -   win\_builder (devel and release)
--   Oracle Solaris 10 x86 (using Solaris VMware)
 
 R CMD check results
 -------------------
