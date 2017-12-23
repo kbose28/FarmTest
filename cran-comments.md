@@ -1,8 +1,5 @@
-This is an update fixing C++ problems revealed on Solaris
----------------------------------------------------------
-
--   sqrt and log functions were previously applied to int. This is
-    now corrected.
+This is an update adding some functions
+---------------------------------------
 
 Test environments
 -----------------

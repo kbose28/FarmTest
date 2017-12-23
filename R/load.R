@@ -533,3 +533,58 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
                       return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
                                   lambda = lambda, pi0.smooth = pi0Smooth))
       }
+
+
+
+
+#################### huber mean calculation ##############################################
+#' Mean estimation with Huber's loss function
+#'
+#' This function estimates mean of multivariate data the Huber's loss. The tuning parameter is chosen by cross validation.
+#' @param X a n x p data matrix with each row being a sample.
+
+#' @return A list with the following items
+#' \item{muhat}{the vector of estimated means}
+#' @examples
+#' set.seed(100)
+#' p = 20
+#' n = 10
+#' X = matrix(rnorm( p*n, 0,1), nrow = n)
+#' mu = mean.huber(X)
+#'
+#' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @export
+mean.huber <- function (X){
+  X = t(X)
+  p  = NROW(X)
+  n = NCOL(X)
+  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
+  return(muhat)
+}
+
+
+#################### huber covariance calculation ##############################################
+#' Covariance estimation with Huber's loss function
+#'
+#' This function estimates covariance of multivariate data using the Huber's loss. The tuning parameter is chosen by cross validation.
+#' @param X a n x p data matrix with each row being a sample.
+
+#' @return A list with the following items
+#' \item{covhat}{the covariance matrix}
+#' @examples
+#' set.seed(100)
+#' p = 20
+#' n = 10
+#' X = matrix(rnorm( p*n, 0,1), nrow = n)
+#' covhat = cov.huber(X)
+#'
+#' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @export
+cov.huber <- function (X){
+  X = t(X)
+  p  = NROW(X)
+  n = NCOL(X)
+  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
+  covhat = Cov_Huber(0.6,  X, muhat)#the first term is redundant, using CV
+  return(covhat)
+}
