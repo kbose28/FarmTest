@@ -65,48 +65,70 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
   alpha <- if(is.null(alpha)) 0.05 else alpha
   if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
 
-  if (!is.null(fx)){
-    if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
-    output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = c("two.sided", "less", "greater"), alpha=alpha,robust = robust,...)
-    if(verbose){output.call = match.call()
-    cat("Call:\n")
-    print(output.call)
-    if(is.null(Y)){
-      cat("\n One Sample Robust Test with Known Factors\n")
-      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", NCOL(fx), "\n", sep = ""))
-    }else
-      {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
-        if(is.null(fy)) stop('must provide factors for either both or neither data matrices')
-        if(NROW(fy)!=NROW(Y)) stop('number of rows in factor matrix should be the same as data matrix')
-        cat("\n Two Sample Robust Test with Known Factors\n")
-          cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", NCOL(fx), ", Y.nfactors = ", NCOL(fy), "\n", sep = ""))
-      }
-    cat(paste("FDR to be controlled at: ", alpha, "\n", sep = ""))
-    cat(paste("alternative hypothesis: ",  match.arg(alternative), "\n",sep = ""))
-    cat("hypotheses rejected:\n")
-    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
+
+  if (!is.null(Y)){
+    if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
+    if(!is.null(fy)){
+      if( is.null(fx)) {stop('must provide factors for either both or neither data matrices')
+    if(NROW(fy)!=NROW(Y)) stop('number of rows in factor matrix should be the same as data matrix')}
     }
+  }
+  if (!is.null(fx)){
+    if(NROW(fx)!=NROW(X)) {stop('number of rows in factor matrix should be the same as data matrix')}
+        output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = alternative, alpha=alpha,robust = robust,...)
   }
   else{
-    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative= c("two.sided", "less", "greater"), alpha=alpha, robust = robust,...)
-    if(verbose){output.call = match.call()
-    cat("Call:\n")
-    print(output.call)
-    if(is.null(Y)){
-      cat("\n One Sample Robust Test with Unknown Factors\n")
-      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", output$nfactors, "\n", sep = ""))
-    }else
-      {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
-        cat("\n Two Sample Robust Test with Unknown Factors\n")
-       cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", output$nfactors$X.nfactors,", Y.nfactors = ", output$nfactors$Y.nfactors,  "\n", sep = ""))}
-    cat(paste("FDR to be controlled at: ",  alpha, "\n", sep = ""))
-    cat(paste("alternative hypothesis: ",  match.arg(alternative),"\n", sep = ""))
-    cat("hypotheses rejected:\n")
-    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
-    }
+    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative=alternative, alpha=alpha, robust = robust,...)
+
   }
+  class(output) <- "farm.test"
   return(output)
+}
+
+#' Print method for the class farm.test.
+#' Not intended for end-iser use.
+#'
+#' @export
+print.farm.test <- function(obj){
+  if(is.null(obj$Y.means)){
+    if (is.null(obj$X.nfactors)){
+      p = NCOL(obj$X)
+      n = NROW(obj$X)
+      nfactors = NROW(obj$X.loadings)
+      cat("\n One Sample Robust Test with Known Factors\n")
+      cat(paste("\np = ", p,", n = ", n, ", nfactors = ", nfactors, "\n", sep = ""))
+    }else
+      {p = NCOL(obj$X)
+      n = NROW(obj$X)
+      nfactors = obj$X.nfactors
+        cat("\n One Sample Robust Test with Unknown Factors\n")
+        cat(paste("\np = ", p,", n = ", n, ", nfactors = ", nfactors, "\n", sep = ""))
+        }
+      }else
+    {if (is.null(obj$X.nfactors)){
+      p = NCOL(obj$X)
+      n.X = NROW(obj$X)
+      n.Y = NROW(obj$X)
+      X.nfactors = NROW(obj$X.loadings)
+      Y.nfactors = NROW(obj$Y.loadings)
+      cat("\n Two Sample Robust Test with Known Factors\n")
+      cat(paste("\np = ", p,", n.X = ", n.X,", n.Y = ", n.Y, ", X.nfactors = ", X.nfactors, ", Y.nfactors = ", Y.nfactors, "\n", sep = ""))
+      }else
+      {
+      p = NCOL(obj$X)
+      n.X = NROW(obj$X)
+      n.Y = NROW(obj$X)
+      X.nfactors = obj$X.nfactors
+      Y.nfactors = obj$Y.nfactors
+        cat("\n Two Sample Robust Test with Unknown Factors\n")
+      cat(paste("\np = ", p,", n.X = ", n.X,", n.Y = ", n.Y, ", X.nfactors = ", X.nfactors,", Y.nfactors = ", Y.nfactors,  "\n", sep = ""))}
   }
+    cat(paste("FDR to be controlled at: ",  obj$alpha, "\n", sep = ""))
+    cat(paste("alternative hypothesis: ", obj$alternative,"\n", sep = ""))
+    cat("hypotheses rejected:\n")
+    if(is.character(obj$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(obj$rejected),"\n", sep = ""))
+    }
+}
 
 ###################################################################################
 ## main function (KNOWN FACTORS)
@@ -174,13 +196,16 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
 
     if (is.null(Y)){
     stat=(muhatx-H0)/sehatx
-    means <- muhatx
-    stderr <- sehatx
-    loadings = bhatx
+    X.means <- muhatx
+    X.stderr <- sehatx
+    X.loadings = bhatx
     } else{stat=(muhatx-muhaty-H0)/sqrt(sehatx^2 + sehaty^2)
-    means <- list(X.mean = muhatx, Y.mean = muhaty)
-    stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
-    loadings = list(X.loadings = bhatx, Y.loadings =bhaty)
+    X.means <- muhatx
+    Y.means = muhaty
+    X.stderr =  sehatx
+    Y.stderr= sehaty
+    X.loadings = bhatx
+    Y.loadings =bhaty
     }
 
     if (alternative == "less"){
@@ -197,9 +222,11 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
   rejected.alldata = farm.FDR(pvalue, alpha, ...)
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
-
-  list(means = means ,  stderr=  stderr,loadings = loadings,
-       pvalue = pvalue, rejected  =rejected, alldata   = alldata)
+  if (is.null(Y)){
+  list(X= t(X), X.means = X.means , X.stderr=X.stderr  ,X.loadings = X.loadings , pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
+  } else{
+    list(X=t(X), Y=t(Y), X.means = X.means ,  Y.means = Y.means ,X.stderr=X.stderr  ,Y.stderr =Y.stderr,X.loadings = X.loadings ,Y.loadings = Y.loadings , pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
+  }
   }
 #
 # ###################################################################################
@@ -306,16 +333,20 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   #test statistics
   if (is.null(Y)){
     stat=(muhatx-Bx%*%fx-H0)/sehatx
-    means <- muhatx - Bx%*%fx
-    stderr <- sehatx
-    loadings <- Bx
-    nfactors = Kx
+    X.means <- muhatx - Bx%*%fx
+    X.stderr <- sehatx
+    X.loadings <- Bx
+    X.nfactors = Kx
   } else{
     stat=(muhatx - Bx%*%fx-muhaty+By%*%fy -H0)/sqrt(sehatx^2 +sehaty^2)
-    means <- list(X.mean = muhatx-Bx%*%fx, Y.mean = muhaty-By%*%fy)
-    stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
-    loadings = list(X.loadings = Bx, Y.loadings = By)
-    nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+    X.means <- muhatx- Bx%*%fx
+    Y.means = muhaty- By%*%fy
+    X.stderr =  sehatx
+    Y.stderr= sehaty
+    X.loadings = Bx
+    Y.loadings =By
+    X.nfactors = Kx
+    Y.nfactors =Ky
   }
   if (alternative == "less"){
     pvalue = stats::pnorm((stat))
@@ -329,8 +360,12 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
 
-  list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
-       pvalue = pvalue, rejected  =rejected, alldata = alldata)
+
+  if (is.null(Y)){
+    list(X= t(X), X.means = X.means , X.stderr=X.stderr  ,X.loadings = X.loadings , X.nfactors= X.nfactors, pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
+  } else{
+    list(X= t(X), Y=t(Y), X.means = X.means ,  Y.means = Y.means ,X.stderr=X.stderr  ,Y.stderr =Y.stderr,X.loadings = X.loadings ,Y.loadings = Y.loadings ,X.nfactors= X.nfactors,Y.nfactors= Y.nfactors,  pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
+  }
 }
 
 
@@ -383,6 +418,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
    eig = pmax(eig, 0)
   }
   else {
+  covx = cov(X)
   pca_fit=stats::prcomp((X), center = TRUE, scale = TRUE)
   eig = (pca_fit$sdev)^2
   }
@@ -390,7 +426,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
 
   #plot first n eigenvalues
-  grid =seq(1,K.scree)
+  grid = seq(1,K.scree)
   graphics::barplot(props[1:K.scree], main="Scree plot of the data",
           xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
   graphics::par(new=T)
@@ -407,8 +443,13 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   ratio = ratio[is.finite(ratio)]
     graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
   graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
-  list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+  output = list(covx  = covx, eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio), X = t(X))
+  class(output) <- "farm.scree"
+  return(output)
   }
+
+
+
 
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
@@ -537,32 +578,6 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
 
 
 
-#################### huber mean calculation ##############################################
-#' Mean estimation with Huber's loss function
-#'
-#' This function estimates mean of multivariate data the Huber's loss. The tuning parameter is chosen by cross validation.
-#' @param X a n x p data matrix with each row being a sample.
-
-#' @return A list with the following items
-#' \item{muhat}{the vector of estimated means}
-#' @examples
-#' set.seed(100)
-#' p = 20
-#' n = 10
-#' X = matrix(rnorm( p*n, 0,1), nrow = n)
-#' mu = mean.huber(X)
-#'
-#' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
-#' @export
-mean.huber <- function (X){
-  X = t(X)
-  p  = NROW(X)
-  n = NCOL(X)
-  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
-  return(muhat)
-}
-
-
 #################### huber covariance calculation ##############################################
 #' Covariance estimation with Huber's loss function
 #'
@@ -576,15 +591,75 @@ mean.huber <- function (X){
 #' p = 20
 #' n = 10
 #' X = matrix(rnorm( p*n, 0,1), nrow = n)
-#' covhat = cov.huber(X)
+#' covhat = farm.cov(X)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-cov.huber <- function (X){
+farm.cov <- function (X){
   X = t(X)
   p  = NROW(X)
   n = NCOL(X)
   muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
   covhat = Cov_Huber(0.6,  X, muhat)#the first term is redundant, using CV
   return(covhat)
+}
+
+
+#################### huber mean calculation ##############################################
+#' Mean estimation with Huber's loss function
+#'
+#' This function estimates mean of multivariate data using the Huber's loss. The tuning parameter is chosen by cross validation.
+#' @param X a n x p data matrix with each row being a sample.
+
+#' @return A list with the following items
+#' \item{covhat}{the covariance matrix}
+#' @examples
+#' set.seed(100)
+#' p = 20
+#' n = 10
+#' X = matrix(rnorm( p*n, 0,1), nrow = n)
+#' muhat = farm.mean(X)
+#'
+#' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @export
+farm.mean <- function (X){
+  X = t(X)
+  p  = NROW(X)
+  n = NCOL(X)
+  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
+  return(muhat)
+}
+
+
+#################### huber mean calculation ##############################################
+#' Estimate Factor loadings and factors
+#'
+#' This function estimates the factor (loadings) given the estimated number of factors and covariance matrix. These can be found as output to the \code{\link{farm.scree}} function.
+#' @param  object an object produced from the farm.scree function
+#' @return A list with the following items
+#' \item{loadings}{the factor loadings}
+#' \item{factors}{the factors}
+
+#' @examples
+#' set.seed(100)
+#' p = 20
+#' n = 10
+#' X = matrix(rnorm( p*n, 0,1), nrow = n)
+#' output  = farm.scree(X)
+#' loadings = farm.loadings(output)
+
+#' @export
+farm.loadings <- function (object){
+  X = object$X
+  X = t(X)
+  n = NCOL(X)
+  p = NROW(X)
+  nfactors = object$nfactors
+  covx = object$covx
+  loadings = Loading_Robust(nfactors, matrix(covx,p,p))
+  factors = matrix(0,n, 3)
+      for ( i in 1:n) {
+       factors [i,]  =  mu_robust_F(0.5, matrix(X[,i],1, p), matrix(loadings, p, nfactors))
+      }
+     list(loadings = loadings, factors = factors)
 }

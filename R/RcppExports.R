@@ -33,10 +33,6 @@ Robust_CV_F <- function(vx, phi) {
     .Call('_FarmTest_Robust_CV_F', PACKAGE = 'FarmTest', vx, phi)
 }
 
-Influence_Huber <- function(X, tau) {
-    .Call('_FarmTest_Influence_Huber', PACKAGE = 'FarmTest', X, tau)
-}
-
 mu_robust <- function(C_tau, X) {
     .Call('_FarmTest_mu_robust', PACKAGE = 'FarmTest', C_tau, X)
 }
@@ -51,10 +47,6 @@ Cov_Huber <- function(C_tau, X, mu_hat) {
 
 Eigen_Decomp <- function(M) {
     .Call('_FarmTest_Eigen_Decomp', PACKAGE = 'FarmTest', M)
-}
-
-Loading_Sample <- function(K, M) {
-    .Call('_FarmTest_Loading_Sample', PACKAGE = 'FarmTest', K, M)
 }
 
 Loading_Robust <- function(K, M) {

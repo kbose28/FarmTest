@@ -116,18 +116,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Influence_Huber
-arma::mat Influence_Huber(arma::mat X, float tau);
-RcppExport SEXP _FarmTest_Influence_Huber(SEXP XSEXP, SEXP tauSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< float >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(Influence_Huber(X, tau));
-    return rcpp_result_gen;
-END_RCPP
-}
 // mu_robust
 arma::mat mu_robust(float C_tau, arma::mat X);
 RcppExport SEXP _FarmTest_mu_robust(SEXP C_tauSEXP, SEXP XSEXP) {
@@ -177,18 +165,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Loading_Sample
-arma::mat Loading_Sample(int K, arma::mat M);
-RcppExport SEXP _FarmTest_Loading_Sample(SEXP KSEXP, SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type K(KSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(Loading_Sample(K, M));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Loading_Robust
 arma::mat Loading_Robust(int K, arma::mat M);
 RcppExport SEXP _FarmTest_Loading_Robust(SEXP KSEXP, SEXP MSEXP) {
@@ -211,12 +187,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Huber_gradient_F", (DL_FUNC) &_FarmTest_Huber_gradient_F, 5},
     {"_FarmTest_Huber_descent_F", (DL_FUNC) &_FarmTest_Huber_descent_F, 4},
     {"_FarmTest_Robust_CV_F", (DL_FUNC) &_FarmTest_Robust_CV_F, 2},
-    {"_FarmTest_Influence_Huber", (DL_FUNC) &_FarmTest_Influence_Huber, 2},
     {"_FarmTest_mu_robust", (DL_FUNC) &_FarmTest_mu_robust, 2},
     {"_FarmTest_mu_robust_F", (DL_FUNC) &_FarmTest_mu_robust_F, 3},
     {"_FarmTest_Cov_Huber", (DL_FUNC) &_FarmTest_Cov_Huber, 3},
     {"_FarmTest_Eigen_Decomp", (DL_FUNC) &_FarmTest_Eigen_Decomp, 1},
-    {"_FarmTest_Loading_Sample", (DL_FUNC) &_FarmTest_Loading_Sample, 2},
     {"_FarmTest_Loading_Robust", (DL_FUNC) &_FarmTest_Loading_Robust, 2},
     {NULL, NULL, 0}
 };

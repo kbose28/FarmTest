@@ -44,14 +44,13 @@ Issues
 Functions
 ---------
 
-There are three functions available.
+There are five functions available.
 
 -   `farm.test`: The main function farm.test which carries out the entire hypothesis testing procedure.
 -   `farm.FDR`: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in (Storey 2015).
 -   `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated.
-
-Simple hypothesis testing example
----------------------------------
+-   `farm.mean`: Multivariate mean estimation with Huber's loss.
+-   `farm.cov`: Multivariate covariance estimation with Huber's loss. \#\# Simple hypothesis testing example
 
 Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.
 
@@ -132,6 +131,15 @@ pval = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pval)
 output$rejected
 #> [1] "no hypotheses rejected"
+```
+
+Finally let us calculate the mean and variance of our dataset.
+
+``` r
+muhat = farm.mean(t(X))
+hist(rowMeans(X)- muhat)
+covhat = farm.cov(t(X))
+heatmap(cov(X)- covhat, Rowv = NA, Colv = NA)
 ```
 
 Notes

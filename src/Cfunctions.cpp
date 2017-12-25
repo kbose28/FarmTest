@@ -304,56 +304,6 @@ float Robust_CV_F (arma::mat vx, arma::mat phi)
 
 
 
-///////////////////////////////////////////////////////////////////////////
-//      Infulence function used for U-type robust cov estimation         //
-//////////////////////////////////////////////////////////////////////////
-////See section 2.4.1 for more details
-
-//Infulence Matrix
-// [[Rcpp::export]]
-arma::mat Influence_Huber (arma::mat X, float tau)
-{
-  using namespace arma;
-  int i;       float v1;
-  int d; d=X.n_rows;
-
-  vec eigval_cov;  eigval_cov.zeros(d);
-  vec eigval_sign; eigval_sign.zeros(d);
-  vec eigval_phi;  eigval_phi.zeros(d);
-  mat eigvec_cov;  eigvec_cov.zeros(d,d);
-  mat X_return;    X_return.zeros(d,d);
-
-  eig_sym(eigval_cov, eigvec_cov, X);
-
-  eigval_phi=eigval_cov;
-
-  eigval_sign=sign(eigval_cov);
-
-  for(i=0; i<d; i++){
-    v1=as_scalar(eigval_cov[i]);
-    if(std::abs(v1)>tau)eigval_phi[i]=eigval_sign[i]*tau;
-
-  }
-
-  mat eig_lambda; eig_lambda.zeros(d,d);
-  eig_lambda.diag()=eigval_phi;
-
-
-  X_return=eigvec_cov * eig_lambda * eigvec_cov.t();
-
-
-  return X_return;
-
-}
-
-
-
-
-
-
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////
 //            Robust estimate of mu                                     //
@@ -495,34 +445,6 @@ arma::mat Eigen_Decomp( arma::mat M)
 
 }
 
-///////////////////////////////////////////////////////////////////////////
-//             Estimate the loadings via Sample COV and PCA              //
-//////////////////////////////////////////////////////////////////////////
-
-//Input:  Covariance matrix M and the number of factors K
-//Output: Eigen-vectors corresponding to top K eigenvalues
-// [[Rcpp::export]]
-arma::mat Loading_Sample(int K, arma::mat M)
-{
-  using namespace arma;
-  int P=M.n_rows;
-
-  //Define matrices for eigenvalues and eigen-vectors
-  vec eigval_cov;  eigval_cov.zeros(P);
-  mat eigvec_cov;  eigvec_cov.zeros(P,P);
-  mat Lambda_hat;  Lambda_hat.zeros(P,K);
-
-  eig_sym(eigval_cov, eigvec_cov, M);
-  eigval_cov=sort(eigval_cov,"descend");
-  eigvec_cov=fliplr(eigvec_cov);
-
-  Lambda_hat=eigvec_cov.cols(0,K-1)*sqrt(static_cast<double>(P));
-
-
-
-  return Lambda_hat;
-
-}
 
 
 
