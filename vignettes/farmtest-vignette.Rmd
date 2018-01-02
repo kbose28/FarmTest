@@ -89,7 +89,7 @@ Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we 
 output = farm.test(X, alpha = 0.01,alternative = "greater")
 names(output)
 print(output$rejected)
-hist(output$means, 20, main = "Estimated Means", xlab = "")
+hist(output$X.means, 20, main = "Estimated Means", xlab = "")
 ```
 
 ##Other functions

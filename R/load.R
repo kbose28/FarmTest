@@ -86,7 +86,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
 }
 
 #' Print method for the class farm.test.
-#' Not intended for end-iser use.
+#' Not intended for end-user use.
 #'
 #' @export
 print.farm.test <- function(obj){

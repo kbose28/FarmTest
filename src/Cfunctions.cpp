@@ -352,9 +352,9 @@ arma::mat mu_robust(float C_tau, arma::mat X)
 arma::mat mu_robust_F(float C_tau, arma::mat X, arma::mat phi)
 {
   using namespace arma;
-  int i, P, N, K;
+  int i, P,  K;
   //Initial value of Huber descent
-  P=X.n_rows;    N=X.n_cols;
+  P=X.n_rows;
   K=phi.n_cols;
   //The order of Tau see Theorem 2.7
   float Tau;

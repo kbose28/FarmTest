@@ -3,11 +3,11 @@
 \name{print.farm.test}
 \alias{print.farm.test}
 \title{Print method for the class farm.test.
-Not intended for end-iser use.}
+Not intended for end-user use.}
 \usage{
 \method{print}{farm.test}(obj)
 }
 \description{
 Print method for the class farm.test.
-Not intended for end-iser use.
+Not intended for end-user use.
 }
