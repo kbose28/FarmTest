@@ -50,7 +50,11 @@ There are five functions available.
 -   `farm.FDR`: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in (Storey 2015).
 -   `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated.
 -   `farm.mean`: Multivariate mean estimation with Huber's loss.
--   `farm.cov`: Multivariate covariance estimation with Huber's loss. \#\# Simple hypothesis testing example
+-   `farm.cov`: Multivariate covariance estimation with Huber's loss.
+-   `farm.loadings`: Given the output to the farm.scree function, outputs the factor loadings.
+
+Simple hypothesis testing example
+---------------------------------
 
 Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.
 
@@ -66,43 +70,23 @@ mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
 output = farm.test(X)
-#> Call:
-#> farm.test(X = X)
-#> 
-#>  One Sample Robust Test with Unknown Factors
-#> 
-#> p = 100, n = 20, nfactors = 3
-#> FDR to be controlled at: 0.05
-#> alternative hypothesis: two.sided
-#> hypotheses rejected:
-#>  7
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
 
 ``` r
 output = farm.test(X, alpha = 0.01,alternative = "greater")
-#> Call:
-#> farm.test(X = X, alternative = "greater", alpha = 0.01)
-#> 
-#>  One Sample Robust Test with Unknown Factors
-#> 
-#> p = 100, n = 20, nfactors = 3
-#> FDR to be controlled at: 0.01
-#> alternative hypothesis: greater
-#> hypotheses rejected:
-#>  5
 names(output)
-#> [1] "means"    "stderr"   "loadings" "nfactors" "pvalue"   "rejected"
-#> [7] "alldata"
+#>  [1] "X"           "X.means"     "X.stderr"    "X.loadings"  "X.nfactors" 
+#>  [6] "pvalue"      "rejected"    "alldata"     "alpha"       "alternative"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 1.877161e-24    1.877161e-22
-#> [2,]     1 4.194009e-18    2.097004e-16
-#> [3,]     2 8.731807e-17    2.910602e-15
-#> [4,]     5 5.166529e-11    1.291632e-09
-#> [5,]     3 6.609598e-11    1.321920e-09
-hist(output$means, 10, main = "Estimated Means", xlab = "")
+#> [1,]     4 9.385803e-25    9.385803e-23
+#> [2,]     1 2.097004e-18    1.048502e-16
+#> [3,]     2 4.365903e-17    1.455301e-15
+#> [4,]     5 2.583264e-11    6.458161e-10
+#> [5,]     3 3.304799e-11    6.609598e-10
+hist(output$X.means, 10, main = "Estimated Means", xlab = "")
 ```
 
 ![](README-unnamed-chunk-3-1.png)
@@ -131,15 +115,6 @@ pval = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pval)
 output$rejected
 #> [1] "no hypotheses rejected"
-```
-
-Finally let us calculate the mean and variance of our dataset.
-
-``` r
-muhat = farm.mean(t(X))
-hist(rowMeans(X)- muhat)
-covhat = farm.cov(t(X))
-heatmap(cov(X)- covhat, Rowv = NA, Colv = NA)
 ```
 
 Notes

@@ -20,7 +20,7 @@ output = farm.test(X)
 output = farm.test(X, alpha = 0.01,alternative = "greater")
 names(output)
 print(output$rejected)
-hist(output$X.means, 20, main = "Estimated Means", xlab = "")
+hist(output$means, 10, main = "Estimated Means", xlab = "")
 
 ## ------------------------------------------------------------------------
 output = farm.scree(X, K.factors = 15, K.scree = 10)

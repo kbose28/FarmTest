@@ -88,14 +88,14 @@ fx = matrix(rnorm(3*n, 0,1), nrow = n)
 mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
-output = farm.test(X)
+farm.test(X)
 ```
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
 ```{r}
 output = farm.test(X, alpha = 0.01,alternative = "greater")
 names(output)
 print(output$rejected)
-hist(output$X.means, 10, main = "Estimated Means", xlab = "")
+hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
 ##Other functions

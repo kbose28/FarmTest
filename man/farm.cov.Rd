@@ -7,7 +7,7 @@
 farm.cov(X)
 }
 \arguments{
-\item{X}{a n x p data matrix with each row being a sample.}
+\item{X}{an n x p data matrix with each row being a sample.}
 }
 \value{
 A list with the following items

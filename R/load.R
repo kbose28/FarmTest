@@ -8,7 +8,7 @@
 
 NULL
 ###################################################################################
-## This is the main function that condusts the statistical test given the data
+## This is the main function that conducts the statistical test given the data
 ###################################################################################
 #' Main function performing factor-adjusted robust test for means
 #'
@@ -65,69 +65,47 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
   alpha <- if(is.null(alpha)) 0.05 else alpha
   if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
 
-
-  if (!is.null(Y)){
-    if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
-    if(!is.null(fy)){
-      if( is.null(fx)) {stop('must provide factors for either both or neither data matrices')
-    if(NROW(fy)!=NROW(Y)) stop('number of rows in factor matrix should be the same as data matrix')}
-    }
-  }
   if (!is.null(fx)){
-    if(NROW(fx)!=NROW(X)) {stop('number of rows in factor matrix should be the same as data matrix')}
-        output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = alternative, alpha=alpha,robust = robust,...)
+    if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
+    output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = c("two.sided", "less", "greater"), alpha=alpha,robust = robust,...)
+    if(verbose){output.call = match.call()
+    cat("Call:\n")
+    print(output.call)
+    if(is.null(Y)){
+      cat("\n One Sample Robust Test with Known Factors\n")
+      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", NCOL(fx), "\n", sep = ""))
+    }else
+    {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
+      if(is.null(fy)) stop('must provide factors for either both or neither data matrices')
+      if(NROW(fy)!=NROW(Y)) stop('number of rows in factor matrix should be the same as data matrix')
+      cat("\n Two Sample Robust Test with Known Factors\n")
+      cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", NCOL(fx), ", Y.nfactors = ", NCOL(fy), "\n", sep = ""))
+    }
+    cat(paste("FDR to be controlled at: ", alpha, "\n", sep = ""))
+    cat(paste("alternative hypothesis: ",  match.arg(alternative), "\n",sep = ""))
+    cat("hypotheses rejected:\n")
+    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
+    }
   }
   else{
-    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative=alternative, alpha=alpha, robust = robust,...)
-
-  }
-  class(output) <- "farm.test"
-  return(output)
-}
-
-#' Print method for the class farm.test.
-#' Not intended for end-user use.
-#'
-#' @export
-print.farm.test <- function(obj){
-  if(is.null(obj$Y.means)){
-    if (is.null(obj$X.nfactors)){
-      p = NCOL(obj$X)
-      n = NROW(obj$X)
-      nfactors = NROW(obj$X.loadings)
-      cat("\n One Sample Robust Test with Known Factors\n")
-      cat(paste("\np = ", p,", n = ", n, ", nfactors = ", nfactors, "\n", sep = ""))
+    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative= c("two.sided", "less", "greater"), alpha=alpha, robust = robust,...)
+    if(verbose){output.call = match.call()
+    cat("Call:\n")
+    print(output.call)
+    if(is.null(Y)){
+      cat("\n One Sample Robust Test with Unknown Factors\n")
+      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", output$nfactors, "\n", sep = ""))
     }else
-      {p = NCOL(obj$X)
-      n = NROW(obj$X)
-      nfactors = obj$X.nfactors
-        cat("\n One Sample Robust Test with Unknown Factors\n")
-        cat(paste("\np = ", p,", n = ", n, ", nfactors = ", nfactors, "\n", sep = ""))
-        }
-      }else
-    {if (is.null(obj$X.nfactors)){
-      p = NCOL(obj$X)
-      n.X = NROW(obj$X)
-      n.Y = NROW(obj$X)
-      X.nfactors = NROW(obj$X.loadings)
-      Y.nfactors = NROW(obj$Y.loadings)
-      cat("\n Two Sample Robust Test with Known Factors\n")
-      cat(paste("\np = ", p,", n.X = ", n.X,", n.Y = ", n.Y, ", X.nfactors = ", X.nfactors, ", Y.nfactors = ", Y.nfactors, "\n", sep = ""))
-      }else
-      {
-      p = NCOL(obj$X)
-      n.X = NROW(obj$X)
-      n.Y = NROW(obj$X)
-      X.nfactors = obj$X.nfactors
-      Y.nfactors = obj$Y.nfactors
-        cat("\n Two Sample Robust Test with Unknown Factors\n")
-      cat(paste("\np = ", p,", n.X = ", n.X,", n.Y = ", n.Y, ", X.nfactors = ", X.nfactors,", Y.nfactors = ", Y.nfactors,  "\n", sep = ""))}
-  }
-    cat(paste("FDR to be controlled at: ",  obj$alpha, "\n", sep = ""))
-    cat(paste("alternative hypothesis: ", obj$alternative,"\n", sep = ""))
+    {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
+      cat("\n Two Sample Robust Test with Unknown Factors\n")
+      cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", output$nfactors$X.nfactors,", Y.nfactors = ", output$nfactors$Y.nfactors,  "\n", sep = ""))}
+    cat(paste("FDR to be controlled at: ",  alpha, "\n", sep = ""))
+    cat(paste("alternative hypothesis: ",  match.arg(alternative),"\n", sep = ""))
     cat("hypotheses rejected:\n")
-    if(is.character(obj$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(obj$rejected),"\n", sep = ""))
+    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
     }
+  }
+  return(output)
 }
 
 ###################################################################################
@@ -141,10 +119,10 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
   Zx <- cbind(matrix(1, nx, 1) , fx)
   Kx = NCOL(Zx)
   if(robust==TRUE){
-  coefx = mu_robust_F(0.5,matrix(X, p, nx), matrix(Zx, nx, Kx))
-  muhatx = coefx[1,]
-  bhatx = coefx[-1,]
-  thetax = mu_robust(0.5,matrix(X^2, p, nx))
+    coefx = mu_robust_F(matrix(X, p, nx), matrix(Zx, nx, Kx))
+    muhatx = coefx[1,]
+    bhatx = coefx[-1,]
+    thetax = mu_robust(matrix(X^2, p, nx))
   }else{
     coefx= apply((X), 1, function(x) lm(x~Zx-1)$coefficients)
     muhatx = coefx[1,]
@@ -153,81 +131,76 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
   }
   varhatx=NULL
   if(is.null( dim(bhatx))){for (j in 1:p){rvar = (thetax[j] - muhatx[j]^2)*(thetax[j] >muhatx[j]^2)+ (thetax[j])*(thetax[j]<=muhatx[j]^2)
-      varf = bhatx[j] %*% stats::cov(fx) %*% bhatx[j]
-      varhatx[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
-    }
+  varf = bhatx[j] %*% stats::cov(fx) %*% bhatx[j]
+  varhatx[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
+  }
   }else {for (j in 1:p){rvar = (thetax[j] - muhatx[j]^2)*(thetax[j] >muhatx[j]^2)+ (thetax[j])*(thetax[j]<=muhatx[j]^2)
-      varf = bhatx[,j] %*% stats::cov(fx) %*% bhatx[,j]
-      varhatx[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
-    }
+  varf = bhatx[,j] %*% stats::cov(fx) %*% bhatx[,j]
+  varhatx[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
+  }
   }
   sehatx = sqrt(varhatx/nx)
 
-    if (!is.null(Y)){
-        Y = t(Y)
-        ny = NCOL(Y)
-        Zy <- cbind(matrix(1, ny, 1) , fy)
-        Ky = NCOL(Zy)
+  if (!is.null(Y)){
+    Y = t(Y)
+    ny = NCOL(Y)
+    Zy <- cbind(matrix(1, ny, 1) , fy)
+    Ky = NCOL(Zy)
 
-        if(robust==TRUE){
-          coefy= mu_robust_F(0.5,matrix(Y, p, ny), matrix(Zy, ny, Ky))
-          muhaty = coefy[1,]
-          bhaty = coefy[-1,]
-          thetay = mu_robust(0.5,matrix(Y^2, p, ny))
-        }else{
-          coefy= apply((Y), 1, function(y) lm(y~Zy-1)$coefficients)
-          muhaty = coefy[1,]
-          bhaty = coefy[-1,]
-          thetay = rowMeans(Y^2)
-        }
-        varhaty=NULL
-        if(is.null( dim(bhaty))){for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
-            varf = bhaty[j] %*% stats::cov(fy) %*% bhaty[j]
-            varhaty[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
-            }
-        }
-        else{for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
-            varf = bhaty[,j] %*% stats::cov(fy) %*% bhaty[,j]
-            varhaty[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
-        }
-         }
-        sehaty = sqrt(varhaty/ny)
-       }
+    if(robust==TRUE){
+      coefy= mu_robust_F(matrix(Y, p, ny), matrix(Zy, ny, Ky))
+      muhaty = coefy[1,]
+      bhaty = coefy[-1,]
+      thetay = mu_robust(matrix(Y^2, p, ny))
+    }else{
+      coefy= apply((Y), 1, function(y) lm(y~Zy-1)$coefficients)
+      muhaty = coefy[1,]
+      bhaty = coefy[-1,]
+      thetay = rowMeans(Y^2)
+    }
+    varhaty=NULL
+    if(is.null( dim(bhaty))){for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
+    varf = bhaty[j] %*% stats::cov(fy) %*% bhaty[j]
+    varhaty[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
+    }
+    }
+    else{for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
+    varf = bhaty[,j] %*% stats::cov(fy) %*% bhaty[,j]
+    varhaty[j] = (rvar - varf)*((rvar - varf)>0) + rvar*((rvar- varf)<=0)
+    }
+    }
+    sehaty = sqrt(varhaty/ny)
+  }
 
-    if (is.null(Y)){
+  if (is.null(Y)){
     stat=(muhatx-H0)/sehatx
-    X.means <- muhatx
-    X.stderr <- sehatx
-    X.loadings = bhatx
-    } else{stat=(muhatx-muhaty-H0)/sqrt(sehatx^2 + sehaty^2)
-    X.means <- muhatx
-    Y.means = muhaty
-    X.stderr =  sehatx
-    Y.stderr= sehaty
-    X.loadings = bhatx
-    Y.loadings =bhaty
-    }
+    means <- muhatx
+    stderr <- sehatx
+    loadings = bhatx
+  } else{stat=(muhatx-muhaty-H0)/sqrt(sehatx^2 + sehaty^2)
+  means <- list(X.mean = muhatx, Y.mean = muhaty)
+  stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
+  loadings = list(X.loadings = bhatx, Y.loadings =bhaty)
+  }
 
-    if (alternative == "less"){
+  if (alternative == "less"){
     pvalue = stats::pnorm(stat)
-    }
-    else if (alternative == "greater"){
+  }
+  else if (alternative == "greater"){
     pvalue = stats::pnorm(stat, lower.tail = FALSE)
-    }
-    else {
+  }
+  else {
     pvalue = 2*stats::pnorm(-abs(stat))
-    }
+  }
 
   #Storey's procedure of pFDR
   rejected.alldata = farm.FDR(pvalue, alpha, ...)
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
-  if (is.null(Y)){
-  list(X= t(X), X.means = X.means , X.stderr=X.stderr  ,X.loadings = X.loadings , pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
-  } else{
-    list(X=t(X), Y=t(Y), X.means = X.means ,  Y.means = Y.means ,X.stderr=X.stderr  ,Y.stderr =Y.stderr,X.loadings = X.loadings ,Y.loadings = Y.loadings , pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
-  }
-  }
+
+  list(means = means ,  stderr=  stderr,loadings = loadings,
+       pvalue = pvalue, rejected  =rejected, alldata   = alldata)
+}
 #
 # ###################################################################################
 # ## main function (UNKNOWN FACTORS)
@@ -243,11 +216,11 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 
   #for X
   if(robust==TRUE){
-    muhatx = mu_robust(0.5, matrix(X, p, nx))#the first term is redundant, using CV
-    covx = Cov_Huber(0.6,  X, muhatx)
+    muhatx = mu_robust( matrix(X, p, nx))
+    covx = Cov_Huber( X, muhatx)
   }else{
     muhatx = rowMeans(X)
-   covx = cov(t(X))
+    covx = cov(t(X))
   }
   eigs = Eigen_Decomp( covx)
   values = eigs[,p+1]
@@ -269,7 +242,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   }
   Bx2 = apply(Bx,1, function(y) sum(y^2))
   if(robust==TRUE){
-  thetax = mu_robust(0.5, matrix(X^2, p, nx))#the first term is redundant, using CV
+    thetax = mu_robust( matrix(X^2, p, nx))
   }else{
     thetax = rowMeans(X^2)
   }
@@ -277,76 +250,72 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   varhatx = (varhatx_0 - Bx2)* (varhatx_0 > Bx2) +(varhatx_0)* ( varhatx_0 <=Bx2)
   sehatx = sqrt(varhatx/nx)
   if(robust == TRUE){
-  fx = mu_robust_F(0.5, matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
+    fx = mu_robust_F( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
   }else{
     fx = coef(lm(rowMeans(X)~Bx-1))
   }
 
   #for Y
   if (!is.null(Y)){
-  Y = t(Y)
-  ny = NCOL(Y)
-  if(min(ny,p)<=4) stop('n and p must be at least 4')
-  if(robust==TRUE){
-    muhaty = mu_robust(0.5, matrix(Y, p, ny))#the first term is redundant, using CV
-    covy = Cov_Huber(0.6,  Y, muhaty)
-  }else{
-    muhaty = rowMeans(Y)
-    covy = cov(t(Y))
-  }
-  eigs = Eigen_Decomp( covy)
-  values = eigs[,p+1]
-  vectors = eigs[,1:p]
-  #estimate nfactors
-  values = pmax(values, 0)
-  ratio=c()
-  Ky <- if (is.null(Ky)) {
-    for(i in 1:floor(min(p,ny)/2))
-      ratio=append(ratio, values[i+1]/values[i])
-    ratio = ratio[is.finite(ratio)]
-    Ky = which.min(ratio)} else {Ky}
-  if(Ky>=min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
-  if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
+    Y = t(Y)
+    ny = NCOL(Y)
+    if(min(ny,p)<=4) stop('n and p must be at least 4')
+    if(robust==TRUE){
+      muhaty = mu_robust(matrix(Y, p, ny))
+      covy = Cov_Huber(  Y, muhaty)
+    }else{
+      muhaty = rowMeans(Y)
+      covy = cov(t(Y))
+    }
+    eigs = Eigen_Decomp( covy)
+    values = eigs[,p+1]
+    vectors = eigs[,1:p]
+    #estimate nfactors
+    values = pmax(values, 0)
+    ratio=c()
+    Ky <- if (is.null(Ky)) {
+      for(i in 1:floor(min(p,ny)/2))
+        ratio=append(ratio, values[i+1]/values[i])
+      ratio = ratio[is.finite(ratio)]
+      Ky = which.min(ratio)} else {Ky}
+    if(Ky>=min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+    if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
 
-  By = matrix(NA, p, Ky)
+    By = matrix(NA, p, Ky)
 
-  for (k in 1:Ky){
-    By[,k] = sqrt(values[k])*vectors[,k]
-  }
-  By2 = apply(By,1, function(y) sum(y^2))
-  if(robust==TRUE){
-    thetay = mu_robust(0.5, matrix(Y^2, p, ny))#the first term is redundant, using CV
-  }else{
-    thetay = rowMeans(Y^2)
-  }
-  varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
-  varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
-  sehaty = sqrt(varhaty/ny)
-  if(robust == TRUE){
-    fy = mu_robust_F(0.5, matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
-  }else{
-    fy = coef(lm(rowMeans(Y)~By-1))
-  }
+    for (k in 1:Ky){
+      By[,k] = sqrt(values[k])*vectors[,k]
+    }
+    By2 = apply(By,1, function(y) sum(y^2))
+    if(robust==TRUE){
+      thetay = mu_robust( matrix(Y^2, p, ny))
+    }else{
+      thetay = rowMeans(Y^2)
+    }
+    varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
+    varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
+    sehaty = sqrt(varhaty/ny)
+    if(robust == TRUE){
+      fy = mu_robust_F(matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
+    }else{
+      fy = coef(lm(rowMeans(Y)~By-1))
+    }
 
   }
 
   #test statistics
   if (is.null(Y)){
     stat=(muhatx-Bx%*%fx-H0)/sehatx
-    X.means <- muhatx - Bx%*%fx
-    X.stderr <- sehatx
-    X.loadings <- Bx
-    X.nfactors = Kx
+    means <- muhatx - Bx%*%fx
+    stderr <- sehatx
+    loadings <- Bx
+    nfactors = Kx
   } else{
     stat=(muhatx - Bx%*%fx-muhaty+By%*%fy -H0)/sqrt(sehatx^2 +sehaty^2)
-    X.means <- muhatx- Bx%*%fx
-    Y.means = muhaty- By%*%fy
-    X.stderr =  sehatx
-    Y.stderr= sehaty
-    X.loadings = Bx
-    Y.loadings =By
-    X.nfactors = Kx
-    Y.nfactors =Ky
+    means <- list(X.mean = muhatx-Bx%*%fx, Y.mean = muhaty-By%*%fy)
+    stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
+    loadings = list(X.loadings = Bx, Y.loadings = By)
+    nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
   }
   if (alternative == "less"){
     pvalue = stats::pnorm((stat))
@@ -360,12 +329,8 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
 
-
-  if (is.null(Y)){
-    list(X= t(X), X.means = X.means , X.stderr=X.stderr  ,X.loadings = X.loadings , X.nfactors= X.nfactors, pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
-  } else{
-    list(X= t(X), Y=t(Y), X.means = X.means ,  Y.means = Y.means ,X.stderr=X.stderr  ,Y.stderr =Y.stderr,X.loadings = X.loadings ,Y.loadings = Y.loadings ,X.nfactors= X.nfactors,Y.nfactors= Y.nfactors,  pvalue = pvalue, rejected  =rejected, alldata   = alldata, alpha = alpha, alternative = alternative)
-  }
+  list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
+       pvalue = pvalue, rejected  =rejected, alldata = alldata)
 }
 
 
@@ -411,24 +376,23 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   K.factors <- if (is.null(K.factors)) (min(n,p)/2) else K.factors
   if(K.factors>min(n,p)/2) warning('Number of factors supplied is > min(n,p)/2. May cause numerical inconsistencies')
   if (robust){
-    muhatx = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
-    covx = Cov_Huber(0.6,  X, muhatx)
+    muhatx = mu_robust( matrix(X, p, n))
+    covx = Cov_Huber(  X, muhatx)
     decomp = Eigen_Decomp(covx)
-   eig = decomp[,p+1]
-   eig = pmax(eig, 0)
+    eig = decomp[,p+1]
+    eig = pmax(eig, 0)
   }
   else {
-  covx = cov(X)
-  pca_fit=stats::prcomp((X), center = TRUE, scale = TRUE)
-  eig = (pca_fit$sdev)^2
+    pca_fit=stats::prcomp((X), center = TRUE, scale = TRUE)
+    eig = (pca_fit$sdev)^2
   }
   props = eig / sum(eig)
   graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
 
   #plot first n eigenvalues
-  grid = seq(1,K.scree)
+  grid =seq(1,K.scree)
   graphics::barplot(props[1:K.scree], main="Scree plot of the data",
-          xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+                    xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
   graphics::par(new=T)
   graphics::plot(grid, eig[1:K.scree], type="b", pch=19, axes = FALSE, xlab="", ylab="")
   graphics::axis(1, at=pretty(range(grid)))
@@ -441,15 +405,10 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   for(i in 1:K.factors)
     ratio=append(ratio, eig[i]/eig[i+1])
   ratio = ratio[is.finite(ratio)]
-    graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
+  graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
   graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
-  output = list(covx  = covx, eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio), X = t(X))
-  class(output) <- "farm.scree"
-  return(output)
-  }
-
-
-
+  list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+}
 
 # ################# rejections using storeys method#################
 #' Control FDR given a list of pvalues
@@ -480,7 +439,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
 
 #' @export
 farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
-smooth.df = 3, smooth.log.pi0 = FALSE){
+                    smooth.df = 3, smooth.log.pi0 = FALSE){
   if((sum(pvalue<0)!=0)|| (sum(pvalue>1)!=0)) stop("pvalues must be between 0 and 1")
   type = match.arg(type)
   alpha <- if (is.null(alpha)) 0.05 else alpha
@@ -514,75 +473,73 @@ smooth.df = 3, smooth.log.pi0 = FALSE){
 
   }
 
- list(rejected = rejected , alldata = alldata)
+  list(rejected = rejected , alldata = alldata)
 }
 
 mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
-                                       smooth.df = 3, smooth.log.pi0 = FALSE, ...) {
-                      # Check input arguments
-                      rm_na <- !is.na(p)
-                      p <- p[rm_na]
-                      pi0.method = match.arg(pi0.method)
-                      m <- length(p)
-                      lambda <- sort(lambda) # guard against user input
+                     smooth.df = 3, smooth.log.pi0 = FALSE, ...) {
+  # Check input arguments
+  rm_na <- !is.na(p)
+  p <- p[rm_na]
+  pi0.method = match.arg(pi0.method)
+  m <- length(p)
+  lambda <- sort(lambda) # guard against user input
 
-                      ll <- length(lambda)
-                      if (min(p) < 0 || max(p) > 1) {
-                        stop("ERROR: p-values not in valid range [0, 1].")
-                      } else if (ll > 1 && ll < 4) {
-                        stop(cat("ERROR:", paste("length(lambda)=", ll, ".", sep=""),
-                                 "If length of lambda greater than 1,",
-                                 "you need at least 4 values."))
-                      } else if (min(lambda) < 0 || max(lambda) >= 1) {
-                        stop("ERROR: Lambda must be within [0, 1).")
-                      }
-                      # Determines pi0
-                      if (ll == 1) {
-                        pi0 <- mean(p >= lambda)/(1 - lambda)
-                        pi0.lambda <- pi0
-                        pi0 <- min(pi0, 1)
-                        pi0Smooth <- NULL
-                      } else {
-                        pi0 <- sapply(lambda, function(l) mean(p >= l) / (1 - l))
-                        pi0.lambda <- pi0
-                        # Smoother method approximation
-                        if (pi0.method == "smoother") {
-                          if (smooth.log.pi0) {
-                            pi0 <- log(pi0)
-                            spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
-                            pi0Smooth <- exp(stats::predict(spi0, x = lambda)$y)
-                            pi0 <- min(pi0Smooth[ll], 1)
-                          } else {
-                            spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
-                            pi0Smooth <- stats::predict(spi0, x = lambda)$y
-                            pi0 <- min(pi0Smooth[ll], 1)
-                          }
-                        } else if (pi0.method == "bootstrap") {
-                          # Bootstrap method closed form solution by David Robinson
-                          minpi0 <- stats::quantile(pi0, prob = 0.1)
-                          W <- sapply(lambda, function(l) sum(p >= l))
-                          mse <- (W / (m ^ 2 * (1 - lambda) ^ 2)) * (1 - W / m) + (pi0 - minpi0) ^ 2
-                          pi0 <- min(pi0[mse == min(mse)], 1)
-                          pi0Smooth <- NULL
-                        } else {
-                          stop('ERROR: pi0.method must be one of "smoother" or "bootstrap".')
-                        }
-                      }
-                      if (pi0 <= 0) {
-                        stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda. Alternatively, to not estimate pi0, use type = \"BH\".")
-                      }
-                      return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
-                                  lambda = lambda, pi0.smooth = pi0Smooth))
+  ll <- length(lambda)
+  if (min(p) < 0 || max(p) > 1) {
+    stop("ERROR: p-values not in valid range [0, 1].")
+  } else if (ll > 1 && ll < 4) {
+    stop(cat("ERROR:", paste("length(lambda)=", ll, ".", sep=""),
+             "If length of lambda greater than 1,",
+             "you need at least 4 values."))
+  } else if (min(lambda) < 0 || max(lambda) >= 1) {
+    stop("ERROR: Lambda must be within [0, 1).")
+  }
+  # Determines pi0
+  if (ll == 1) {
+    pi0 <- mean(p >= lambda)/(1 - lambda)
+    pi0.lambda <- pi0
+    pi0 <- min(pi0, 1)
+    pi0Smooth <- NULL
+  } else {
+    pi0 <- sapply(lambda, function(l) mean(p >= l) / (1 - l))
+    pi0.lambda <- pi0
+    # Smoother method approximation
+    if (pi0.method == "smoother") {
+      if (smooth.log.pi0) {
+        pi0 <- log(pi0)
+        spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
+        pi0Smooth <- exp(stats::predict(spi0, x = lambda)$y)
+        pi0 <- min(pi0Smooth[ll], 1)
+      } else {
+        spi0 <- stats::smooth.spline(lambda, pi0, df = smooth.df)
+        pi0Smooth <- stats::predict(spi0, x = lambda)$y
+        pi0 <- min(pi0Smooth[ll], 1)
       }
-
-
+    } else if (pi0.method == "bootstrap") {
+      # Bootstrap method closed form solution by David Robinson
+      minpi0 <- stats::quantile(pi0, prob = 0.1)
+      W <- sapply(lambda, function(l) sum(p >= l))
+      mse <- (W / (m ^ 2 * (1 - lambda) ^ 2)) * (1 - W / m) + (pi0 - minpi0) ^ 2
+      pi0 <- min(pi0[mse == min(mse)], 1)
+      pi0Smooth <- NULL
+    } else {
+      stop('ERROR: pi0.method must be one of "smoother" or "bootstrap".')
+    }
+  }
+  if (pi0 <= 0) {
+    stop("ERROR: The estimated pi0 <= 0. Check that you have valid p-values or use a different range of lambda. Alternatively, to not estimate pi0, use type = \"BH\".")
+  }
+  return(list(pi0 = pi0, pi0.lambda = pi0.lambda,
+              lambda = lambda, pi0.smooth = pi0Smooth))
+}
 
 
 #################### huber covariance calculation ##############################################
 #' Covariance estimation with Huber's loss function
 #'
 #' This function estimates covariance of multivariate data using the Huber's loss. The tuning parameter is chosen by cross validation.
-#' @param X a n x p data matrix with each row being a sample.
+#' @param X an n x p data matrix with each row being a sample.
 
 #' @return A list with the following items
 #' \item{covhat}{the covariance matrix}
@@ -599,11 +556,10 @@ farm.cov <- function (X){
   X = t(X)
   p  = NROW(X)
   n = NCOL(X)
-  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
-  covhat = Cov_Huber(0.6,  X, muhat)#the first term is redundant, using CV
-  return(covhat)
+  muhatx = mu_robust( matrix(X, p, n))
+  covhat = Cov_Huber(matrix((X),p,n), muhatx)
+return(covhat)
 }
-
 
 #################### huber mean calculation ##############################################
 #' Mean estimation with Huber's loss function
@@ -612,7 +568,7 @@ farm.cov <- function (X){
 #' @param X a n x p data matrix with each row being a sample.
 
 #' @return A list with the following items
-#' \item{covhat}{the covariance matrix}
+#' \item{muhat}{the mean vector}
 #' @examples
 #' set.seed(100)
 #' p = 20
@@ -626,40 +582,6 @@ farm.mean <- function (X){
   X = t(X)
   p  = NROW(X)
   n = NCOL(X)
-  muhat = mu_robust(0.5, matrix(X, p, n))#the first term is redundant, using CV
+  muhat = mu_robust(matrix(X,p,n))
   return(muhat)
-}
-
-
-#################### huber mean calculation ##############################################
-#' Estimate Factor loadings and factors
-#'
-#' This function estimates the factor (loadings) given the estimated number of factors and covariance matrix. These can be found as output to the \code{\link{farm.scree}} function.
-#' @param  object an object produced from the farm.scree function
-#' @return A list with the following items
-#' \item{loadings}{the factor loadings}
-#' \item{factors}{the factors}
-
-#' @examples
-#' set.seed(100)
-#' p = 20
-#' n = 10
-#' X = matrix(rnorm( p*n, 0,1), nrow = n)
-#' output  = farm.scree(X)
-#' loadings = farm.loadings(output)
-
-#' @export
-farm.loadings <- function (object){
-  X = object$X
-  X = t(X)
-  n = NCOL(X)
-  p = NROW(X)
-  nfactors = object$nfactors
-  covx = object$covx
-  loadings = Loading_Robust(nfactors, matrix(covx,p,p))
-  factors = matrix(0,n, 3)
-      for ( i in 1:n) {
-       factors [i,]  =  mu_robust_F(0.5, matrix(X[,i],1, p), matrix(loadings, p, nfactors))
-      }
-     list(loadings = loadings, factors = factors)
 }
