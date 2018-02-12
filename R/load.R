@@ -343,6 +343,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
 #' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
+#' @param show.plot a TRUE/FALSE indicating whether to show the resulting plots. Default is TRUE.
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 #' @details User has to hit <Return> to see the second plot.
 #' @details All the data used in the plots are output as a list.
@@ -367,7 +368,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #'
 #' @references Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 #' @export
-farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
+farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, show.plot=TRUE){
   X = t(X)
   n = NCOL(X)
   p = NROW(X)
@@ -387,8 +388,8 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
     eig = (pca_fit$sdev)^2
   }
   props = eig / sum(eig)
+  if(show.plot){
   graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
-
   #plot first n eigenvalues
   grid =seq(1,K.scree)
   graphics::barplot(props[1:K.scree], main="Scree plot of the data",
@@ -399,14 +400,15 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE){
   graphics::axis(side = 4, at = pretty(range(eig[1:K.scree])))
   graphics::mtext("Eigenvalues",side=4,col="black",line=3)
   oldpar = graphics::par(ask = TRUE)
-  on.exit(graphics::par(oldpar))
+  on.exit(graphics::par(oldpar))}
   #eigenvalue ratio test
   ratio=c()
   for(i in 1:K.factors)
     ratio=append(ratio, eig[i]/eig[i+1])
   ratio = ratio[is.finite(ratio)]
+  if(show.plot){
   graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
-  graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)
+  graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)}
   list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
 }
 

@@ -4,7 +4,8 @@
 \alias{farm.scree}
 \title{Diagnostic plots and quantities arising from estimating the number of underlying factors}
 \usage{
-farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
+farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE,
+  show.plot = TRUE)
 }
 \arguments{
 \item{X}{an n x p data matrix with each row being a sample.}
@@ -14,6 +15,8 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE)
 \item{K.factors}{an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.}
 
 \item{robust}{a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
+
+\item{show.plot}{a TRUE/FALSE indicating whether to show the resulting plots. Default is TRUE.}
 }
 \value{
 Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
