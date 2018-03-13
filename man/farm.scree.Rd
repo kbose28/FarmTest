@@ -5,7 +5,7 @@
 \title{Diagnostic plots and quantities arising from estimating the number of underlying factors}
 \usage{
 farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE,
-  show.plot = TRUE)
+  show.plot = FALSE)
 }
 \arguments{
 \item{X}{an n x p data matrix with each row being a sample.}
@@ -16,18 +16,18 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = FALSE,
 
 \item{robust}{a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
 
-\item{show.plot}{a TRUE/FALSE indicating whether to show the resulting plots. Default is TRUE.}
+\item{show.plot}{a TRUE/FALSE indicating whether to show the resulting plots. Default is FALSE.}
 }
 \value{
-Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
-
-A list with the data used for the plots:
+An object with S3 class \code{farm.scree} containing:
 \itemize{
  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
  \item{\code{proportions} }{Proportion of variance explained by the principal components}
  \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 }
+
+If \code{show.plots=TRUE} function returns two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
 }
 \description{
 Given the data, this function  draws a scree plot and a plot of the eigenvalue ratios.
@@ -36,9 +36,7 @@ The eignevalue ratio test is used to estimate the number of factors. See Ahn and
 \details{
 The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 
-User has to hit <Return> to see the second plot.
-
-All the data used in the plots are output as a list.
+If \code{show.plots=TRUE}, plots are output and user has to hit <Return> to see the second plot. Alternatively, one may use the plot method for this class.
 }
 \examples{
 set.seed(100)
@@ -53,4 +51,7 @@ ouput = farm.scree(X)
 }
 \references{
 Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
+}
+\seealso{
+\code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}
 }

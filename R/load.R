@@ -22,27 +22,30 @@ NULL
 #' @param Y an \emph{optional} data matrix that must have the same number of columns as \code{X}. You wish test the equality of means of each columns of \code{X} and \code{Y}.
 #' @param fy an \emph{optional} factor matrix with each column being a factor for \code{Y}.  Same number of rows as \code{Y}. Only used for a two sample test.
 #' @param Ky a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.
-#' @param alternative	an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
+#' @param alternative	an \emph{optional} character string specifying the alternate hypothesis, must be one of "two.sided" (default), "greater" or "lesser". You can specify just the initial letter.
 #' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
 #' @param robust a TRUE/FALSE indicating whether to use robust estimates of paramters and robust regression. Default is TRUE.
-#' @param verbose a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.
-#'
 #' @param \dots Arguments passed to the \code{\link{farm.FDR}} function.
-#' @return A list with the following items
-#' \item{means}{the vector of estimated means}
-#' \item{stderr}{the p x 1 vector of estimated standard errors}
-#' \item{pvalue}{the p x 1 vector of unadjusted p values}
+#' @return An object with S3 class \code{farm.test} containing:
+#' \item{means}{estimated means}
+#' \item{stderr}{estimated standard errors}
+#' \item{pvalue}{unadjusted p values}
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
 #' \item{loadings}{estimated factor loadings}
-#' \item{nfactors}{if needed, the number of estimated factors}
+#' \item{nfactors}{the number of (estimated) factors}
+#' \item{significant}{the number of means that are found significant}
+#' \item{\dots}{further arguments passed to methods. For complete list use the function \code{\link{names}} on the output object}
 #' @details
 #' \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 #' @details
 #' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 #' @details
 #' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
+#' @details For two-sample test, the output values \code{means}, \code{stderr}, \code{n}, \code{nfactors},\code{loadings} are all lists containing two items, each pertaining to \code{X} and \code{Y}, indicated by a prefix \code{X.} and \code{Y.} respectively.
+#' @details Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #' @details For details about multiple comparison correction, see \code{\link{farm.FDR}}.
+#' @seealso \code{\link{farm.FDR}}, \code{\link{print.farm.test}}
 #' @examples
 #' set.seed(100)
 #' p = 20
@@ -58,61 +61,183 @@ NULL
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "less", "greater"),  alpha=NULL ,robust = TRUE, verbose=TRUE,...){
+farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "lesser", "greater"),  alpha=NULL ,robust = TRUE,...){
   p = NCOL(X)
+  alternative <- match.arg(alternative)
   H0 <- if(is.null(H0)) rep(0,p ) else H0
-  if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
   alpha <- if(is.null(alpha)) 0.05 else alpha
-  if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
 
+  #error checking
+  if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
+  if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
   if (!is.null(fx)){
     if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
-    output = farm.test.known (X, H0, fx,Y = Y , fy= fy,  alternative  = c("two.sided", "less", "greater"), alpha=alpha,robust = robust,...)
-    if(verbose){output.call = match.call()
-    cat("Call:\n")
-    print(output.call)
-    if(is.null(Y)){
-      cat("\n One Sample Robust Test with Known Factors\n")
-      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", NCOL(fx), "\n", sep = ""))
-    }else
-    {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
+    if(!is.null(Y)){
+      if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
       if(is.null(fy)) stop('must provide factors for either both or neither data matrices')
       if(NROW(fy)!=NROW(Y)) stop('number of rows in factor matrix should be the same as data matrix')
-      cat("\n Two Sample Robust Test with Known Factors\n")
-      cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", NCOL(fx), ", Y.nfactors = ", NCOL(fy), "\n", sep = ""))
+      }
+    }else{
+    if(!is.null(Y)){
+      if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
+      }
     }
-    cat(paste("FDR to be controlled at: ", alpha, "\n", sep = ""))
-    cat(paste("alternative hypothesis: ",  match.arg(alternative), "\n",sep = ""))
-    cat("hypotheses rejected:\n")
-    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
-    }
+  #call main function
+  if(!is.null(fx)){output = farm.testknown (X, H0, fx,Y = Y , fy= fy,  alternative  =alternative, alpha=alpha,robust = robust,...)}
+  else{output=farm.testunknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative=alternative, alpha=alpha, robust = robust,...)}
+  value = (output)
+  attr(value, "class") <- "farm.test"
+  value
+}
+###################################################################################
+## Print method
+###################################################################################
+#' Summarize and print the results of the multiple testing
+#'
+#' Print method for \code{farm.test} objects
+#' @param x A \code{farm.test} object.
+#' @param \dots Further arguments passed to or from other methods.
+#' @return A list with the following items:
+#' \item{means}{estimated means}
+#' \item{stderr}{estimated standard errors}
+#' \item{pvalue}{unadjusted p values}
+#' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
+#' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
+#' \item{loadings}{estimated factor loadings}
+#' \item{nfactors}{number of (estimated) factors}
+#' \item{n}{number of observations}
+#' \item{p}{number of dimensions}
+#' \item{alpha}{level at which FDR was controlled}
+#' \item{H0}{null hypothesis}
+#' \item{alternative}{alternate hypothesis}
+#' \item{robust}{whether robust parameters were used}
+#' \item{type}{whether the test is one or two-sided}
+#' \item{significant}{the number of means that are found significant}
+#' @seealso \code{\link{farm.test}}
+#' @examples
+#' set.seed(100)
+#' p = 100
+#' n = 20
+#' X = matrix(rnorm( p*n, 0,1), nrow = n)
+#' output = farm.test(X)
+#' output
+#' names(output)
+#' @export
+print.farm.test<-function(x,...){
+  if (x$type=="known"){
+    if(length(x$n)==1){
+     cat(paste("\n One Sample",if(x$robust) "Robust", "Test with Known Factors\n"))
+     cat(paste("\np = ", x$p,", n = ", x$n, ", nfactors = ", x$nfactors, "\n", sep = ""))
+   }else{
+    cat(paste("\n Two Sample",if(x$robust) "Robust", "Test with Known Factors\n"))
+    cat(paste("\np = ", x$p,", nX = ", x$n$X.n,", nY = ", x$n$Y.n, ", X.nfactors = ",x$nfactors$X.nfactors, ", Y.nfactors = ", x$nfactors$Y.nfactors, "\n", sep = ""))
   }
-  else{
-    output=farm.test.unknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative= c("two.sided", "less", "greater"), alpha=alpha, robust = robust,...)
-    if(verbose){output.call = match.call()
-    cat("Call:\n")
-    print(output.call)
-    if(is.null(Y)){
-      cat("\n One Sample Robust Test with Unknown Factors\n")
-      cat(paste("\np = ", NCOL(X),", n = ", NROW(X), ", nfactors = ", output$nfactors, "\n", sep = ""))
-    }else
-    {if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
-      cat("\n Two Sample Robust Test with Unknown Factors\n")
-      cat(paste("\np = ", NCOL(X),", n.X = ", NROW(X),", n.Y = ", NROW(Y), ", X.nfactors = ", output$nfactors$X.nfactors,", Y.nfactors = ", output$nfactors$Y.nfactors,  "\n", sep = ""))}
-    cat(paste("FDR to be controlled at: ",  alpha, "\n", sep = ""))
-    cat(paste("alternative hypothesis: ",  match.arg(alternative),"\n", sep = ""))
-    cat("hypotheses rejected:\n")
-    if(is.character(output$rejected)){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", NROW(output$rejected),"\n", sep = ""))}
-    }
+  cat(paste("FDR to be controlled at: ", x$alpha, "\n", sep = ""))
+  cat(paste("alternative hypothesis: ",  x$alternative, "\n",sep = ""))
+  cat("hypotheses rejected:\n")
+  if(x$significant==0){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", x$significant,"\n", sep = ""))}
+  }else{
+  if(length(x$n)==1){
+    cat(paste("\n One Sample",if(x$robust) "Robust", "Test with Unknown Factors\n"))
+    cat(paste("\np = ", x$p,", n = ", x$n, ", nfactors = ", x$nfactors, "\n", sep = ""))
+  }else{cat(paste("\n Two Sample",if(x$robust) "Robust", "Test with Unknown Factors\n"))
+  cat(paste("\np = ", x$p,", nX = ",x$n$X.n,", nY = ", x$n$Y.n, ", X.nfactors = ", x$nfactors$X.nfactors,", Y.nfactors = ", x$nfactors$Y.nfactors,  "\n", sep = ""))
   }
-  return(output)
+  cat(paste("FDR to be controlled at: ", x$alpha, "\n", sep = ""))
+  cat(paste("alternative hypothesis: ",  x$alternative, "\n",sep = ""))
+  cat("hypotheses rejected:\n")
+  if(x$significant==0){ cat(" no hypotheses rejected\n")} else{ cat(paste(" ", x$significant,"\n", sep = ""))}
+  }
+}
+
+###################################################################################
+## Plot method for farm.scree
+###################################################################################
+#' Diagnostic plots from factor-finding
+#'
+#' Plot method for \code{farm.scree} objects. Plots the eigenvalue ratio plot and the scree plot.
+#' @param x A "\code{farm.scree}" object.
+#' @param scree.plot \emph{optional} indicating whether to show the scree plot. Default TRUE
+#' @param ratio.plot \emph{optional} indicating whether to show the scree plot. Default TRUE.
+#' @param col Controls the color of the maximim eigenvalue dot. Defaut "red".
+#' @param \dots graphical parameters to \code{\link{plot}}.
+#' @return Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
+#' @details By default, two plots are output with default options. To customize plots, plot one at a time and customize.
+#' @seealso \code{\link{farm.scree}} and \code{\link{print.farm.scree}}
+#' @examples
+#' set.seed(100)
+#' p = 100
+#' n = 20
+#' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
+#' B = matrix(rnorm(p*3,0,1), nrow=p)
+#' fx = matrix(rnorm(3*n, 0,1), nrow = n)
+#' X = fx%*%t(B)+ epsilon
+#' output = farm.scree(X)
+#' plot(output)
+#' plot(output, ratio.plot=FALSE, main="My Title")
+#' @export
+plot.farm.scree<-function(x, scree.plot=TRUE, ratio.plot=TRUE, col="red", ...){
+
+  col <- if(is.null(col))"red" else col
+  new.args = list(...)
+  if(scree.plot==TRUE &ratio.plot==TRUE){
+    graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
+    #plot first n eigenvalues
+    grid =seq(1,length(x$eigenvalues))
+    graphics::barplot(x$proportions, main="Scree plot of the data",
+                      xlab=paste("Top", length(x$eigenvalues) ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+    graphics::par(new=T)
+    graphics::plot(grid, x$eigenvalues, type="b", pch=19, axes = FALSE, xlab="", ylab="")
+    graphics::axis(1, at=pretty(range(grid)))
+    graphics::axis(side = 4, at = pretty(range(x$eigenvalues)))
+    graphics::mtext("Eigenvalues",side=4,col="black",line=3)
+    oldpar = graphics::par(ask = TRUE)
+    on.exit(graphics::par(oldpar))
+    graphics::plot(x$eigenvalue.ratios,type="b",pch=19,ylab="ratio", ylim=c(min(x$eigenvalue.ratios),max(x$eigenvalue.ratios)),main = paste("Eigenvalue ratio plot:\n", x$nfactors, "factor(s) found"),cex.main=1)
+    graphics::points(x = x$nfactors, max(x$eigenvalue.ratios), col = col,bg = col, pch = 23,cex = 1)
+  }else if(scree.plot == TRUE & ratio.plot==FALSE){
+    plot.args = list(x=seq(1,length(x$eigenvalues)), y=x$proportions, main="Scree plot of the data", xlab=paste("Top", length(x$eigenvalues) ,"principle components", sep=" "),ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+    if (length(new.args)) plot.args[names(new.args)] = new.args
+    do.call("plot", plot.args)
+    }else if(scree.plot == FALSE & ratio.plot==TRUE){
+    plot.args = list(x=seq(1,length(x$eigenvalue.ratios)),y= x$eigenvalue.ratios, ylim=c(min(x$eigenvalue.ratios),max(x$eigenvalue.ratios)), xlab="Index",type="b", main= paste("Eigenvalue ratio plot:\n", x$nfactors, "factor(s) found"),pch=19,ylab="ratio", cex.main=1)
+    if (length(new.args)) plot.args[names(new.args)] = new.args
+    do.call("plot", plot.args)
+    graphics::points(x = x$nfactors, max(x$eigenvalue.ratios), col = col,bg = col, pch = 23,cex = 1)
+ }
+}
+
+###################################################################################
+## Print method for farm.scree
+###################################################################################
+#' Summarize and print the results of the eignevalue ratio test
+#'
+#' Print method for farm.scree objects.
+#' @param x A "farm.scree" object.
+#' @param \dots Further arguments passed to or from other methods.
+#' @return Summarizes the results of the factor-finding step.
+#' @seealso \code{\link{farm.scree}} and \code{\link{plot.farm.scree}}
+#' @examples
+#' set.seed(100)
+#' p = 100
+#' n = 20
+#' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
+#' B = matrix(rnorm(p*3,0,1), nrow=p)
+#' fx = matrix(rnorm(3*n, 0,1), nrow = n)
+#' X = fx%*%t(B)+ epsilon
+#' output = farm.scree(X)
+#' output
+#' @export
+print.farm.scree<-function(x,...){
+  cat("Summary of eigenvalue ratio test\n")
+  cat(paste("  Number of factors found: ",  x$nfactors, "\n", sep = ""))
+  cat(paste("  Proportion of variation explained by the top ", x$nfactors, " principal components: ", paste(round(100*sum(x$proportions[1:x$nfactors]), 2), "%", sep=""),"\n",sep = ""))
 }
 
 ###################################################################################
 ## main function (KNOWN FACTORS)
 ###################################################################################
-farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "less", "greater") , alpha,robust,  ...){
-  alternative <- match.arg(alternative)
+farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha,robust,  ...){
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
@@ -177,13 +302,17 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
     means <- muhatx
     stderr <- sehatx
     loadings = bhatx
+    nfactors  = Kx
+    n = nx
   } else{stat=(muhatx-muhaty-H0)/sqrt(sehatx^2 + sehaty^2)
   means <- list(X.mean = muhatx, Y.mean = muhaty)
   stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
   loadings = list(X.loadings = bhatx, Y.loadings =bhaty)
+  nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+  n = list(X.n = nx,Y.n = ny)
   }
 
-  if (alternative == "less"){
+  if (alternative == "lesser"){
     pvalue = stats::pnorm(stat)
   }
   else if (alternative == "greater"){
@@ -200,19 +329,25 @@ farm.test.known <- function (X, H0, fx,Y  , fy,  alternative = c("two.sided", "l
 
   list(means = means ,  stderr=  stderr,loadings = loadings,
        pvalue = pvalue, rejected  =rejected, alldata   = alldata)
+
+
+  val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
+                      pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
+                      H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "known", significant = NROW(rejected))
+  return(val)
+
 }
 #
 # ###################################################################################
 # ## main function (UNKNOWN FACTORS)
 # ###################################################################################
 
-farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "less", "greater"), alpha,robust, ... ){
+farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha,robust, ... ){
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
   if(min(nx,p)<=4) stop('n and p must be at least 4')
 
-  alternative <- match.arg(alternative)
 
   #for X
   if(robust==TRUE){
@@ -233,7 +368,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
       ratio=append(ratio, values[i+1]/values[i])}
     ratio = ratio[is.finite(ratio)]
     Kx = which.min(ratio)} else {Kx}
-  if(Kx>=min(nx,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+  if(Kx>min(nx,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
   if(Kx>max(nx,p)) stop('Number of factors cannot be larger than n or p')
 
   Bx = matrix(NA, p, Kx)
@@ -278,7 +413,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
         ratio=append(ratio, values[i+1]/values[i])
       ratio = ratio[is.finite(ratio)]
       Ky = which.min(ratio)} else {Ky}
-    if(Ky>=min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+    if(Ky>min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
     if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
 
     By = matrix(NA, p, Ky)
@@ -309,15 +444,17 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
     means <- muhatx - Bx%*%fx
     stderr <- sehatx
     loadings <- Bx
-    nfactors = Kx
+    nfactors=Kx
+    n = nx
   } else{
     stat=(muhatx - Bx%*%fx-muhaty+By%*%fy -H0)/sqrt(sehatx^2 +sehaty^2)
     means <- list(X.mean = muhatx-Bx%*%fx, Y.mean = muhaty-By%*%fy)
     stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
     loadings = list(X.loadings = Bx, Y.loadings = By)
     nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+    n = list(X.n=nx, Y.=ny)
   }
-  if (alternative == "less"){
+  if (alternative == "lesser"){
     pvalue = stats::pnorm((stat))
   }else if (alternative == "greater"){
     pvalue = stats::pnorm((stat) ,lower.tail = FALSE)
@@ -329,9 +466,16 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
 
-  list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
-       pvalue = pvalue, rejected  =rejected, alldata = alldata)
+  val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
+                 pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
+                 H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "unknown",significant = NROW(rejected))
+  return(val)
+
 }
+
+
+
+
 
 
 # ################# #################
@@ -343,19 +487,18 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
 #' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
-#' @param show.plot a TRUE/FALSE indicating whether to show the resulting plots. Default is TRUE.
+#' @param show.plot a TRUE/FALSE indicating whether to show the resulting plots. Default is FALSE.
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
-#' @details User has to hit <Return> to see the second plot.
-#' @details All the data used in the plots are output as a list.
-#' @return
-#' Two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
-#' @return A list with the data used for the plots:
+#' @details If \code{show.plots=TRUE}, plots are output and user has to hit <Return> to see the second plot. Alternatively, one may use the plot method for this class.
+#' @return An object with S3 class \code{farm.scree} containing:
 #' \itemize{
 #'  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
 #'  \item{\code{proportions} }{Proportion of variance explained by the principal components}
 #'  \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
 #'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
 #' }
+#' @return If \code{show.plots=TRUE} function returns two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
+#' @seealso \code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}
 #' @examples
 #' set.seed(100)
 #' p = 100
@@ -368,7 +511,7 @@ farm.test.unknown <- function (X, H0,Kx, Y, Ky,  alternative = c("two.sided", "l
 #'
 #' @references Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 #' @export
-farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, show.plot=TRUE){
+farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, show.plot=FALSE){
   X = t(X)
   n = NCOL(X)
   p = NROW(X)
@@ -389,27 +532,30 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, sho
   }
   props = eig / sum(eig)
   if(show.plot){
-  graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
-  #plot first n eigenvalues
-  grid =seq(1,K.scree)
-  graphics::barplot(props[1:K.scree], main="Scree plot of the data",
-                    xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
-  graphics::par(new=T)
-  graphics::plot(grid, eig[1:K.scree], type="b", pch=19, axes = FALSE, xlab="", ylab="")
-  graphics::axis(1, at=pretty(range(grid)))
-  graphics::axis(side = 4, at = pretty(range(eig[1:K.scree])))
-  graphics::mtext("Eigenvalues",side=4,col="black",line=3)
-  oldpar = graphics::par(ask = TRUE)
-  on.exit(graphics::par(oldpar))}
+    graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
+    #plot first n eigenvalues
+    grid =seq(1,K.scree)
+    graphics::barplot(props[1:K.scree], main="Scree plot of the data",
+                      xlab=paste("Top", K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+    graphics::par(new=T)
+    graphics::plot(grid, eig[1:K.scree], type="b", pch=19, axes = FALSE, xlab="", ylab="")
+    graphics::axis(1, at=pretty(range(grid)))
+    graphics::axis(side = 4, at = pretty(range(eig[1:K.scree])))
+    graphics::mtext("Eigenvalues",side=4,col="black",line=3)
+    oldpar = graphics::par(ask = TRUE)
+    on.exit(graphics::par(oldpar))}
   #eigenvalue ratio test
   ratio=c()
   for(i in 1:K.factors)
     ratio=append(ratio, eig[i]/eig[i+1])
   ratio = ratio[is.finite(ratio)]
   if(show.plot){
-  graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
-  graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)}
-  list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+    graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
+    graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)}
+  value   =list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+
+  attr(value, "class") <- "farm.scree"
+  value
 }
 
 # ################# rejections using storeys method#################
@@ -560,7 +706,7 @@ farm.cov <- function (X){
   n = NCOL(X)
   muhatx = mu_robust( matrix(X, p, n))
   covhat = Cov_Huber(matrix((X),p,n), muhatx)
-return(covhat)
+  return(covhat)
 }
 
 #################### huber mean calculation ##############################################
@@ -587,3 +733,4 @@ farm.mean <- function (X){
   muhat = mu_robust(matrix(X,p,n))
   return(muhat)
 }
+

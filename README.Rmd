@@ -71,7 +71,6 @@ There are five functions available.
 * `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated. 
 * `farm.mean`: Multivariate mean estimation with Huber's loss.
 * `farm.cov`: Multivariate covariance estimation with Huber's loss. 
-* `farm.loadings`: Given the output to the farm.scree function, outputs the factor loadings.
 
 ## Simple hypothesis testing example 
 
@@ -88,11 +87,13 @@ fx = matrix(rnorm(3*n, 0,1), nrow = n)
 mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
-farm.test(X)
+output = farm.test(X)
+output
 ```
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
 ```{r}
 output = farm.test(X, alpha = 0.01,alternative = "greater")
+output
 names(output)
 print(output$rejected)
 hist(output$means, 10, main = "Estimated Means", xlab = "")
@@ -102,7 +103,7 @@ hist(output$means, 10, main = "Estimated Means", xlab = "")
 
 The function ``farm.scree`` makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test. 
 ```{r}
-output = farm.scree(X, K.factors = 15, K.scree = 10)
+output = farm.scree(X, K.factors = 15, K.scree = 10, show.plot = TRUE)
 ```
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples. 
@@ -116,7 +117,11 @@ pval = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pval)
 output$rejected
 ```
-
+Finally let us calculate the mean and variance of our dataset. 
+``` {r}
+muhat = farm.mean(X)
+covhat = farm.cov(X)
+```
 
 ## Notes 
 

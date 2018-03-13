@@ -15,15 +15,17 @@ mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
 output = farm.test(X)
+output
 
 ## ------------------------------------------------------------------------
 output = farm.test(X, alpha = 0.01,alternative = "greater")
+output
 names(output)
 print(output$rejected)
 hist(output$means, 10, main = "Estimated Means", xlab = "")
 
 ## ------------------------------------------------------------------------
-output = farm.scree(X, K.factors = 15, K.scree = 10)
+output = farm.scree(X, K.factors = 15, K.scree = 10, show.plot = TRUE)
 
 ## ------------------------------------------------------------------------
 set.seed(100)
@@ -31,4 +33,8 @@ Y = matrix(rnorm(1000, 0, 1),100)
 pvalues = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pvalues)
 output$rejected
+
+## ------------------------------------------------------------------------
+muhat = farm.mean(X)
+covhat = farm.cov(X)
 

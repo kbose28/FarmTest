@@ -70,15 +70,34 @@ mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
 output = farm.test(X)
+output
+#> 
+#>  One Sample Robust Test with Unknown Factors
+#> 
+#> p = 100, n = 20, nfactors = 3
+#> FDR to be controlled at: 0.05
+#> alternative hypothesis: two.sided
+#> hypotheses rejected:
+#>  7
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
 
 ``` r
 output = farm.test(X, alpha = 0.01,alternative = "greater")
+output
+#> 
+#>  One Sample Robust Test with Unknown Factors
+#> 
+#> p = 100, n = 20, nfactors = 3
+#> FDR to be controlled at: 0.01
+#> alternative hypothesis: greater
+#> hypotheses rejected:
+#>  5
 names(output)
-#>  [1] "X"           "X.means"     "X.stderr"    "X.loadings"  "X.nfactors" 
-#>  [6] "pvalue"      "rejected"    "alldata"     "alpha"       "alternative"
+#>  [1] "means"       "stderr"      "loadings"    "nfactors"    "pvalue"     
+#>  [6] "rejected"    "alldata"     "alternative" "H0"          "robust"     
+#> [11] "n"           "p"           "alpha"       "type"        "significant"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
 #> [1,]     4 9.385803e-25    9.385803e-23
@@ -86,7 +105,7 @@ print(output$rejected)
 #> [3,]     2 4.365903e-17    1.455301e-15
 #> [4,]     5 2.583264e-11    6.458161e-10
 #> [5,]     3 3.304799e-11    6.609598e-10
-hist(output$X.means, 10, main = "Estimated Means", xlab = "")
+hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
 ![](README-unnamed-chunk-3-1.png)
@@ -97,9 +116,10 @@ Other functions
 The function `farm.scree` makes some informative plots. It is possible to specify the maximum number of factors to be considered and the maximum number of eigenvalues to be calculated in this function. We recommend min(n,p)/2 as a conservative threshold for the number of factors; this also prevents numerical inconsistencies like extremely small eigenvalues which can blow up the eigenvalue ratio test.
 
 ``` r
-output = farm.scree(X, K.factors = 15, K.scree = 10)
-#> Warning in farm.scree(X, K.factors = 15, K.scree = 10): Number of factors
-#> supplied is > min(n,p)/2. May cause numerical inconsistencies
+output = farm.scree(X, K.factors = 15, K.scree = 10, show.plot = TRUE)
+#> Warning in farm.scree(X, K.factors = 15, K.scree = 10, show.plot =
+#> TRUE): Number of factors supplied is > min(n,p)/2. May cause numerical
+#> inconsistencies
 ```
 
 ![](README-unnamed-chunk-4-1.png)![](README-unnamed-chunk-4-2.png)
@@ -115,6 +135,13 @@ pval = apply(Y, 1, function(x) t.test(x)$p.value)
 output = farm.FDR(pval)
 output$rejected
 #> [1] "no hypotheses rejected"
+```
+
+Finally let us calculate the mean and variance of our dataset.
+
+``` r
+muhat = farm.mean(X)
+covhat = farm.cov(X)
 ```
 
 Notes

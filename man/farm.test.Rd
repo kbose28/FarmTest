@@ -5,8 +5,8 @@
 \title{Main function performing factor-adjusted robust test for means}
 \usage{
 farm.test(X, H0 = NULL, fx = NULL, Kx = NULL, Y = NULL, fy = NULL,
-  Ky = NULL, alternative = c("two.sided", "less", "greater"),
-  alpha = NULL, robust = TRUE, verbose = TRUE, ...)
+  Ky = NULL, alternative = c("two.sided", "lesser", "greater"),
+  alpha = NULL, robust = TRUE, ...)
 }
 \arguments{
 \item{X}{a n x p data matrix with each row being a sample.
@@ -24,25 +24,25 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{Ky}{a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.}
 
-\item{alternative}{an \emph{optional} character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.}
+\item{alternative}{an \emph{optional} character string specifying the alternate hypothesis, must be one of "two.sided" (default), "greater" or "lesser". You can specify just the initial letter.}
 
 \item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
 \item{robust}{a TRUE/FALSE indicating whether to use robust estimates of paramters and robust regression. Default is TRUE.}
 
-\item{verbose}{a TRUE/FALSE indicating whether to print summary of the run to console. Default is TRUE.}
-
 \item{\dots}{Arguments passed to the \code{\link{farm.FDR}} function.}
 }
 \value{
-A list with the following items
-\item{means}{the vector of estimated means}
-\item{stderr}{the p x 1 vector of estimated standard errors}
-\item{pvalue}{the p x 1 vector of unadjusted p values}
+An object with S3 class \code{farm.test} containing:
+\item{means}{estimated means}
+\item{stderr}{estimated standard errors}
+\item{pvalue}{unadjusted p values}
 \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
 \item{loadings}{estimated factor loadings}
-\item{nfactors}{if needed, the number of estimated factors}
+\item{nfactors}{the number of (estimated) factors}
+\item{significant}{the number of means that are found significant}
+\item{\dots}{further arguments passed to methods. For complete list use the function \code{\link{names}} on the output object}
 }
 \description{
 This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
@@ -52,6 +52,10 @@ It uses the Huber's loss function (Huber (1964)) to robustly estimate data param
 \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
 
 If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
+
+Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
+
+For two-sample test, the output values \code{means}, \code{stderr}, \code{n}, \code{nfactors},\code{loadings} are all lists containing two items, each pertaining to \code{X} and \code{Y}, indicated by a prefix \code{X.} and \code{Y.} respectively.
 
 Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
@@ -73,4 +77,7 @@ output = farm.test(X, alpha = 0.01,alternative = "greater")
 }
 \references{
 Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+}
+\seealso{
+\code{\link{farm.FDR}}, \code{\link{print.farm.test}}
 }
