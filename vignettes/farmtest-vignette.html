@@ -12,7 +12,7 @@
 
 <meta name="author" content="Koushiki Bose" />
 
-<meta name="date" content="2018-03-13" />
+<meta name="date" content="2018-03-14" />
 
 <title>FarmTest: Factor Adjusted Robust Multiple Testing</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">FarmTest: Factor Adjusted Robust Multiple Testing</h1>
 <h4 class="author"><em>Koushiki Bose</em></h4>
-<h4 class="date"><em>2018-03-13</em></h4>
+<h4 class="date"><em>2018-03-14</em></h4>
 
 
 
@@ -108,9 +108,9 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <h2>Functions</h2>
 <p>There are five functions available.</p>
 <ul>
-<li><code>farm.test</code>: The main function which carries out the entire hypothesis testing procedure.</li>
+<li><code>farm.test</code>: The main function which carries out the entire hypothesis testing procedure. Has a print method.</li>
 <li><code>farm.FDR</code>: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in <span class="citation">(Storey 2015)</span>.</li>
-<li><code>farm.scree</code>: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated.</li>
+<li><code>farm.scree</code>: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated. Has a print and plot method.</li>
 <li><code>farm.mean</code>: Multivariate mean estimation with Huber’s loss.</li>
 <li><code>farm.cov</code>: Multivariate covariance estimation with Huber’s loss.</li>
 </ul>

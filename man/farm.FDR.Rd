@@ -26,6 +26,7 @@ farm.FDR(pvalue, alpha = NULL, type = c("mBH", "BH"), lambda = seq(0.05,
 \value{
 \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
+\item{significant}{The number of hypotheses rejected}
 }
 \description{
 Given a list of p-values, this function conducts multiple testing and outputs the indices of the rejected hypothesis. Uses an adaptive Benjamini-Hochberg (BH) procedure where the proportion of true nulls \eqn{\pi_0} is estimated.

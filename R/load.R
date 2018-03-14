@@ -70,6 +70,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
   #error checking
   if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
   if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
+
   if (!is.null(fx)){
     if(NROW(fx)!=NROW(X)) stop('number of rows in factor matrix should be the same as data matrix')
     if(!is.null(Y)){
@@ -79,6 +80,7 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
       }
     }else{
     if(!is.null(Y)){
+      if(!is.null(fy)) stop('must provide factors for either both or neither data matrices')
       if(NCOL(X)!=NCOL(Y)) stop('number of rows in both data matrices must be the same')
       }
     }
@@ -326,14 +328,11 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
   rejected.alldata = farm.FDR(pvalue, alpha, ...)
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
-
-  list(means = means ,  stderr=  stderr,loadings = loadings,
-       pvalue = pvalue, rejected  =rejected, alldata   = alldata)
-
+  significant= rejected.alldata$significant
 
   val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
                       pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
-                      H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "known", significant = NROW(rejected))
+                      H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "known", significant = significant)
   return(val)
 
 }
@@ -452,7 +451,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
     stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
     loadings = list(X.loadings = Bx, Y.loadings = By)
     nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
-    n = list(X.n=nx, Y.=ny)
+    n = list(X.n=nx, Y.n=ny)
   }
   if (alternative == "lesser"){
     pvalue = stats::pnorm((stat))
@@ -465,10 +464,12 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
   rejected.alldata = farm.FDR(pvalue, alpha, ...)
   alldata = rejected.alldata$alldata
   rejected = rejected.alldata$rejected
+  significant= rejected.alldata$significant
+
 
   val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
                  pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
-                 H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "unknown",significant = NROW(rejected))
+                 H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "unknown",significant = significant)
   return(val)
 
 }
@@ -573,6 +574,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, sho
 #' @return
 #' \item{rejected}{the indices of rejected hypotheses, along with their corresponding p values, and adjusted p values, ordered from most significant to least significant}
 #' \item{alldata}{all the indices of the tested hypotheses, along with their corresponding p values, adjusted p values, and a column with 1 if declared siginificant and 0 if not}
+#' \item{significant}{The number of hypotheses rejected}
 #' @details The "mBH" procedure is simply the regular Benjamini-Hochberg pocedure, but in the rejection threshold the denominator \eqn{p} is replaced by  \eqn{\pi_0 * p}. This is a less conservative approach. See Storey (2002).
 #' @examples
 #' set.seed(100)
@@ -621,7 +623,7 @@ farm.FDR<- function(pvalue, alpha= NULL , type = c("mBH", "BH"),lambda = seq(0.0
 
   }
 
-  list(rejected = rejected , alldata = alldata)
+  list(rejected = rejected , alldata = alldata, significant = NROW(rejected))
 }
 
 mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother", "bootstrap"),
@@ -733,4 +735,5 @@ farm.mean <- function (X){
   muhat = mu_robust(matrix(X,p,n))
   return(muhat)
 }
+
 

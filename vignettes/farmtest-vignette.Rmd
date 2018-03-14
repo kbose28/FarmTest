@@ -58,9 +58,9 @@ Help on the functions can be accessed by typing "?", followed by function name a
 
 There are five functions available. 
 
-* `farm.test`: The main function which carries out the entire hypothesis testing procedure. 
+* `farm.test`: The main function which carries out the entire hypothesis testing procedure. Has a print method.
 * `farm.FDR`: Apply FDR control to a list of input p-values. This function rejects hypotheses based on a modified Benjamini- Hochberg procedure, where the proportion of true nulls is estimated using the method in [@storey2015].
-* `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated. 
+* `farm.scree`: Estimate the number of factors if it is unknown. The farm.scree function also generates two plots to illustrate how the number of latent factors is calculated. Has a print and plot method. 
 * `farm.mean`: Multivariate mean estimation with Huber's loss.
 * `farm.cov`: Multivariate covariance estimation with Huber's loss. 
 
