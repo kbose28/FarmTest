@@ -6,7 +6,7 @@
 \usage{
 farm.test(X, H0 = NULL, fx = NULL, Kx = NULL, Y = NULL, fy = NULL,
   Ky = NULL, alternative = c("two.sided", "lesser", "greater"),
-  alpha = NULL, robust = TRUE, ...)
+  alpha = NULL, robust.cov = TRUE, robust.mean = TRUE, ...)
 }
 \arguments{
 \item{X}{a n x p data matrix with each row being a sample.
@@ -28,7 +28,9 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
-\item{robust}{a TRUE/FALSE indicating whether to use robust estimates of paramters and robust regression. Default is TRUE.}
+\item{robust.cov}{a TRUE/FALSE indicating whether to use robust estimates of covariance matrix. Default is TRUE.}
+
+\item{robust.mean}{a TRUE/FALSE indicating whether to use robust estimates of mean. Default is TRUE.}
 
 \item{\dots}{Arguments passed to the \code{\link{farm.FDR}} function.}
 }
