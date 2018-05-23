@@ -41,12 +41,28 @@ mu_robust <- function(X) {
     .Call('_FarmTest_mu_robust', PACKAGE = 'FarmTest', X)
 }
 
+mu_robust_noCV <- function(X, tau) {
+    .Call('_FarmTest_mu_robust_noCV', PACKAGE = 'FarmTest', X, tau)
+}
+
 mu_robust_F <- function(X, phi) {
     .Call('_FarmTest_mu_robust_F', PACKAGE = 'FarmTest', X, phi)
 }
 
+mu_robust_F_noCV <- function(X, phi, tau) {
+    .Call('_FarmTest_mu_robust_F_noCV', PACKAGE = 'FarmTest', X, phi, tau)
+}
+
 Cov_Huber <- function(X, mu_hat) {
     .Call('_FarmTest_Cov_Huber', PACKAGE = 'FarmTest', X, mu_hat)
+}
+
+Cov_Huber_tune <- function(X, tau) {
+    .Call('_FarmTest_Cov_Huber_tune', PACKAGE = 'FarmTest', X, tau)
+}
+
+Cov_Huber_noCV <- function(X, mu_hat, tau) {
+    .Call('_FarmTest_Cov_Huber_noCV', PACKAGE = 'FarmTest', X, mu_hat, tau)
 }
 
 Eigen_Decomp <- function(M) {
@@ -59,5 +75,9 @@ Loading_Sample <- function(K, M) {
 
 Loading_Robust <- function(K, M) {
     .Call('_FarmTest_Loading_Robust', PACKAGE = 'FarmTest', K, M)
+}
+
+Cov_U <- function(C_tau, X) {
+    .Call('_FarmTest_Cov_U', PACKAGE = 'FarmTest', C_tau, X)
 }
 

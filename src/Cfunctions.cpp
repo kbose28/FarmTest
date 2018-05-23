@@ -97,7 +97,7 @@ float Robust_CV (arma::mat Vi, arma::mat Vj)
 {
   using namespace arma;
   int i,k,T, T_vali=0;
-  float Z=0, Z_hat=0, MSE_vali, MSE_small, ct_o=5, ct, range;;
+  float Z=0, Z_hat=0, MSE_vali, MSE_small, ct_o=5, ct, range;
 
 
   //mat vx;        vx=;
@@ -392,6 +392,42 @@ arma::mat mu_robust(arma::mat X)
 
 }
 
+
+///////////////////////////////////////////////////////////////////////////
+//            Robust estimate of mu: no cross validation                               //
+//////////////////////////////////////////////////////////////////////////
+
+//Input: Data matrix X
+//Output: Estimated mean mu_hat
+// [[Rcpp::export]]
+arma::mat mu_robust_noCV(arma::mat X, arma::mat tau)
+{
+  using namespace arma;
+  int i, P, N;
+  //Initial value of Huber descent
+  P=X.n_rows;    N=X.n_cols;
+  float tau_select;
+
+  float Z=0.5;
+
+
+  mat Xi;
+  mat mu_hat; mu_hat.zeros(P);
+  mat mu_one; mu_one.ones(N);
+
+
+  for(i=0;i<P;i++){
+    Rcpp::checkUserInterrupt();
+    Xi=X.row(i);
+    tau_select  = tau(i);
+    mu_hat(i)=Huber_descent (Xi, mu_one, Z,tau_select);
+
+  }
+
+
+  return mu_hat;
+
+}
 ///////////////////////////////////////////////////////////////////////////
 //            Robust estimate of mu and factor coefficients              //
 //////////////////////////////////////////////////////////////////////////
@@ -421,6 +457,39 @@ arma::mat mu_robust_F(arma::mat X, arma::mat phi)
    mu_hat.col(i)=Huber_descent_F(Xi, phi, F_H_0, Tau);
   }
  return mu_hat;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+//            Robust estimate of mu and factor coefficients: no CV        //
+//////////////////////////////////////////////////////////////////////////
+
+//Input: Data matrix X
+//Output: Estimated mean mu_hat
+// [[Rcpp::export]]
+arma::mat mu_robust_F_noCV(arma::mat X, arma::mat phi,arma::mat tau)
+{
+  using namespace arma;
+  int i, P, K;
+  //Initial value of Huber descent
+  P=X.n_rows;
+  K=phi.n_cols;
+  //The order of Tau see Theorem 2.7
+  float tau_select;
+  mat F_H_0; F_H_0.ones(K);
+
+  mat Xi;
+  mat mu_hat; mu_hat.zeros(K,P);
+
+  for(i=0;i<P;i++){
+    Rcpp::checkUserInterrupt();
+    Xi=X.row(i);
+    F_H_0=solve(phi,trans(Xi));
+    tau_select  = tau(i);
+    mu_hat.col(i)=Huber_descent_F(Xi, phi, F_H_0, tau_select);
+  }
+  return mu_hat;
 
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -454,6 +523,81 @@ arma::mat Cov_Huber(arma::mat X, arma::mat mu_hat)
       Tau= Robust_CV (Xi,Xj);
       //printf("\n (%d, %d) th CT= %f", i,j,CT);
       Sigma_hat(i,j)=Huber_descent (Xi, Xj, Z, Tau);
+      Sigma_hat(i,j)-=mu_hat(i)*mu_hat(j);
+      Sigma_hat(j,i)=Sigma_hat(i,j);
+    }
+  }
+
+
+  return Sigma_hat;
+
+}
+
+
+//Output: Estimated tuning parameter for covriance matrix
+// [[Rcpp::export]]
+arma::mat Cov_Huber_tune( arma::mat X, float tau)
+{
+  using namespace arma;
+  int i, j, P=X.n_rows, N=X.n_cols;
+
+  //Tuning parameter
+  float tautemp;
+
+  //Define the matrices
+  mat Xi, Xj;
+  mat CT; CT.zeros(P,P);
+  mat Z; Z.ones(N);
+  mat sd;
+
+  // Entry-wise Huber method
+  for(i=0;i<P;i++){
+    Rcpp::checkUserInterrupt();
+    for(j=0;j<=i;j++){
+      Xi=X.row(i); Xj=X.row(j);
+      Z = Xi%Xj;
+      sd = arma::stddev(Z,1,1);
+      tautemp  = N/log(static_cast<double>((P^2)*N));
+      CT(i,j) = tau*sd(0,0)*sqrt(static_cast<double>(tautemp));
+      //cout << CT(i,j);
+      CT(j,i)=CT(i,j);
+    }
+  }
+
+  return CT;
+
+}
+
+///////////////////////////////////////////////////////////////////////////
+//       Entry-wise Huber robust eatimaiton of covariance matrix   : noCV     //
+//////////////////////////////////////////////////////////////////////////
+//Input: Data matrix X, estimated mean mu_hat
+//Output: Estimated cov matrix Sigma_hat
+// [[Rcpp::export]]
+arma::mat Cov_Huber_noCV(arma::mat X, arma::mat mu_hat, arma::mat tau)
+{
+  using namespace arma;
+  int i, j, P=X.n_rows;
+
+  //Initial value of Huber descent
+  float Z=0.5;
+
+  //Tuning parameter
+  float tau_select;
+
+  //Define the matrices
+  mat Xi, Xj;
+  mat Sigma_hat; Sigma_hat.zeros(P,P);
+
+
+  //Entry-wise Huber method
+  for(i=0;i<P;i++){
+    Rcpp::checkUserInterrupt();
+    for(j=0;j<=i;j++){
+      Xi=X.row(i); Xj=X.row(j);
+      tau_select = tau(i,j);
+      //printf("\n (%d, %d) th CT= %f", i,j,CT);
+      Sigma_hat(i,j)=Huber_descent(Xi, Xj, Z, tau_select);
       Sigma_hat(i,j)-=mu_hat(i)*mu_hat(j);
       Sigma_hat(j,i)=Sigma_hat(i,j);
     }
@@ -556,4 +700,42 @@ arma::mat Loading_Robust(int K, arma::mat M)
 
 
 
+
+///////////////////////////////////////////////////////////////////////////
+//            U-type robust eatimaiton of covariance matrix             //
+//////////////////////////////////////////////////////////////////////////
+
+//Input: Data matrix X and tuning parameter Tau
+//Output: Estimated cov matrix Sigma_U
+// [[Rcpp::export]]
+arma::mat Cov_U(float C_tau, arma::mat X)
+{
+  using namespace arma;
+  int i, j, P=X.n_rows, N=X.n_cols;
+  float v1=0, v2=0, v3=0;
+  float Tau=C_tau*P*sqrt(N/log(N));
+  //Define the matrices
+  mat A, B;
+  mat Sigma_U; Sigma_U.zeros(P,P);
+
+
+  //U-type COV estimate method
+  for(i=1;i<N;i++){
+    for(j=0;j<i;j++){
+      A=X.col(j)-X.col(i);
+      B=A*A.t();
+      v1=as_scalar(A.t()*A);
+      v2=v1/2;
+      if(v2>Tau)v2=Tau;
+      v3=v2/v1/2;
+      Sigma_U+=v3*B;
+    }
+  }
+
+  Sigma_U=Sigma_U/N/(N-1);
+
+
+  return Sigma_U;
+
+}
 

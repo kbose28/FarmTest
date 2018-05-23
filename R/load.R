@@ -5,7 +5,7 @@
 #' @import utils
 #' @import grDevices
 #' @import stats
-
+#' @importFrom fBasics rowSds
 NULL
 ###################################################################################
 ## This is the main function that conducts the statistical test given the data
@@ -18,14 +18,16 @@ NULL
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
 #' @param H0 an \emph{optional} p x 1 vector of the true value of the means (or difference in means if you are performing a two sample test). The default is the zero.
 #' @param fx an \emph{optional} factor matrix with each column being a factor for \code{X}. Same number of rows as \code{X}.
-#' @param Kx a \emph{optional} number of factors to be estimated for \code{X}. Otherwise estimated internally.
+#' @param Kx a \emph{optional} number of factors to be estimated for \code{X}. Otherwise estimated internally. Kx>=0
 #' @param Y an \emph{optional} data matrix that must have the same number of columns as \code{X}. You wish test the equality of means of each columns of \code{X} and \code{Y}.
 #' @param fy an \emph{optional} factor matrix with each column being a factor for \code{Y}.  Same number of rows as \code{Y}. Only used for a two sample test.
 #' @param Ky a \emph{optional} number of factors to be estimated for \code{Y}. Otherwise estimated internally.
 #' @param alternative	an \emph{optional} character string specifying the alternate hypothesis, must be one of "two.sided" (default), "greater" or "lesser". You can specify just the initial letter.
 #' @param alpha an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.
-#' @param robust.cov a TRUE/FALSE indicating whether to use robust estimates of covariance matrix. Default is TRUE.
-#' @param robust.mean a TRUE/FALSE indicating whether to use robust estimates of mean. Default is TRUE.
+#' @param robust a boolean, specifying whether or not to use robust estimators for mean and variance. Default is TRUE.
+#' @param cv a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE. Only used if \code{robust} is TRUE.
+#' @param tau \code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{robust} is TRUE and \code{cv} is FALSE. See details.
+#' @param verbose a boolean specifying whether to print runtime updates to the console. Default is TRUE.
 #' @param \dots Arguments passed to the \code{\link{farm.FDR}} function.
 #' @return An object with S3 class \code{farm.test} containing:
 #' \item{means}{estimated means}
@@ -39,35 +41,47 @@ NULL
 #' \item{\dots}{further arguments passed to methods. For complete list use the function \code{\link{names}} on the output object}
 #' @details
 #' \code{alternative = "greater"} is the alternative that \code{X} has a larger mean than \code{Y}.
-#' @details
-#' If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
-#' @details
-#' Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
+#' @details If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 #' @details For two-sample test, the output values \code{means}, \code{stderr}, \code{n}, \code{nfactors},\code{loadings} are all lists containing two items, each pertaining to \code{X} and \code{Y}, indicated by a prefix \code{X.} and \code{Y.} respectively.
 #' @details Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 #' @details For details about multiple comparison correction, see \code{\link{farm.FDR}}.
+#' @details The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal rate } is the optimal rate for the tuning parameter. For details, see Fan et al.(2017). \code{sigma} is the standard deviation of the data.
 #' @seealso \code{\link{farm.FDR}}, \code{\link{print.farm.test}}
 #' @examples
 #' set.seed(100)
-#' p = 20
-#' n = 10
+#' p = 100
+#' n = 50
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
-#' B = matrix(rnorm(p,0,1), nrow=p)
-#' fx = matrix(rnorm(n, 0,1), nrow = n)
+#' B = matrix(runif(p*3,-2,2), nrow=p)
+#' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' mu = rep(0, p)
 #' mu[1:5] = 2
 #' X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
-#' output1 = farm.test(X)
-#' output = farm.test(X, alpha = 0.01,alternative = "greater")
+#' output = farm.test(X, cv=FALSE)#robust, no cross-validation
+#' output
+#'
+#' #other robustification options
+#' output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
+#' output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+#' #output = farm.test(X) #robust, cross-validation, longer running
+#'
+#' #two sample test
+#' n2 = 25
+#' epsilon = matrix(rnorm( p*n2, 0,1), nrow = n2)
+#' B = matrix(rnorm(p*3,0,1), nrow=p)
+#' fy = matrix(rnorm(3*n2, 0,1), nrow = n2)
+#' Y = fy%*%t(B)+ epsilon
+#' output = farm.test(X=X,Y=Y, robust=FALSE)
+#' names(output$means)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "lesser", "greater"),  alpha=NULL ,robust.cov = TRUE,robust.mean=TRUE,...){
+farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "lesser", "greater"),  alpha=NULL ,robust=TRUE,cv = TRUE, tau=2,verbose = FALSE,...){
   p = NCOL(X)
   alternative <- match.arg(alternative)
   H0 <- if(is.null(H0)) rep(0,p ) else H0
   alpha <- if(is.null(alpha)) 0.05 else alpha
-
+  if(tau<=0) stop('tau should be a positive number')
   #error checking
   if(length(H0)!=p) stop('number of hypotheses should be the same as dimension of the data')
   if(alpha>=1 || alpha <=0) stop('alpha should be between 0 and 1')
@@ -86,8 +100,8 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
       }
     }
   #call main function
-  if(!is.null(fx)){output = farm.testknown (X, H0, fx,Y = Y , fy= fy,  alternative  =alternative, alpha=alpha,robust.cov = robust.cov,robust.mean = robust.mean,...)}
-  else{output=farm.testunknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative=alternative, alpha=alpha, robust.cov = robust.cov,robust.mean= robust.mean,...)}
+  if(!is.null(fx)){output = farm.testknown (X, H0, fx,Y = Y , fy= fy,  alternative  =alternative, alpha=alpha,robust, cv, tau,verbose=verbose,...)}
+  else{output=farm.testunknown (X, H0, Kx = Kx, Y=Y, Ky = Ky, alternative=alternative, alpha=alpha,robust, cv, tau,verbose=verbose,...)}
   value = (output)
   attr(value, "class") <- "farm.test"
   value
@@ -176,8 +190,8 @@ print.farm.test<-function(x,...){
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
 #' output = farm.scree(X)
-#' plot(output)
-#' plot(output, ratio.plot=FALSE, main="My Title")
+#' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
+#'
 #' @export
 plot.farm.scree<-function(x, scree.plot=TRUE, ratio.plot=TRUE, col="red", ...){
 
@@ -240,27 +254,34 @@ print.farm.scree<-function(x,...){
 ###################################################################################
 ## main function (KNOWN FACTORS)
 ###################################################################################
-farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha,robust.cov, robust.mean,  ...){
+farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha,robust, cv, tau, verbose,...){
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
   Zx <- cbind(matrix(1, nx, 1) , fx)
   Kx = NCOL(Zx)
-  if(robust.mean==TRUE){
+  if(robust==TRUE){
+    if(cv==TRUE){
     coefx = mu_robust_F(matrix(X, p, nx), matrix(Zx, nx, Kx))
     muhatx = coefx[1,]
     bhatx = coefx[-1,]
+    thetax = mu_robust(matrix(X^2, p, nx))
+    }else{olsres = apply(X, 1, function(x) lm(x~Zx-1)$residuals)
+    CT = tau*rowSds(t(olsres))*sqrt(nx/log(p*nx))
+      coefx = mu_robust_F_noCV(matrix(X, p, nx), matrix(Zx, nx, Kx), matrix(CT, p,1) )
+      muhatx = coefx[1,]
+      bhatx = coefx[-1,]
+      CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+      thetax = mu_robust_noCV(matrix(X^2, p, nx), matrix(CT, p,1))
+    }
   }else{
     coefx= apply((X), 1, function(x) lm(x~Zx-1)$coefficients)
     muhatx = coefx[1,]
     bhatx = coefx[-1,]
-  }
-
-  if(robust.cov==TRUE){
-    thetax = mu_robust(matrix(X^2, p, nx))
-  }else{
     thetax = rowMeans(X^2)
   }
+
+
   varhatx=NULL
   if(is.null( dim(bhatx))){for (j in 1:p){rvar = (thetax[j] - muhatx[j]^2)*(thetax[j] >muhatx[j]^2)+ (thetax[j])*(thetax[j]<=muhatx[j]^2)
   varf = bhatx[j] %*% stats::cov(fx) %*% bhatx[j]
@@ -279,21 +300,29 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
     Zy <- cbind(matrix(1, ny, 1) , fy)
     Ky = NCOL(Zy)
 
-    if(robust.mean==TRUE){
-      coefy= mu_robust_F(matrix(Y, p, ny), matrix(Zy, ny, Ky))
-      muhaty = coefy[1,]
-      bhaty = coefy[-1,]
-    }else{
-      coefy= apply((Y), 1, function(y) lm(y~Zy-1)$coefficients)
-      muhaty = coefy[1,]
-      bhaty = coefy[-1,]
-    }
 
-    if(robust.cov==TRUE){
-      thetay = mu_robust(matrix(Y^2, p, ny))
+    if(robust==TRUE){
+      if(cv==TRUE){
+        coefy = mu_robust_F(matrix(Y, p, ny), matrix(Zy, ny, Ky))
+        muhaty = coefy[1,]
+        bhaty = coefy[-1,]
+        thetay = mu_robust(matrix(Y^2, p, ny))
+      }else{olsres = apply(Y,1, function(x) lm(x~Zy-1)$residuals)
+        CT = tau*rowSds(t(olsres))*sqrt(ny/log(p*ny))
+      coefy = mu_robust_F_noCV(matrix(Y, p, ny), matrix(Zy, ny, Ky), matrix(CT, p,1) )
+      muhaty = coefy[1,]
+      bhaty = coefy[-1,]
+      CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+      thetay = mu_robust_noCV(matrix(Y^2, p, ny), matrix(CT, p,1))
+      }
     }else{
+      coefy= apply((Y), 1, function(x) lm(x~Zy-1)$coefficients)
+      muhaty = coefy[1,]
+      bhaty = coefy[-1,]
       thetay = rowMeans(Y^2)
     }
+
+
     varhaty=NULL
     if(is.null( dim(bhaty))){for (j in 1:p){rvar = (thetay[j] - muhaty[j]^2)*(thetay[j] >muhaty[j]^2)+ (thetay[j])*(thetay[j]<=muhaty[j]^2)
     varf = bhaty[j] %*% stats::cov(fy) %*% bhaty[j]
@@ -313,13 +342,13 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
     means <- muhatx
     stderr <- sehatx
     loadings = bhatx
-    nfactors  = Kx
+    nfactors  = Kx-1
     n = nx
   } else{stat=(muhatx-muhaty-H0)/sqrt(sehatx^2 + sehaty^2)
   means <- list(X.mean = muhatx, Y.mean = muhaty)
   stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
   loadings = list(X.loadings = bhatx, Y.loadings =bhaty)
-  nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+  nfactors = list(X.nfactors= Kx-1, Y.nfactors =Ky-1)
   n = list(X.n = nx,Y.n = ny)
   }
 
@@ -341,7 +370,7 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
 
   val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
                       pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
-                      H0 = H0, robust = max(robust.cov, robust.mean), n = n, p = p, alpha = alpha, type = "known", significant = significant)
+                      H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "known", significant = significant)
   return(val)
 
 }
@@ -350,127 +379,297 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
 # ## main function (UNKNOWN FACTORS)
 # ###################################################################################
 
-farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha,robust.cov, robust.mean, ... ){
+farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha,robust, cv, tau,verbose, ... ){
   X = t(X)
   nx = NCOL(X)
   p = NROW(X)
   if(min(nx,p)<=4) stop('n and p must be at least 4')
 
-
   #for X
-  if(robust.mean==TRUE){
-    muhatx = mu_robust( matrix(X, p, nx))
-  }else{
-    muhatx = rowMeans(X)
-  }
-
-  if(robust.cov==TRUE){
-    covx = Cov_Huber( X, matrix(muhatx, p, 1))
-  }else{
-    covx = cov(t(X))
-  }
-  eigs = Eigen_Decomp( covx)
-  values = eigs[,p+1]
-  vectors = eigs[,1:p]
-  #estimate nfactors
-  values = pmax(values,0)
-  ratio=c()
-  Kx <- if (is.null(Kx)) {
-    for(i in 1:(floor(min(nx,p)/2))){
-      ratio=append(ratio, values[i+1]/values[i])}
-    ratio = ratio[is.finite(ratio)]
-    Kx = which.min(ratio)} else {Kx}
-  if(Kx>min(nx,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
-  if(Kx>max(nx,p)) stop('Number of factors cannot be larger than n or p')
-
-  Bx = matrix(NA, p, Kx)
-  for (k in 1:Kx){
-    Bx[,k] = sqrt(values[k])*vectors[,k]
-  }
-  Bx2 = apply(Bx,1, function(y) sum(y^2))
-  if(robust.cov==TRUE){
-    thetax = mu_robust( matrix(X^2, p, nx))
-  }else{
-    thetax = rowMeans(X^2)
-  }
-
-  varhatx_0 = ( thetax - muhatx^2)* ( thetax > muhatx^2) +(thetax)* ( thetax <=muhatx^2)
-  varhatx = (varhatx_0 - Bx2)* (varhatx_0 > Bx2) +(varhatx_0)* ( varhatx_0 <=Bx2)
-  sehatx = sqrt(varhatx/nx)
-  if(robust.mean == TRUE){
-    fx = mu_robust_F( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
-  }else{
-    fx = coef(lm(rowMeans(X)~Bx-1))
-  }
+  if(!is.null(Kx)){
+    if(Kx==0){
+      if(robust==TRUE){
+        if(cv==TRUE){
+          muhatx = mu_robust( matrix(X, p, nx))
+          thetax = mu_robust( matrix(X^2, p, nx))
+          }else{
+            CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+            muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
+            CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+            thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
+            }
+        }else{
+          muhatx = rowMeans(X)
+          thetax = rowMeans(X^2)
+          }
+      varhatx = ( thetax - muhatx^2)* ( thetax > muhatx^2) +(thetax)* ( thetax <=muhatx^2)
+      sehatx = sqrt(varhatx/nx)
+      }else{
+        if(Kx>min(nx,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+        if(Kx>max(nx,p)) stop('Number of factors cannot be larger than n or p')
+        if(robust==TRUE){
+          if(cv==TRUE){
+            muhatx = mu_robust( matrix(X, p, nx))
+            thetax = mu_robust( matrix(X^2, p, nx))
+            if(verbose){cat("calculating covariance matrix for X...\n")}
+            covx = Cov_Huber( X, matrix(muhatx, p, 1))
+          }else{
+            CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+            muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
+            CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+            thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
+            if(verbose){cat("calculating tuning parameters for X...\n")}
+            CT = Cov_Huber_tune(X, tau)
+            covx =  Cov_Huber_noCV(matrix((X),p,nx), matrix(muhatx, p, 1), matrix(CT,p,p))
+          }
+        }else{
+          muhatx = rowMeans(X)
+          covx = cov(t(X))
+          thetax = rowMeans(X^2)
+        }
+        eigs = Eigen_Decomp( covx)
+        values = eigs[,p+1]
+        vectors = eigs[,1:p]
+        #estimate nfactors
+        values = pmax(values,0)
+        Bx = matrix(NA, p, Kx)
+        for (k in 1:Kx){Bx[,k] = sqrt(values[k])*vectors[,k]}
+        Bx2 = apply(Bx,1, function(y) sum(y^2))
+        varhatx_0 = ( thetax - muhatx^2)* ( thetax > muhatx^2) +(thetax)* ( thetax <=muhatx^2)
+        varhatx = (varhatx_0 - Bx2)* (varhatx_0 > Bx2) +(varhatx_0)* ( varhatx_0 <=Bx2)
+        sehatx = sqrt(varhatx/nx)
+        if(robust == TRUE){
+          if(cv==TRUE){
+            fx = mu_robust_F( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
+          }else{
+            olsres = lm( matrix(rowMeans(X),p, 1) ~  matrix(Bx, p, Kx)-1)$residuals
+            CT = tau*sd(olsres)*sqrt(p/log(nx))
+            fx = mu_robust_F_noCV( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx), matrix(CT, 1,1))
+          }
+        }else{
+          fx = coef(lm(rowMeans(X)~Bx-1))
+          }
+        }
+    }else{
+      if(robust==TRUE){
+        if(cv==TRUE){
+          muhatx = mu_robust( matrix(X, p, nx))
+          thetax = mu_robust( matrix(X^2, p, nx))
+          if(verbose){cat("calculating covariance matrix for X...\n")}
+          covx = Cov_Huber( X, matrix(muhatx, p, 1))
+        }else{
+          CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+          muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
+          CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+          thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
+          if(verbose){cat("calculating tuning parameters for X...\n")}
+          CT = Cov_Huber_tune(X, tau)
+          covx =  Cov_Huber_noCV(matrix((X),p,nx), matrix(muhatx, p, 1), matrix(CT,p,p))
+        }
+      }else{
+        muhatx = rowMeans(X)
+        covx = cov(t(X))
+        thetax = rowMeans(X^2)
+      }
+      eigs = Eigen_Decomp( covx)
+      values = eigs[,p+1]
+      vectors = eigs[,1:p]
+      #estimate nfactors
+      values = pmax(values,0)
+      ratio=c()
+      for(i in 1:(floor(min(nx,p)/2))){ratio=append(ratio, values[i+1]/values[i])}
+      ratio = ratio[is.finite(ratio)]
+      Kx = which.min(ratio)
+      Bx = matrix(NA, p, Kx)
+      for (k in 1:Kx){Bx[,k] = sqrt(values[k])*vectors[,k]}
+      Bx2 = apply(Bx,1, function(y) sum(y^2))
+      varhatx_0 = ( thetax - muhatx^2)* ( thetax > muhatx^2) +(thetax)* ( thetax <=muhatx^2)
+      varhatx = (varhatx_0 - Bx2)* (varhatx_0 > Bx2) +(varhatx_0)* ( varhatx_0 <=Bx2)
+      sehatx = sqrt(varhatx/nx)
+      if(robust == TRUE){
+        if(cv==TRUE){
+          fx = mu_robust_F( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx))
+        }else{
+          olsres = lm( matrix(rowMeans(X),p, 1) ~  matrix(Bx, p, Kx)-1)$residuals
+          CT = tau*sd(olsres)*sqrt(p/log(nx))
+          fx = mu_robust_F_noCV( matrix(rowMeans(X),1, p), matrix(Bx, p, Kx), matrix(CT, 1,1))
+        }
+      }else{
+        fx = coef(lm(rowMeans(X)~Bx-1))
+      }
+    }
 
   #for Y
   if (!is.null(Y)){
     Y = t(Y)
     ny = NCOL(Y)
     if(min(ny,p)<=4) stop('n and p must be at least 4')
-    if(robust==TRUE){
-      muhaty = mu_robust(matrix(Y, p, ny))
-    }else{
-      muhaty = rowMeans(Y)
-    }
-
-    if(robust.cov==TRUE){
-      covy = Cov_Huber(  Y,  matrix(muhaty, p, 1))
-    }else{
-      covy = cov(t(Y))
-    }
-    eigs = Eigen_Decomp( covy)
-    values = eigs[,p+1]
-    vectors = eigs[,1:p]
-    #estimate nfactors
-    values = pmax(values, 0)
-    ratio=c()
-    Ky <- if (is.null(Ky)) {
-      for(i in 1:floor(min(p,ny)/2))
-        ratio=append(ratio, values[i+1]/values[i])
-      ratio = ratio[is.finite(ratio)]
-      Ky = which.min(ratio)} else {Ky}
-    if(Ky>min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
-    if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
-
-    By = matrix(NA, p, Ky)
-
-    for (k in 1:Ky){
-      By[,k] = sqrt(values[k])*vectors[,k]
-    }
-    By2 = apply(By,1, function(y) sum(y^2))
-    if(robust.cov==TRUE){
-      thetay = mu_robust( matrix(Y^2, p, ny))
-    }else{
-      thetay = rowMeans(Y^2)
-    }
-    varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
-    varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
-    sehaty = sqrt(varhaty/ny)
-    if(robust.mean == TRUE){
-      fy = mu_robust_F(matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
-    }else{
-      fy = coef(lm(rowMeans(Y)~By-1))
-    }
+      if(!is.null(Ky)){
+        if(Ky==0){
+          if(robust==TRUE){
+            if(cv==TRUE){
+              muhaty = mu_robust( matrix(Y, p, ny))
+              thetay = mu_robust( matrix(Y^2, p, ny))
+              }else{
+                CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+                muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
+                CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+                thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
+              }
+            }else{
+              muhaty = rowMeans(Y)
+              thetay = rowMeans(Y^2)
+              }
+          varhaty = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
+          sehaty = sqrt(varhaty/ny)
+          }else{
+            if(robust==TRUE){
+              if(cv==TRUE){
+                muhaty = mu_robust( matrix(Y, p, ny))
+                thetay = mu_robust( matrix(Y^2, p, ny))
+                if(verbose){cat("calculating covariance matrix for Y...\n")}
+                covy = Cov_Huber( Y, matrix(muhaty, p, 1))
+              }else{
+                CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+                muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
+                CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+                thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
+                if (verbose){cat("calculating tuning parameters for Y...\n")}
+                CT = Cov_Huber_tune(Y, tau)
+                covy =  Cov_Huber_noCV(matrix((Y),p,ny), matrix(muhaty, p, 1), matrix(CT,p,p))
+              }
+            }else{
+              muhaty = rowMeans(Y)
+              covy = cov(t(Y))
+              thetay = rowMeans(Y^2)
+            }
+            eigs = Eigen_Decomp( covy)
+            values = eigs[,p+1]
+            vectors = eigs[,1:p]
+            #estimate nfactors
+            values = pmax(values, 0)
+            if(Ky>min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
+            if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
+            By = matrix(NA, p, Ky)
+            for (k in 1:Ky){By[,k] = sqrt(values[k])*vectors[,k]}
+            By2 = apply(By,1, function(y) sum(y^2))
+            varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
+            varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
+            sehaty = sqrt(varhaty/ny)
+            if(robust == TRUE){
+              if(cv==TRUE){
+                fy = mu_robust_F( matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
+              }else
+              {
+                olsres = lm( matrix(rowMeans(Y),p, 1)~  matrix(By, p, Ky)-1)$residuals
+                CT = tau*sd(olsres)*sqrt(p/log(ny))
+                fy = mu_robust_F_noCV( matrix(rowMeans(Y),1, p), matrix(By, p, Ky), matrix(CT, 1,1))
+              }
+            }else{
+              fy = coef(lm(rowMeans(Y)~By-1))
+              }
+            }
+        }else{
+              if(robust==TRUE){
+               if(cv==TRUE){
+              muhaty = mu_robust( matrix(Y, p, ny))
+              thetay = mu_robust( matrix(Y^2, p, ny))
+              if(verbose){cat("calculating covariance matrix for Y...\n")}
+              covy = Cov_Huber( Y, matrix(muhaty, p, 1))
+            }else{
+              CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+              muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
+              CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+              thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
+              if (verbose){cat("calculating tuning parameters for Y...\n")}
+              CT = Cov_Huber_tune(Y, tau)
+              covy =  Cov_Huber_noCV(matrix((Y),p,ny), matrix(muhaty, p, 1), matrix(CT,p,p))
+            }
+          }else{
+            muhaty = rowMeans(Y)
+            covy = cov(t(Y))
+            thetay = rowMeans(Y^2)
+          }
+          eigs = Eigen_Decomp( covy)
+          values = eigs[,p+1]
+          vectors = eigs[,1:p]
+          #estimate nfactors
+          values = pmax(values, 0)
+          ratio=c()
+          for(i in 1:floor(min(p,ny)/2)){ratio=append(ratio, values[i+1]/values[i])}
+          ratio = ratio[is.finite(ratio)]
+          Ky = which.min(ratio)
+          By = matrix(NA, p, Ky)
+          for (k in 1:Ky){By[,k] = sqrt(values[k])*vectors[,k]}
+          By2 = apply(By,1, function(y) sum(y^2))
+          varhaty_0 = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
+          varhaty = (varhaty_0 - By2)* (varhaty_0 > By2) +(varhaty_0)* ( varhaty_0 <=By2)
+          sehaty = sqrt(varhaty/ny)
+          if(robust == TRUE){
+            if(cv==TRUE){
+              fy = mu_robust_F( matrix(rowMeans(Y),1, p), matrix(By, p, Ky))
+            }else
+            {
+              olsres = lm( matrix(rowMeans(Y),p, 1)~  matrix(By, p, Ky)-1)$residuals
+              CT = tau*sd(olsres)*sqrt(p/log(ny))
+              fy = mu_robust_F_noCV( matrix(rowMeans(Y),1, p), matrix(By, p, Ky), matrix(CT, 1,1))
+            }
+          }else{
+            fy = coef(lm(rowMeans(Y)~By-1))
+          }
+            }
 
   }
 
+
   #test statistics
   if (is.null(Y)){
+    if(Kx==0){
+      stat=(muhatx-H0)/sehatx
+      means <- muhatx
+      stderr <- sehatx
+      loadings <- NULL
+      nfactors=Kx
+      n = nx
+    }else{
     stat=(muhatx-Bx%*%fx-H0)/sehatx
     means <- muhatx - Bx%*%fx
     stderr <- sehatx
     loadings <- Bx
     nfactors=Kx
-    n = nx
+    n = nx}
   } else{
+    if(Kx==0 & Ky!=0){
+      stat=(muhatx - muhaty+By%*%fy -H0)/sqrt(sehatx^2 +sehaty^2)
+      means <- list(X.mean = muhatx, Y.mean = muhaty-By%*%fy)
+      stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
+      loadings = list(X.loadings = NULL, Y.loadings = By)
+      nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+      n = list(X.n=nx, Y.n=ny)
+    } else if(Ky==0 & Kx!=0){
+      stat=(muhatx - Bx%*%fx-muhaty -H0)/sqrt(sehatx^2 +sehaty^2)
+      means <- list(X.mean = muhatx-Bx%*%fx, Y.mean = muhaty)
+      stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
+      loadings = list(X.loadings = Bx, Y.loadings = NULL)
+      nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+      n = list(X.n=nx, Y.n=ny)
+    }
+    else if(Kx==0 & Ky==0){
+      stat=(muhatx -muhaty-H0)/sqrt(sehatx^2 +sehaty^2)
+      means <- list(X.mean = muhatx, Y.mean = muhaty)
+      stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
+      loadings = list(X.loadings =NULL, Y.loadings = NULL)
+      nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
+      n = list(X.n=nx, Y.n=ny)
+    }else{
     stat=(muhatx - Bx%*%fx-muhaty+By%*%fy -H0)/sqrt(sehatx^2 +sehaty^2)
     means <- list(X.mean = muhatx-Bx%*%fx, Y.mean = muhaty-By%*%fy)
     stderr <- list(X.stderr= sehatx, Y.stderr= sehaty)
     loadings = list(X.loadings = Bx, Y.loadings = By)
     nfactors = list(X.nfactors= Kx, Y.nfactors =Ky)
     n = list(X.n=nx, Y.n=ny)
-  }
+    }
+    }
   if (alternative == "lesser"){
     pvalue = stats::pnorm((stat))
   }else if (alternative == "greater"){
@@ -487,13 +686,10 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 
   val<-list(means = means ,  stderr=  stderr,loadings = loadings , nfactors= nfactors,
                  pvalue = pvalue, rejected  =rejected, alldata = alldata, alternative = alternative,
-                 H0 = H0, robust = max(robust.cov, robust.mean), n = n, p = p, alpha = alpha, type = "unknown",significant = significant)
+                 H0 = H0, robust = robust, n = n, p = p, alpha = alpha, type = "unknown",significant = significant)
   return(val)
 
 }
-
-
-
 
 
 
@@ -506,9 +702,12 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
 #' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
+#' @param cv a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE. Only used if \code{robust} is TRUE.
+#' @param tau \code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{robust} is TRUE and \code{cv} is FALSE. See details.
 #' @param show.plot a TRUE/FALSE indicating whether to show the resulting plots. Default is FALSE.
 #' @details The maximum eigenvalue ratio is marked differently on the plot.  The index of this maximum ratio gives the number of estimated factors.
 #' @details If \code{show.plots=TRUE}, plots are output and user has to hit <Return> to see the second plot. Alternatively, one may use the plot method for this class.
+#' @details The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal rate } is the optimal rate for the tuning parameter. For details, see Fan et al.(2017). \code{sigma} is the standard deviation of the data.
 #' @return An object with S3 class \code{farm.scree} containing:
 #' \itemize{
 #'  \item{\code{eigenvalues} }{Eigenvalues of the covariance matrix}
@@ -520,27 +719,44 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' @seealso \code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}
 #' @examples
 #' set.seed(100)
+#' set.seed(100)
 #' p = 100
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
-#' ouput = farm.scree(X)
+#' output = farm.scree(X,show.plot = TRUE)
+#' output
+#' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 #'
 #' @references Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
 #' @export
-farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = FALSE, show.plot=FALSE){
+farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = TRUE,cv=TRUE,tau=2, show.plot=FALSE){
   X = t(X)
   n = NCOL(X)
   p = NROW(X)
+  if(tau<=0) stop('tau should be a positive number')
+
   if(min(n,p) <=3) stop('n and p must be at least 3')
   K.scree <- if (is.null(K.scree)) min(n,p) else K.scree
   K.factors <- if (is.null(K.factors)) (min(n,p)/2) else K.factors
   if(K.factors>min(n,p)/2) warning('Number of factors supplied is > min(n,p)/2. May cause numerical inconsistencies')
-  if (robust){
-    muhatx = mu_robust( matrix(X, p, n))
-    covx = Cov_Huber(  X, muhatx)
+
+
+  if(robust==TRUE){
+    if(cv==TRUE){
+      muhatx = mu_robust( matrix(X, p, n))
+      thetax = mu_robust( matrix(X^2, p, n))
+      covx = Cov_Huber( X, matrix(muhatx, p, 1))
+    }
+    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
+    CT = tau*rowSds(X^2)*sqrt(n/log(p*n))
+    thetax = mu_robust_noCV( matrix(X^2, p, n), matrix(CT,p,1))
+    CT = Cov_Huber_tune(X, tau)
+    covx =  Cov_Huber_noCV(matrix((X),p,n), matrix(muhatx, p, 1), matrix(CT,p,p))
+    }
     decomp = Eigen_Decomp(covx)
     eig = decomp[,p+1]
     eig = pmax(eig, 0)
@@ -708,7 +924,10 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
 #'
 #' This function estimates covariance of multivariate data using the Huber's loss. The tuning parameter is chosen by cross validation.
 #' @param X an n x p data matrix with each row being a sample.
-
+#' @param cv a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE.
+#' @param tau \code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{cv} is FALSE. See details.
+#' @param verbose a boolean specifying whether to print runtime updates to the console. Default is TRUE.
+#' @details The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal rate } is the optimal rate for the tuning parameter. For details, see Fan et al.(2017). \code{sigma} is the standard deviation of the data.
 #' @return A list with the following items
 #' \item{covhat}{the covariance matrix}
 #' @examples
@@ -720,13 +939,24 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-farm.cov <- function (X){
+farm.cov <- function (X, cv=TRUE, tau=2, verbose=FALSE){
   X = t(X)
   p  = NROW(X)
   n = NCOL(X)
-  muhatx = mu_robust( matrix(X, p, n))
-  covhat = Cov_Huber(matrix((X),p,n), muhatx)
-  return(covhat)
+  if(tau<=0) stop('tau should be a positive number')
+    if(cv==TRUE){
+      muhatx = mu_robust( matrix(X, p, n))
+      if(verbose){cat("calculating covariance matrix for X...\n")}
+      covx = Cov_Huber( X, matrix(muhatx, p, 1))
+    }
+    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
+    if (verbose){cat("calculating tuning parameters for X...\n")}
+    CT = Cov_Huber_tune(X, tau)
+    if (verbose){cat("calculating covariance matrix for X...\n")}
+    covx =  Cov_Huber_noCV(matrix((X),p,n), matrix(muhatx, p, 1), matrix(CT,p,p))
+    }
+  return(covx)
 }
 
 #################### huber mean calculation ##############################################
@@ -734,9 +964,12 @@ farm.cov <- function (X){
 #'
 #' This function estimates mean of multivariate data using the Huber's loss. The tuning parameter is chosen by cross validation.
 #' @param X a n x p data matrix with each row being a sample.
-
+#' @param cv a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE.
+#' @param tau \code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{cv} is FALSE. See details.
+#' @param verbose a boolean specifying whether to print runtime updates to the console. Default is TRUE.
 #' @return A list with the following items
 #' \item{muhat}{the mean vector}
+#' @details The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal rate } is the optimal rate for the tuning parameter. For details, see Fan et al.(2017). \code{sigma} is the standard deviation of the data.
 #' @examples
 #' set.seed(100)
 #' p = 20
@@ -746,12 +979,19 @@ farm.cov <- function (X){
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
 #' @export
-farm.mean <- function (X){
+farm.mean <- function(X, cv=TRUE, tau=2, verbose=FALSE){
   X = t(X)
   p  = NROW(X)
   n = NCOL(X)
-  muhat = mu_robust(matrix(X,p,n))
-  return(muhat)
+  if(tau<=0) stop('tau should be a positive number')
+  if(cv==TRUE){
+      muhatx = mu_robust( matrix(X, p, n))
+    }
+    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
+    }
+
+  return(muhatx)
 }
 
 

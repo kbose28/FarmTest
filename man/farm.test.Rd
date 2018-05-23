@@ -6,7 +6,8 @@
 \usage{
 farm.test(X, H0 = NULL, fx = NULL, Kx = NULL, Y = NULL, fy = NULL,
   Ky = NULL, alternative = c("two.sided", "lesser", "greater"),
-  alpha = NULL, robust.cov = TRUE, robust.mean = TRUE, ...)
+  alpha = NULL, robust = TRUE, cv = TRUE, tau = 2, verbose = FALSE,
+  ...)
 }
 \arguments{
 \item{X}{a n x p data matrix with each row being a sample.
@@ -16,7 +17,7 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{fx}{an \emph{optional} factor matrix with each column being a factor for \code{X}. Same number of rows as \code{X}.}
 
-\item{Kx}{a \emph{optional} number of factors to be estimated for \code{X}. Otherwise estimated internally.}
+\item{Kx}{a \emph{optional} number of factors to be estimated for \code{X}. Otherwise estimated internally. Kx>=0}
 
 \item{Y}{an \emph{optional} data matrix that must have the same number of columns as \code{X}. You wish test the equality of means of each columns of \code{X} and \code{Y}.}
 
@@ -28,9 +29,13 @@ You wish to test a hypothesis for the mean of each column of \code{X}.}
 
 \item{alpha}{an \emph{optional} level for controlling the false discovery rate (in decimals). Default is 0.05. Must be in \eqn{(0,1)}.}
 
-\item{robust.cov}{a TRUE/FALSE indicating whether to use robust estimates of covariance matrix. Default is TRUE.}
+\item{robust}{a boolean, specifying whether or not to use robust estimators for mean and variance. Default is TRUE.}
 
-\item{robust.mean}{a TRUE/FALSE indicating whether to use robust estimates of mean. Default is TRUE.}
+\item{cv}{a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE. Only used if \code{robust} is TRUE.}
+
+\item{tau}{\code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{robust} is TRUE and \code{cv} is FALSE. See details.}
+
+\item{verbose}{a boolean specifying whether to print runtime updates to the console. Default is TRUE.}
 
 \item{\dots}{Arguments passed to the \code{\link{farm.FDR}} function.}
 }
@@ -55,26 +60,40 @@ It uses the Huber's loss function (Huber (1964)) to robustly estimate data param
 
 If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data \eqn{X = \mu + Bf + Cg + u}, where \eqn{f} is observed and \eqn{g} is unobserved. In the first step, the user passes the data \eqn{\{X,f\}} into the main function. From the output, let us construct the residuals: \eqn{Xres = X - Bf}. Now pass \eqn{Xres} into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
-Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
-
 For two-sample test, the output values \code{means}, \code{stderr}, \code{n}, \code{nfactors},\code{loadings} are all lists containing two items, each pertaining to \code{X} and \code{Y}, indicated by a prefix \code{X.} and \code{Y.} respectively.
 
 Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
 For details about multiple comparison correction, see \code{\link{farm.FDR}}.
+
+The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal rate } is the optimal rate for the tuning parameter. For details, see Fan et al.(2017). \code{sigma} is the standard deviation of the data.
 }
 \examples{
 set.seed(100)
-p = 20
-n = 10
+p = 100
+n = 50
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
-B = matrix(rnorm(p,0,1), nrow=p)
-fx = matrix(rnorm(n, 0,1), nrow = n)
+B = matrix(runif(p*3,-2,2), nrow=p)
+fx = matrix(rnorm(3*n, 0,1), nrow = n)
 mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)\%*\%t(mu)+fx\%*\%t(B)+ epsilon
-output1 = farm.test(X)
-output = farm.test(X, alpha = 0.01,alternative = "greater")
+output = farm.test(X, cv=FALSE)#robust, no cross-validation
+output
+
+#other robustification options
+output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
+output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+#output = farm.test(X) #robust, cross-validation, longer running
+
+#two sample test
+n2 = 25
+epsilon = matrix(rnorm( p*n2, 0,1), nrow = n2)
+B = matrix(rnorm(p*3,0,1), nrow=p)
+fy = matrix(rnorm(3*n2, 0,1), nrow = n2)
+Y = fy\%*\%t(B)+ epsilon
+output = farm.test(X=X,Y=Y, robust=FALSE)
+names(output$means)
 
 }
 \references{

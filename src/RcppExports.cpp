@@ -139,6 +139,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mu_robust_noCV
+arma::mat mu_robust_noCV(arma::mat X, arma::mat tau);
+RcppExport SEXP _FarmTest_mu_robust_noCV(SEXP XSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(mu_robust_noCV(X, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mu_robust_F
 arma::mat mu_robust_F(arma::mat X, arma::mat phi);
 RcppExport SEXP _FarmTest_mu_robust_F(SEXP XSEXP, SEXP phiSEXP) {
@@ -151,6 +163,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mu_robust_F_noCV
+arma::mat mu_robust_F_noCV(arma::mat X, arma::mat phi, arma::mat tau);
+RcppExport SEXP _FarmTest_mu_robust_F_noCV(SEXP XSEXP, SEXP phiSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(mu_robust_F_noCV(X, phi, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Cov_Huber
 arma::mat Cov_Huber(arma::mat X, arma::mat mu_hat);
 RcppExport SEXP _FarmTest_Cov_Huber(SEXP XSEXP, SEXP mu_hatSEXP) {
@@ -160,6 +185,31 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mu_hat(mu_hatSEXP);
     rcpp_result_gen = Rcpp::wrap(Cov_Huber(X, mu_hat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Cov_Huber_tune
+arma::mat Cov_Huber_tune(arma::mat X, float tau);
+RcppExport SEXP _FarmTest_Cov_Huber_tune(SEXP XSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< float >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(Cov_Huber_tune(X, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Cov_Huber_noCV
+arma::mat Cov_Huber_noCV(arma::mat X, arma::mat mu_hat, arma::mat tau);
+RcppExport SEXP _FarmTest_Cov_Huber_noCV(SEXP XSEXP, SEXP mu_hatSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mu_hat(mu_hatSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(Cov_Huber_noCV(X, mu_hat, tau));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -198,6 +248,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Cov_U
+arma::mat Cov_U(float C_tau, arma::mat X);
+RcppExport SEXP _FarmTest_Cov_U(SEXP C_tauSEXP, SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type C_tau(C_tauSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(Cov_U(C_tau, X));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Huber_loss", (DL_FUNC) &_FarmTest_Huber_loss, 4},
@@ -210,11 +272,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Robust_CV_F", (DL_FUNC) &_FarmTest_Robust_CV_F, 2},
     {"_FarmTest_Influence_Huber", (DL_FUNC) &_FarmTest_Influence_Huber, 2},
     {"_FarmTest_mu_robust", (DL_FUNC) &_FarmTest_mu_robust, 1},
+    {"_FarmTest_mu_robust_noCV", (DL_FUNC) &_FarmTest_mu_robust_noCV, 2},
     {"_FarmTest_mu_robust_F", (DL_FUNC) &_FarmTest_mu_robust_F, 2},
+    {"_FarmTest_mu_robust_F_noCV", (DL_FUNC) &_FarmTest_mu_robust_F_noCV, 3},
     {"_FarmTest_Cov_Huber", (DL_FUNC) &_FarmTest_Cov_Huber, 2},
+    {"_FarmTest_Cov_Huber_tune", (DL_FUNC) &_FarmTest_Cov_Huber_tune, 2},
+    {"_FarmTest_Cov_Huber_noCV", (DL_FUNC) &_FarmTest_Cov_Huber_noCV, 3},
     {"_FarmTest_Eigen_Decomp", (DL_FUNC) &_FarmTest_Eigen_Decomp, 1},
     {"_FarmTest_Loading_Sample", (DL_FUNC) &_FarmTest_Loading_Sample, 2},
     {"_FarmTest_Loading_Robust", (DL_FUNC) &_FarmTest_Loading_Robust, 2},
+    {"_FarmTest_Cov_U", (DL_FUNC) &_FarmTest_Cov_U, 2},
     {NULL, NULL, 0}
 };
 
