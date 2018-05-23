@@ -34,8 +34,8 @@ Print method for \code{farm.test} objects
 }
 \examples{
 set.seed(100)
-p = 100
-n = 20
+p = 50
+n = 100
 X = matrix(rnorm( p*n, 0,1), nrow = n)
 output = farm.test(X)
 output

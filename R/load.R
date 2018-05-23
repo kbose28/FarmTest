@@ -5,7 +5,6 @@
 #' @import utils
 #' @import grDevices
 #' @import stats
-#' @importFrom fBasics rowSds
 NULL
 ###################################################################################
 ## This is the main function that conducts the statistical test given the data
@@ -133,8 +132,8 @@ farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NU
 #' @seealso \code{\link{farm.test}}
 #' @examples
 #' set.seed(100)
-#' p = 100
-#' n = 20
+#' p = 50
+#' n = 100
 #' X = matrix(rnorm( p*n, 0,1), nrow = n)
 #' output = farm.test(X)
 #' output
@@ -267,11 +266,11 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
     bhatx = coefx[-1,]
     thetax = mu_robust(matrix(X^2, p, nx))
     }else{olsres = apply(X, 1, function(x) lm(x~Zx-1)$residuals)
-    CT = tau*rowSds(t(olsres))*sqrt(nx/log(p*nx))
+    CT = tau*apply(olsres,2,sd)*sqrt(nx/log(p*nx))
       coefx = mu_robust_F_noCV(matrix(X, p, nx), matrix(Zx, nx, Kx), matrix(CT, p,1) )
       muhatx = coefx[1,]
       bhatx = coefx[-1,]
-      CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+      CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
       thetax = mu_robust_noCV(matrix(X^2, p, nx), matrix(CT, p,1))
     }
   }else{
@@ -308,11 +307,11 @@ farm.testknown <- function (X, H0, fx,Y  , fy,  alternative = alternative, alpha
         bhaty = coefy[-1,]
         thetay = mu_robust(matrix(Y^2, p, ny))
       }else{olsres = apply(Y,1, function(x) lm(x~Zy-1)$residuals)
-        CT = tau*rowSds(t(olsres))*sqrt(ny/log(p*ny))
+        CT = tau*apply(olsres,2,sd)*sqrt(ny/log(p*ny))
       coefy = mu_robust_F_noCV(matrix(Y, p, ny), matrix(Zy, ny, Ky), matrix(CT, p,1) )
       muhaty = coefy[1,]
       bhaty = coefy[-1,]
-      CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+      CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
       thetay = mu_robust_noCV(matrix(Y^2, p, ny), matrix(CT, p,1))
       }
     }else{
@@ -393,9 +392,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
           muhatx = mu_robust( matrix(X, p, nx))
           thetax = mu_robust( matrix(X^2, p, nx))
           }else{
-            CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+            CT = tau*apply(X,1,sd)*sqrt(nx/log(p*nx))
             muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
-            CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+            CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
             thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
             }
         }else{
@@ -414,9 +413,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
             if(verbose){cat("calculating covariance matrix for X...\n")}
             covx = Cov_Huber( X, matrix(muhatx, p, 1))
           }else{
-            CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+            CT = tau*apply(X,1,sd)*sqrt(nx/log(p*nx))
             muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
-            CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+            CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
             thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
             if(verbose){cat("calculating tuning parameters for X...\n")}
             CT = Cov_Huber_tune(X, tau)
@@ -458,9 +457,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
           if(verbose){cat("calculating covariance matrix for X...\n")}
           covx = Cov_Huber( X, matrix(muhatx, p, 1))
         }else{
-          CT = tau*rowSds(X)*sqrt(nx/log(p*nx))
+          CT = tau*apply(X,1,sd)*sqrt(nx/log(p*nx))
           muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
-          CT = tau*rowSds(X^2)*sqrt(nx/log(p*nx))
+          CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
           thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
           if(verbose){cat("calculating tuning parameters for X...\n")}
           CT = Cov_Huber_tune(X, tau)
@@ -511,9 +510,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
               muhaty = mu_robust( matrix(Y, p, ny))
               thetay = mu_robust( matrix(Y^2, p, ny))
               }else{
-                CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+                CT = tau*apply(Y,1,sd)*sqrt(ny/log(p*ny))
                 muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
-                CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+                CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
                 thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
               }
             }else{
@@ -530,9 +529,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
                 if(verbose){cat("calculating covariance matrix for Y...\n")}
                 covy = Cov_Huber( Y, matrix(muhaty, p, 1))
               }else{
-                CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+                CT = tau*apply(Y,1,sd)*sqrt(ny/log(p*ny))
                 muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
-                CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+                CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
                 thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
                 if (verbose){cat("calculating tuning parameters for Y...\n")}
                 CT = Cov_Huber_tune(Y, tau)
@@ -577,9 +576,9 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
               if(verbose){cat("calculating covariance matrix for Y...\n")}
               covy = Cov_Huber( Y, matrix(muhaty, p, 1))
             }else{
-              CT = tau*rowSds(Y)*sqrt(ny/log(p*ny))
+              CT = tau*apply(Y,1,sd)*sqrt(ny/log(p*ny))
               muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
-              CT = tau*rowSds(Y^2)*sqrt(ny/log(p*ny))
+              CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
               thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
               if (verbose){cat("calculating tuning parameters for Y...\n")}
               CT = Cov_Huber_tune(Y, tau)
@@ -750,9 +749,9 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = TRUE,cv=TR
       thetax = mu_robust( matrix(X^2, p, n))
       covx = Cov_Huber( X, matrix(muhatx, p, 1))
     }
-    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    else{CT = tau*apply(X,1,sd)*sqrt(n/log(p*n))
     muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
-    CT = tau*rowSds(X^2)*sqrt(n/log(p*n))
+    CT = tau*apply(X^2,1,sd)*sqrt(n/log(p*n))
     thetax = mu_robust_noCV( matrix(X^2, p, n), matrix(CT,p,1))
     CT = Cov_Huber_tune(X, tau)
     covx =  Cov_Huber_noCV(matrix((X),p,n), matrix(muhatx, p, 1), matrix(CT,p,p))
@@ -949,7 +948,7 @@ farm.cov <- function (X, cv=TRUE, tau=2, verbose=FALSE){
       if(verbose){cat("calculating covariance matrix for X...\n")}
       covx = Cov_Huber( X, matrix(muhatx, p, 1))
     }
-    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    else{CT = tau*apply(X,1,sd)*sqrt(n/log(p*n))
     muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
     if (verbose){cat("calculating tuning parameters for X...\n")}
     CT = Cov_Huber_tune(X, tau)
@@ -987,7 +986,7 @@ farm.mean <- function(X, cv=TRUE, tau=2, verbose=FALSE){
   if(cv==TRUE){
       muhatx = mu_robust( matrix(X, p, n))
     }
-    else{CT = tau*rowSds(X)*sqrt(n/log(p*n))
+    else{CT = tau*apply(X,1,sd)*sqrt(n/log(p*n))
     muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
     }
 
