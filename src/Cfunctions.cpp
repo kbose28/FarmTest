@@ -691,51 +691,10 @@ arma::mat Loading_Robust(int K, arma::mat M)
   eigval_cov=sort(eigval_cov,"descend");
   eigvec_cov=fliplr(eigvec_cov);
 
-  for(i=0;i<K;i++)Lambda_hat.col(i)=eigvec_cov.col(i)*sqrt(eigval_cov(i));
+  for(i=0;i<K;i++)Lambda_hat.col(i)=eigvec_cov.col(i)*sqrt(static_cast<double>(eigval_cov(i)));
 
 
   return Lambda_hat;
-
-}
-
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//            U-type robust eatimaiton of covariance matrix             //
-//////////////////////////////////////////////////////////////////////////
-
-//Input: Data matrix X and tuning parameter Tau
-//Output: Estimated cov matrix Sigma_U
-// [[Rcpp::export]]
-arma::mat Cov_U(float C_tau, arma::mat X)
-{
-  using namespace arma;
-  int i, j, P=X.n_rows, N=X.n_cols;
-  float v1=0, v2=0, v3=0;
-  float Tau=C_tau*P*sqrt(N/log(N));
-  //Define the matrices
-  mat A, B;
-  mat Sigma_U; Sigma_U.zeros(P,P);
-
-
-  //U-type COV estimate method
-  for(i=1;i<N;i++){
-    for(j=0;j<i;j++){
-      A=X.col(j)-X.col(i);
-      B=A*A.t();
-      v1=as_scalar(A.t()*A);
-      v2=v1/2;
-      if(v2>Tau)v2=Tau;
-      v3=v2/v1/2;
-      Sigma_U+=v3*B;
-    }
-  }
-
-  Sigma_U=Sigma_U/N/(N-1);
-
-
-  return Sigma_U;
 
 }
 

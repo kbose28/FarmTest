@@ -77,7 +77,3 @@ Loading_Robust <- function(K, M) {
     .Call('_FarmTest_Loading_Robust', PACKAGE = 'FarmTest', K, M)
 }
 
-Cov_U <- function(C_tau, X) {
-    .Call('_FarmTest_Cov_U', PACKAGE = 'FarmTest', C_tau, X)
-}
-

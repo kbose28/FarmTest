@@ -11,9 +11,7 @@ Test environments
 R CMD check results
 -------------------
 
--   There were NO ERRORs, WARNINGs.
--   1 Note. Possibly mis-spelled words in DESCRIPTION: Zhou (5:906) al
-    (5:914) et (5:911)
+-   There were NO ERRORs, WARNINGs or NOTEs.
 
 These words are spelled correctly.
 

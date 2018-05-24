@@ -248,18 +248,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Cov_U
-arma::mat Cov_U(float C_tau, arma::mat X);
-RcppExport SEXP _FarmTest_Cov_U(SEXP C_tauSEXP, SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< float >::type C_tau(C_tauSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Cov_U(C_tau, X));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Huber_loss", (DL_FUNC) &_FarmTest_Huber_loss, 4},
@@ -281,7 +269,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FarmTest_Eigen_Decomp", (DL_FUNC) &_FarmTest_Eigen_Decomp, 1},
     {"_FarmTest_Loading_Sample", (DL_FUNC) &_FarmTest_Loading_Sample, 2},
     {"_FarmTest_Loading_Robust", (DL_FUNC) &_FarmTest_Loading_Robust, 2},
-    {"_FarmTest_Cov_U", (DL_FUNC) &_FarmTest_Cov_U, 2},
     {NULL, NULL, 0}
 };
 
