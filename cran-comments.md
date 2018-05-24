@@ -1,5 +1,5 @@
-This is an update adding options to some functions
---------------------------------------------------
+The maintainer email address has been changed and some functions have been modified.
+------------------------------------------------------------------------------------
 
 Test environments
 -----------------
