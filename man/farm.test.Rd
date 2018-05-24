@@ -93,6 +93,7 @@ B = matrix(rnorm(p*3,0,1), nrow=p)
 fy = matrix(rnorm(3*n2, 0,1), nrow = n2)
 Y = fy\%*\%t(B)+ epsilon
 output = farm.test(X=X,Y=Y, robust=FALSE)
+output = farm.test(X=X,Y=Y,Kx=0, cv = FALSE) #non-robust
 names(output$means)
 
 }

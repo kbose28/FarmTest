@@ -29,6 +29,8 @@ An object with S3 class \code{farm.scree} containing:
  \item{\code{proportions} }{Proportion of variance explained by the principal components}
  \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
+ \item{\code{K.scree} }{Number of eigenvalues plotted in the scree plot}
+ \item{\code{K.factors} }{Number of eigenvalues used in the eigenvalue ratio test}
 }
 
 If \code{show.plots=TRUE} function returns two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
@@ -52,7 +54,7 @@ epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
 B = matrix(rnorm(p*3,0,1), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 X = fx\%*\%t(B)+ epsilon
-output = farm.scree(X,show.plot = TRUE)
+output = farm.scree(X,show.plot = TRUE, cv=FALSE)
 output = farm.scree(X,show.plot = FALSE, cv=FALSE, K.scree=5, K.factors =10)
 output
 plot(output, scree.plot=FALSE, col="blue", main="Customized plot")

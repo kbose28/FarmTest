@@ -71,6 +71,7 @@ NULL
 #' fy = matrix(rnorm(3*n2, 0,1), nrow = n2)
 #' Y = fy%*%t(B)+ epsilon
 #' output = farm.test(X=X,Y=Y, robust=FALSE)
+#' output = farm.test(X=X,Y=Y,Kx=0, cv = FALSE) #non-robust
 #' names(output$means)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
@@ -190,7 +191,7 @@ print.farm.test<-function(x,...){
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
-#' output = farm.scree(X)
+#' output = farm.scree(X, cv=FALSE)
 #' plot(output)
 #' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 #'
@@ -245,7 +246,7 @@ plot.farm.scree<-function(x, scree.plot=TRUE, ratio.plot=TRUE, col="red", ...){
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
-#' output = farm.scree(X)
+#' output = farm.scree(X, cv = FALSE)
 #' output
 #' @export
 print.farm.scree<-function(x,...){
@@ -694,6 +695,8 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #'  \item{\code{proportions} }{Proportion of variance explained by the principal components}
 #'  \item{\code{eigenvalue.ratios} }{Ratios calculated in the eigenvalue ratio test}
 #'  \item{\code{nfactors} }{Number of factors found using the eigenvalue ratio test}
+#'  \item{\code{K.scree} }{Number of eigenvalues plotted in the scree plot}
+#'  \item{\code{K.factors} }{Number of eigenvalues used in the eigenvalue ratio test}
 #' }
 #' @return If \code{show.plots=TRUE} function returns two plots: First plot is the scree plot of the data. Second plot illustrates the eigenvalue ratio test.
 #' @seealso \code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}
@@ -705,7 +708,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' B = matrix(rnorm(p*3,0,1), nrow=p)
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
-#' output = farm.scree(X,show.plot = TRUE)
+#' output = farm.scree(X,show.plot = TRUE, cv=FALSE)
 #' output = farm.scree(X,show.plot = FALSE, cv=FALSE, K.scree=5, K.factors =10)
 #' output
 #' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
