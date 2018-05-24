@@ -125,7 +125,7 @@ The robustness is controlled by the parameter of the Huber loss function. This c
 ```{r}
 ##examples of other robustification options
 output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
-output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+output = farm.test(X, tau = 3, cv=FALSE, verbose=FALSE) #robust, no cross-validation, specified tau
 #output = farm.test(X) #robust, cross-validation, longer running
 ```
 
@@ -160,7 +160,6 @@ output
 plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 ```
 
-We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples. 
 
 Let us generate data from a Gaussian distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 

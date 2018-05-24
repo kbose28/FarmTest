@@ -199,7 +199,7 @@ Notes
 
 4.  See individual function documentation for detailed description of methods and their references.
 
-Fan, J., Y. Ke, Q. Sun, and W.-X. Zhou. 2017. “FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control.” *arXiv*. <https://arxiv.org/abs/1711.05386>.
+Fan, J., Y. Ke, Q. Sun, and W.-X. Zhou. 2017. “FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control.” <https://arxiv.org/abs/1711.05386>.
 
 Storey, J.D. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <http://github.com/jdstorey/qvalue>.
 

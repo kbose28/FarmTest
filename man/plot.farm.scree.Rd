@@ -36,6 +36,7 @@ B = matrix(rnorm(p*3,0,1), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 X = fx\%*\%t(B)+ epsilon
 output = farm.scree(X)
+plot(output)
 plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 
 }

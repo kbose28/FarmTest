@@ -14,7 +14,7 @@ farm.scree(X, K.scree = NULL, K.factors = NULL, robust = TRUE,
 
 \item{K.factors}{an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.}
 
-\item{robust}{a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.}
+\item{robust}{a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is TRUE.}
 
 \item{cv}{a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE. Only used if \code{robust} is TRUE.}
 

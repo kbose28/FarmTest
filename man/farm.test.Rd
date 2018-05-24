@@ -83,7 +83,7 @@ output
 
 #other robustification options
 output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
-output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+output = farm.test(X, tau = 3, cv=FALSE, verbose=FALSE) #robust, no cross-validation, specified tau
 #output = farm.test(X) #robust, cross-validation, longer running
 
 #two sample test

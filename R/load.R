@@ -61,7 +61,7 @@ NULL
 #'
 #' #other robustification options
 #' output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
-#' output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+#' output = farm.test(X, tau = 3, cv=FALSE, verbose=FALSE) #robust, no cross-validation, specified tau
 #' #output = farm.test(X) #robust, cross-validation, longer running
 #'
 #' #two sample test
@@ -191,6 +191,7 @@ print.farm.test<-function(x,...){
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
 #' output = farm.scree(X)
+#' plot(output)
 #' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 #'
 #' @export
@@ -680,7 +681,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' @param X an n x p data matrix with each row being a sample.
 #' @param K.scree an \emph{optional} integer specifying the number of eigenvalues to be plotted in the scree plot. Default is min(n,p).
 #' @param K.factors an \emph{optional} integer specifying the number of eigenvalues to be used for the eigenvalue ratio test. Default is min(n,p)/2.
-#' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is FALSE.
+#' @param robust a TRUE/FALSE indicating whether to use a robust covariance estimator if TRUE, or the sample covariance estimator. Default is TRUE.
 #' @param cv a boolean, specifying whether or  not to run cross-validation for the tuning parameter. Default is TRUE. Only used if \code{robust} is TRUE.
 #' @param tau \code{>0}, multiplier for the tuning parameter for Huber loss function. Default is 2. Only used if \code{robust} is TRUE and \code{cv} is FALSE. See details.
 #' @param show.plot a TRUE/FALSE indicating whether to show the resulting plots. Default is FALSE.
