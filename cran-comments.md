@@ -11,9 +11,11 @@ Test environments
 R CMD check results
 -------------------
 
--   There were NO ERRORs, WARNINGs or NOTEs.
+-   There were NO ERRORs, WARNINGs
+-   1 NOTE: New maintainer: Koushiki Bose <koush.bose@gmail.com> Old
+    maintainer(s): Koushiki Bose <bose@princeton.edu>
 
-These words are spelled correctly.
+An email has been sent from the old maintainer confirming this change.
 
 Downstream dependencies
 -----------------------
