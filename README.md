@@ -8,7 +8,7 @@ Goal of the package
 
 This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the papers on this method, (Fan et al. 2017) and (Zhou et al. 2017), for detailed description of methods and further references.
 
-The observed data *X* is assumed to follow a factor model ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20+%20Bf%20+%20u), where *f* are the underlying factors, *B* are the factors loadings, *u* are the errors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
+The observed data *X* is assumed to follow a factor model *X* = *μ* + *B**f* + *u*, where *f* are the underlying factors, *B* are the factors loadings, *u* are the errors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
 
 Installation
 ------------
@@ -85,7 +85,7 @@ The robustness is controlled by the parameter of the Huber loss function. This c
 ``` r
 ##examples of other robustification options
 output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
-output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+output = farm.test(X, tau = 3, cv=FALSE, verbose=FALSE) #robust, no cross-validation, specified tau
 #output = farm.test(X) #robust, cross-validation, longer running
 ```
 
@@ -168,8 +168,6 @@ plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 
 ![](README-unnamed-chunk-6-3.png)
 
-We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
-
 Let us generate data from a Gaussian distribution with mean 0. Suppose we perform a simple `t.test` in R and need to adjust the output p-values for multiple testing. The function `farm.FDR` lets us carry out multiple comparison adjustment and outputs rejected hypotheses. We see that there are no rejections, as expected from a zero-mean Gaussian distribution.
 
 ``` r
@@ -191,7 +189,7 @@ covhat = farm.cov(X)
 Notes
 -----
 
-1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20+%20Bf%20+%20Cg%20+%20u), where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: ![equation](https://latex.codecogs.com/gif.latex?Xres%20%3D%20X%20-%20Bf). Now pass ![equation](https://latex.codecogs.com/gif.latex?Xres) into the main function, without any factors. The output in this step is the final answer to the testing problem.
+1.  If some of the underlying factors are known but it is suspected that there are more confounding factors that are unobserved: Suppose we have data *X* = *μ* + *B**f* + *C**g* + *u*, where *f* is observed and *g* is unobserved. In the first step, the user passes the data {*X*, *f*} into the main function. From the output, let us construct the residuals: *X**r**e**s* = *X* − *B**f*. Now pass *X**r**e**s* into the main function, without any factors. The output in this step is the final answer to the testing problem.
 
 2.  Number of rows and columns of the data matrix must be at least 4 in order to be able to calculate latent factors.
 
