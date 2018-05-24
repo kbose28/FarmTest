@@ -6,7 +6,7 @@ FarmTest: Factor Adjusted Robust Multiple Testing
 Goal of the package
 -------------------
 
-This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the paper on this method, Zhou et al.(2017)<https://goo.gl/68SJpd>, for detailed description of methods and further references.
+This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the papers on this method, (Fan et al. 2017) and (Zhou et al. 2017), for detailed description of methods and further references.
 
 The observed data *X* is assumed to follow a factor model ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20+%20Bf%20+%20u), where *f* are the underlying factors, *B* are the factors loadings, *u* are the errors, and *μ* is the mean effect to be tested. We assume the data is of dimension *p* and the sample size is *n*, leading to *p* hypothesis tests.
 
@@ -55,29 +55,38 @@ There are five functions available.
 Simple hypothesis testing example
 ---------------------------------
 
-Here we generate data from a factor model with 3 factors. We have 20 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.
+Here we generate data from a factor model with 3 factors. We have 50 samples of 100 dimensional data. The first five means are set to 2, while the other ones are 0. We conduct a hypotheses test for these means.
 
 ``` r
 library(FarmTest)
 set.seed(100)
 p = 100
-n = 20
+n = 50
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
-B = matrix(rnorm(p*3,0,1), nrow=p)
+B = matrix(runif(p*3,-2,2), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 mu = rep(0, p)
 mu[1:5] = 2
 X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
-output = farm.test(X)
+output = farm.test(X, cv=FALSE)#robust, no cross-validation
 output
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 50, nfactors = 3
 #> FDR to be controlled at: 0.05
 #> alternative hypothesis: two.sided
 #> hypotheses rejected:
-#>  7
+#>  6
+```
+
+The robustness is controlled by the parameter of the Huber loss function. This can be chosen by cross-validation which takes a long time, but gives good results. Alternatively, we use the parameter *t**a**u* \* *s**d* \* *r**a**t**e* where tau is a constant, rate is the optimal rate for the tuning parameter. See (Fan et al. 2017). sd is the standard deviation of the data at hand. The value of *t**a**u* can be supplied by the user and takes a default value of 2.
+
+``` r
+##examples of other robustification options
+output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
+output = farm.test(X, tau = 3, verbose=FALSE) #robust, no cross-validation, specified tau
+#output = farm.test(X) #robust, cross-validation, longer running
 ```
 
 Now we carry out a one-sided test, with the FDR to be controlled at 1%. Then we examine the output
@@ -88,7 +97,7 @@ output
 #> 
 #>  One Sample Robust Test with Unknown Factors
 #> 
-#> p = 100, n = 20, nfactors = 3
+#> p = 100, n = 50, nfactors = 3
 #> FDR to be controlled at: 0.01
 #> alternative hypothesis: greater
 #> hypotheses rejected:
@@ -99,15 +108,44 @@ names(output)
 #> [11] "n"           "p"           "alpha"       "type"        "significant"
 print(output$rejected)
 #>      index       pvalue pvalue adjusted
-#> [1,]     4 9.385803e-25    9.385803e-23
-#> [2,]     1 2.097004e-18    1.048502e-16
-#> [3,]     2 4.365903e-17    1.455301e-15
-#> [4,]     5 2.583264e-11    6.458161e-10
-#> [5,]     3 3.304799e-11    6.609598e-10
+#> [1,]     3 5.512356e-74    2.867494e-72
+#> [2,]     1 1.297040e-59    3.373561e-58
+#> [3,]     5 1.074999e-45    1.864027e-44
+#> [4,]     4 1.556500e-33    2.024205e-32
+#> [5,]     2 1.798489e-10    1.871126e-09
 hist(output$means, 10, main = "Estimated Means", xlab = "")
 ```
 
-![](README-unnamed-chunk-3-1.png)
+![](README-unnamed-chunk-4-1.png)
+
+A two-sample test is done as follows:
+
+``` r
+n2 = 25
+epsilon = matrix(rnorm( p*n2, 0,1), nrow = n2)
+B = matrix(rnorm(p*3,0,1), nrow=p)
+fy = matrix(rnorm(3*n2, 0,1), nrow = n2)
+Y = fy%*%t(B)+ epsilon
+output = farm.test(X=X,Y=Y)
+output
+#> 
+#>  Two Sample Robust Test with Unknown Factors
+#> 
+#> p = 100, nX = 50, nY = 25, X.nfactors = 3, Y.nfactors = 3
+#> FDR to be controlled at: 0.05
+#> alternative hypothesis: two.sided
+#> hypotheses rejected:
+#>  5
+print(output$rejected)
+#>      index       pvalue pvalue adjusted
+#> [1,]     4 1.034103e-29    1.034103e-27
+#> [2,]     5 1.276966e-27    6.384831e-26
+#> [3,]     1 1.147628e-17    3.825428e-16
+#> [4,]     3 1.822131e-10    4.555326e-09
+#> [5,]     2 6.040175e-10    1.208035e-08
+names(output$means)
+#> [1] "X.mean" "Y.mean"
+```
 
 Other functions
 ---------------
@@ -116,12 +154,19 @@ The function `farm.scree` makes some informative plots. It is possible to specif
 
 ``` r
 output = farm.scree(X, K.factors = 15, K.scree = 10, show.plot = TRUE)
-#> Warning in farm.scree(X, K.factors = 15, K.scree = 10, show.plot =
-#> TRUE): Number of factors supplied is > min(n,p)/2. May cause numerical
-#> inconsistencies
 ```
 
-![](README-unnamed-chunk-4-1.png)![](README-unnamed-chunk-4-2.png)
+![](README-unnamed-chunk-6-1.png)![](README-unnamed-chunk-6-2.png)
+
+``` r
+output
+#> Summary of eigenvalue ratio test
+#>   Number of factors found: 3
+#>   Proportion of variation explained by the top 3 principal components: 72.94%
+plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
+```
+
+![](README-unnamed-chunk-6-3.png)
 
 We see a warning telling us that it is not a good idea to calculate 15 eigenvalues from a dataset that has only 20 samples.
 
@@ -154,4 +199,8 @@ Notes
 
 4.  See individual function documentation for detailed description of methods and their references.
 
-Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <https://github.com/jdstorey/qvalue>.
+Fan, J., Y. Ke, Q. Sun, and W.-X. Zhou. 2017. “FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control.” *arXiv*. <https://arxiv.org/abs/1711.05386>.
+
+Storey, J.D. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” *R Package Version 2.8.0*. <http://github.com/jdstorey/qvalue>.
+
+Zhou, W.-X., K. Bose, J. Fan, and H. Liu. 2017. “A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing.” *Annals of Statistics, to Appear*. <https://arxiv.org/abs/1711.05381>.

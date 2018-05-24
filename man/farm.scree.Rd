@@ -46,7 +46,6 @@ The tuning parameter \code{= tau *  sigma * optimal rate } where \code{optimal r
 }
 \examples{
 set.seed(100)
-set.seed(100)
 p = 100
 n = 20
 epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -54,12 +53,17 @@ B = matrix(rnorm(p*3,0,1), nrow=p)
 fx = matrix(rnorm(3*n, 0,1), nrow = n)
 X = fx\%*\%t(B)+ epsilon
 output = farm.scree(X,show.plot = TRUE)
+output = farm.scree(X,show.plot = FALSE, cv=FALSE, K.scree=5, K.factors =10)
 output
 plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 
 }
 \references{
 Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
+
+Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+
+Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 }
 \seealso{
 \code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}

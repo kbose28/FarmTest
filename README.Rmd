@@ -6,11 +6,43 @@ references:
   title: 'qvalue: Q-value estimation for false discovery rate control.' 
   author:
   - family: Storey
-    given: JD
+    given: J.D.
   container-title: R package version 2.8.0
-  URL: 'https://github.com/jdstorey/qvalue'
+  URL: 'http://github.com/jdstorey/qvalue'
   issued:
     year: 2015
+    
+- id: fan2017
+  title: 'FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control' 
+  author:
+  - family: Fan
+    given: J.
+  - family: Ke
+    given: Y.
+  - family: Sun
+    given: Q.
+  - family: Zhou
+    given: W.-X.
+  container-title: 
+  URL: 'https://arxiv.org/abs/1711.05386'
+  issued:
+    year: 2017
+    
+- id: zhou2017
+  title: 'A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing' 
+  author:
+  - family: Zhou
+    given: W.-X.
+  - family: Bose
+    given: K.
+  - family: Fan
+    given: J.
+  - family: Liu
+    given: H.
+  container-title: Annals of Statistics, to appear
+  URL: 'https://arxiv.org/abs/1711.05381'
+  issued:
+    year: 2017
 ---
 
 
@@ -27,9 +59,8 @@ knitr::opts_chunk$set(
 
 
 #FarmTest: Factor Adjusted Robust Multiple Testing 
-
 ##Goal of the package
-This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the paper on this method, Zhou et al.(2017)<https://goo.gl/68SJpd>, for detailed description of methods and further references. 
+This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the papers on this method, [@fan2017] and [@zhou2017], for detailed description of methods and further references. 
 
 The observed data $X$ is assumed to follow a factor model ![equation](https://latex.codecogs.com/gif.latex?X%20%3D%20%5Cmu%20&plus;%20Bf%20&plus;%20u), where $f$ are the underlying factors, $B$ are the factors loadings, $u$ are the errors, and $\mu$ is the mean effect to be tested. We assume the data is of dimension $p$ and the sample size is $n$, leading to $p$ hypothesis tests. 
 
@@ -90,7 +121,7 @@ X = rep(1,n)%*%t(mu)+fx%*%t(B)+ epsilon
 output = farm.test(X, cv=FALSE)#robust, no cross-validation
 output
 ```
-The robustness is controlled by the parameter of the Huber loss function. This can be chosen by cross-validation which takes a long time, but gives good results. Alternatively, we use the parameter $tau*sd*rate$ where tau is a constant, rate is the optimal rate for the tuning parameter (see Fan et al.(2017) <https://arxiv.org/abs/1612.08490>). sd is the standard deviation of the data at hand. The value of $tau$ can be supplied by the user and takes a default value of 2.
+The robustness is controlled by the parameter of the Huber loss function. This can be chosen by cross-validation which takes a long time, but gives good results. Alternatively, we use the parameter $tau*sd*rate$ where tau is a constant, rate is the optimal rate for the tuning parameter. See [@fan2017]. sd is the standard deviation of the data at hand. The value of $tau$ can be supplied by the user and takes a default value of 2.
 ```{r}
 ##examples of other robustification options
 output = farm.test(X, robust = FALSE, verbose=FALSE) #non-robust
@@ -156,3 +187,4 @@ covhat = farm.cov(X)
  package [@storey2015] to estimate the number of true null hypotheses, and inherits all the options from `pi0est`. 
 
 4. See individual function documentation for detailed description of methods and their references. 
+

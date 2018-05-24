@@ -1,5 +1,5 @@
-This is an update adding some functions
----------------------------------------
+This is an update adding options to some functions
+--------------------------------------------------
 
 Test environments
 -----------------

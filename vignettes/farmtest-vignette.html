@@ -77,7 +77,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <hr />
 <div id="goal-of-the-package" class="section level2">
 <h2>Goal of the package</h2>
-<p>This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the paper on this method, Zhou et al.(2017)<a href="https://goo.gl/68SJpd" class="uri">https://goo.gl/68SJpd</a>, for detailed description of methods and further references.</p>
+<p>This R package conducts multiple hypothesis testing of mean effects. It implements a robust procedure to estimate distribution parameters and accounts for strong dependence among coordinates via an approximate factor model. This method is particularly suitable for high-dimensional data when there are thousands of variables but only a small number of observations available. Moreover, the method is tailored to cases when the underlying distribution deviates from Gaussianity, which is commonly assumed in the literature. See the papers on this method, <span class="citation">(Fan et al. 2017)</span> and <span class="citation">(Zhou et al. 2017)</span>, for detailed description of methods and further references.</p>
 <p>The observed data <span class="math inline">\(X\)</span> is assumed to follow a factor model <embed src="data:image/gif;base64,R0lGODlhgwAQALMAAP///wAAAO7u7mZmZhAQEERERKqqqiIiIpiYmNzc3HZ2dlRUVDIyMrq6uszMzIiIiCH5BAEAAAAALAAAAACDABAAAAT+EEgxSChCmnBGlmAojmRpnqNyBIOiDIVRUs+A3riEBAmYKLmgcAgq2ECOQIMUMxyJUNYEAa2eEMtcQBYKAEWCwAeFtYoUYgHVzA6VcckxYOMYGQ65dzusWLdLC1kABXUmeigPDCEGBH4TKgwKgoaTJA0ITwYLgAF/JzwTYleVJgwLBgYIRj1MjqMnagAEhQsPJBQBriUDC72+v18jDQQgd2SkJQGFEg+bJLN5yCBLCZ0S0GBADHieKc4AA08gvL4Mpr7BIg3WIGG6YSfkvebAJArO1SMCXxvSbQx+DnChhENBATABbKnjhuNQCYE6Dp4JcUBivF8YF6TrUiiMAAeBckQ4LBHpDCgRzYKMHCEKgEYAWQR806Gs27SaABQQ0+XGXzslbraQqKXSpwRRCQgYSNCgQYEA2GAy4CDujwIGA1BRWAmCK4irLFyQYzXigNGeNxA8QIBqAE+bJAdGg8uu4Vm4Vk4GCWkmg1MhfPF6GiY4SCNJhRPn2ajYntrGISIAADs="></embed>, where <span class="math inline">\(f\)</span> are the underlying factors, <span class="math inline">\(B\)</span> are the factors loadings, <span class="math inline">\(u\)</span> are the errors, and <span class="math inline">\(\mu\)</span> is the mean effect to be tested. We assume the data is of dimension <span class="math inline">\(p\)</span> and the sample size is <span class="math inline">\(n\)</span>, leading to <span class="math inline">\(p\)</span> hypothesis tests.</p>
 </div>
 <div id="installation" class="section level2">
@@ -138,7 +138,7 @@ output</code></pre></div>
 ## alternative hypothesis: two.sided
 ## hypotheses rejected:
 ##  6</code></pre>
-<p>The robustness is controlled by the parameter of the Huber loss function. This can be chosen by cross-validation which takes a long time, but gives good results. Alternatively, we use the parameter <span class="math inline">\(tau*sd*rate\)</span> where tau is a constant, rate is the optimal rate for the tuning parameter (see Fan et al.(2017) <a href="https://arxiv.org/abs/1612.08490" class="uri">https://arxiv.org/abs/1612.08490</a>). sd is the standard deviation of the data at hand. The value of <span class="math inline">\(tau\)</span> can be supplied by the user and takes a default value of 2.</p>
+<p>The robustness is controlled by the parameter of the Huber loss function. This can be chosen by cross-validation which takes a long time, but gives good results. Alternatively, we use the parameter <span class="math inline">\(tau*sd*rate\)</span> where tau is a constant, rate is the optimal rate for the tuning parameter. See <span class="citation">(Fan et al. 2017)</span>. sd is the standard deviation of the data at hand. The value of <span class="math inline">\(tau\)</span> can be supplied by the user and takes a default value of 2.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">##examples of other robustification options
 output =<span class="st"> </span><span class="kw">farm.test</span>(X, <span class="dt">robust =</span> <span class="ot">FALSE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>) <span class="co">#non-robust</span>
 output =<span class="st"> </span><span class="kw">farm.test</span>(X, <span class="dt">tau =</span> <span class="dv">3</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>) <span class="co">#robust, no cross-validation, specified tau</span>
@@ -231,8 +231,14 @@ covhat =<span class="st"> </span><span class="kw">farm.cov</span>(X)</code></pre
 <li>For up to date information and questions/comments see the project page at <a href="https://kbose28.github.io/FarmTest/" class="uri">https://kbose28.github.io/FarmTest/</a>.</li>
 </ol>
 <div id="refs" class="references">
+<div id="ref-fan2017">
+<p>Fan, J., Y. Ke, Q. Sun, and W.-X. Zhou. 2017. “FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control.” <a href="https://arxiv.org/abs/1711.05386" class="uri">https://arxiv.org/abs/1711.05386</a>.</p>
+</div>
 <div id="ref-storey2015">
-<p>Storey, JD. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” <em>R Package Version 2.8.0</em>. <a href="http://github.com/jdstorey/qvalue" class="uri">http://github.com/jdstorey/qvalue</a>.</p>
+<p>Storey, J.D. 2015. “Qvalue: Q-Value Estimation for False Discovery Rate Control.” <em>R Package Version 2.8.0</em>. <a href="http://github.com/jdstorey/qvalue" class="uri">http://github.com/jdstorey/qvalue</a>.</p>
+</div>
+<div id="ref-zhou2017">
+<p>Zhou, W.-X., K. Bose, J. Fan, and H. Liu. 2017. “A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing.” <em>Annals of Statistics, to Appear</em>. <a href="https://arxiv.org/abs/1711.05381" class="uri">https://arxiv.org/abs/1711.05381</a>.</p>
 </div>
 </div>
 </div>

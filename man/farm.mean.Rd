@@ -35,4 +35,8 @@ muhat = farm.mean(X)
 }
 \references{
 Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+
+Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+
+Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 }

@@ -11,7 +11,7 @@ NULL
 ###################################################################################
 #' Main function performing factor-adjusted robust test for means
 #'
-#' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors.
+#' This function is used to conduct robust statistical test for means of multivariate data, after adjusting for known or unknown latent factors using the methods in Fan et al.(2017) and Zhou et al.(2017).
 #' It uses the Huber's loss function (Huber (1964)) to robustly estimate data parameters.
 #' @param X a n x p data matrix with each row being a sample.
 #' You wish to test a hypothesis for the mean of each column of \code{X}.
@@ -74,6 +74,8 @@ NULL
 #' names(output$means)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @references Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+#' @references Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 #' @export
 farm.test <- function (X, H0=NULL, fx=NULL,Kx = NULL, Y =NULL , fy=NULL, Ky  =NULL,  alternative = c("two.sided", "lesser", "greater"),  alpha=NULL ,robust=TRUE,cv = TRUE, tau=2,verbose = FALSE,...){
   p = NCOL(X)
@@ -194,25 +196,26 @@ print.farm.test<-function(x,...){
 #' @export
 plot.farm.scree<-function(x, scree.plot=TRUE, ratio.plot=TRUE, col="red", ...){
 
+
   col <- if(is.null(col))"red" else col
   new.args = list(...)
   if(scree.plot==TRUE &ratio.plot==TRUE){
     graphics::par(mfrow=c(1,1), mex=0.5,oma=c(0,0,4,0),mar=c(6,7,5,6))
     #plot first n eigenvalues
-    grid =seq(1,length(x$eigenvalues))
-    graphics::barplot(x$proportions, main="Scree plot of the data",
-                      xlab=paste("Top", length(x$eigenvalues) ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+    grid =seq(1,x$K.scree)
+    graphics::barplot(x$proportions[1:x$K.scree], main="Scree plot of the data",
+                      xlab=paste("Top", x$K.scree ,"principle components", sep=" "), ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
     graphics::par(new=T)
-    graphics::plot(grid, x$eigenvalues, type="b", pch=19, axes = FALSE, xlab="", ylab="")
+    graphics::plot(grid, x$eigenvalues[1:x$K.scree], type="b", pch=19, axes = FALSE, xlab="", ylab="")
     graphics::axis(1, at=pretty(range(grid)))
-    graphics::axis(side = 4, at = pretty(range(x$eigenvalues)))
+    graphics::axis(side = 4, at = pretty(range(x$eigenvalues[1:x$K.scree])))
     graphics::mtext("Eigenvalues",side=4,col="black",line=3)
     oldpar = graphics::par(ask = TRUE)
     on.exit(graphics::par(oldpar))
     graphics::plot(x$eigenvalue.ratios,type="b",pch=19,ylab="ratio", ylim=c(min(x$eigenvalue.ratios),max(x$eigenvalue.ratios)),main = paste("Eigenvalue ratio plot:\n", x$nfactors, "factor(s) found"),cex.main=1)
     graphics::points(x = x$nfactors, max(x$eigenvalue.ratios), col = col,bg = col, pch = 23,cex = 1)
   }else if(scree.plot == TRUE & ratio.plot==FALSE){
-    plot.args = list(x=seq(1,length(x$eigenvalues)), y=x$proportions, main="Scree plot of the data", xlab=paste("Top", length(x$eigenvalues) ,"principle components", sep=" "),ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
+    plot.args = list(x=seq(1,x$K.scree), y=x$proportions[1:x$K.scree], main="Scree plot of the data", xlab=paste("Top", length(x$eigenvalues) ,"principle components", sep=" "),ylab="Proportion of variance explained", lwd = 2, cex.lab=1, cex.axis=1, cex.main=1)
     if (length(new.args)) plot.args[names(new.args)] = new.args
     do.call("plot", plot.args)
     }else if(scree.plot == FALSE & ratio.plot==TRUE){
@@ -386,6 +389,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 
   #for X
   if(!is.null(Kx)){
+    if(Kx < 0)stop('number of factors cannot be < 0')
     if(Kx==0){
       if(robust==TRUE){
         if(cv==TRUE){
@@ -417,7 +421,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
             muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
             CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
             thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
-            if(verbose){cat("calculating tuning parameters for X...\n")}
+            if(verbose){cat("calculating covariance matrix for X...\n")}
             CT = Cov_Huber_tune(X, tau)
             covx =  Cov_Huber_noCV(matrix((X),p,nx), matrix(muhatx, p, 1), matrix(CT,p,p))
           }
@@ -461,7 +465,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
           muhatx = mu_robust_noCV( matrix(X, p, nx), matrix(CT, p,1))
           CT = tau*apply(X^2,1,sd)*sqrt(nx/log(p*nx))
           thetax = mu_robust_noCV( matrix(X^2, p, nx), matrix(CT,p,1))
-          if(verbose){cat("calculating tuning parameters for X...\n")}
+          if(verbose){cat("calculating covariance matrix for X...\n")}
           CT = Cov_Huber_tune(X, tau)
           covx =  Cov_Huber_noCV(matrix((X),p,nx), matrix(muhatx, p, 1), matrix(CT,p,p))
         }
@@ -504,6 +508,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
     ny = NCOL(Y)
     if(min(ny,p)<=4) stop('n and p must be at least 4')
       if(!is.null(Ky)){
+        if(Ky < 0)stop('number of factors cannot be < 0')
         if(Ky==0){
           if(robust==TRUE){
             if(cv==TRUE){
@@ -522,31 +527,6 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
           varhaty = ( thetay - muhaty^2)* ( thetay > muhaty^2) +(thetay)* ( thetay <=muhaty^2)
           sehaty = sqrt(varhaty/ny)
           }else{
-            if(robust==TRUE){
-              if(cv==TRUE){
-                muhaty = mu_robust( matrix(Y, p, ny))
-                thetay = mu_robust( matrix(Y^2, p, ny))
-                if(verbose){cat("calculating covariance matrix for Y...\n")}
-                covy = Cov_Huber( Y, matrix(muhaty, p, 1))
-              }else{
-                CT = tau*apply(Y,1,sd)*sqrt(ny/log(p*ny))
-                muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
-                CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
-                thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
-                if (verbose){cat("calculating tuning parameters for Y...\n")}
-                CT = Cov_Huber_tune(Y, tau)
-                covy =  Cov_Huber_noCV(matrix((Y),p,ny), matrix(muhaty, p, 1), matrix(CT,p,p))
-              }
-            }else{
-              muhaty = rowMeans(Y)
-              covy = cov(t(Y))
-              thetay = rowMeans(Y^2)
-            }
-            eigs = Eigen_Decomp( covy)
-            values = eigs[,p+1]
-            vectors = eigs[,1:p]
-            #estimate nfactors
-            values = pmax(values, 0)
             if(Ky>min(ny,p)/2) warning('Number of factors supplied is >= min(n,p)/2. May cause numerical inconsistencies')
             if(Ky>max(ny,p)) stop('Number of factors cannot be larger than n or p')
             By = matrix(NA, p, Ky)
@@ -580,7 +560,7 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
               muhaty = mu_robust_noCV( matrix(Y, p, ny), matrix(CT, p,1))
               CT = tau*apply(Y^2,1,sd)*sqrt(ny/log(p*ny))
               thetay = mu_robust_noCV( matrix(Y^2, p, ny), matrix(CT, p,1))
-              if (verbose){cat("calculating tuning parameters for Y...\n")}
+              if(verbose){cat("calculating covariance matrix for Y...\n")}
               CT = Cov_Huber_tune(Y, tau)
               covy =  Cov_Huber_noCV(matrix((Y),p,ny), matrix(muhaty, p, 1), matrix(CT,p,p))
             }
@@ -718,7 +698,6 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' @seealso \code{\link{plot.farm.scree}} and \code{\link{print.farm.scree}}
 #' @examples
 #' set.seed(100)
-#' set.seed(100)
 #' p = 100
 #' n = 20
 #' epsilon = matrix(rnorm( p*n, 0,1), nrow = n)
@@ -726,10 +705,13 @@ farm.testunknown <- function (X, H0,Kx, Y, Ky,  alternative = alternative, alpha
 #' fx = matrix(rnorm(3*n, 0,1), nrow = n)
 #' X = fx%*%t(B)+ epsilon
 #' output = farm.scree(X,show.plot = TRUE)
+#' output = farm.scree(X,show.plot = FALSE, cv=FALSE, K.scree=5, K.factors =10)
 #' output
 #' plot(output, scree.plot=FALSE, col="blue", main="Customized plot")
 #'
 #' @references Ahn, S. C. and Horenstein, A. R.  (2013). "Eigenvalue Ratio Test for the Number of Factors," Econometrica, 81 (3), 1203–1227.
+#' @references Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+#' @references Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 #' @export
 farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = TRUE,cv=TRUE,tau=2, show.plot=FALSE){
   X = t(X)
@@ -737,10 +719,13 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = TRUE,cv=TR
   p = NROW(X)
   if(tau<=0) stop('tau should be a positive number')
 
-  if(min(n,p) <=3) stop('n and p must be at least 3')
-  K.scree <- if (is.null(K.scree)) min(n,p) else K.scree
-  K.factors <- if (is.null(K.factors)) (min(n,p)/2) else K.factors
-  if(K.factors>min(n,p)/2) warning('Number of factors supplied is > min(n,p)/2. May cause numerical inconsistencies')
+  if(min(n,p) <=4) stop('n and p must be at least 4')
+  K.scree <- if (is.null(K.scree)) floor(min(n,p)) else K.scree
+  if(K.scree <= 0)stop('number of eigenvalues to be plotted cannot be <= 0')
+
+  K.factors <- if (is.null(K.factors)) floor(min(n,p)/2) else K.factors
+  if(K.factors>min(n,p)/2) warning('Number of eigenvalue ratios is > min(n,p)/2. May cause numerical inconsistencies')
+  if(K.factors < 2)stop('number of eigenvalues in the ratio test cannot be < 2')
 
 
   if(robust==TRUE){
@@ -786,7 +771,7 @@ farm.scree<- function(X, K.scree = NULL , K.factors = NULL , robust = TRUE,cv=TR
   if(show.plot){
     graphics::plot(ratio,type="b",pch=19, ylim=c(min(ratio),max(ratio)),main = paste("Eigenvalue ratio plot:\n", which.max(ratio), "factor(s) found"),cex.main=1)
     graphics::points(x = which.max(ratio), max(ratio), col = "red",bg = "red", pch = 23,cex = 1)}
-  value   =list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio))
+  value   =list(eigenvalues = eig, proportions = props ,  eigenvalue.ratios=  ratio, nfactors = which.max(ratio), K.scree=K.scree, K.factors=K.factors)
 
   attr(value, "class") <- "farm.scree"
   value
@@ -937,6 +922,8 @@ mypi0est <- function(p, lambda = seq(0.05,0.95,0.05), pi0.method = c("smoother",
 #' covhat = farm.cov(X)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @references Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+#' @references Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 #' @export
 farm.cov <- function (X, cv=TRUE, tau=2, verbose=FALSE){
   X = t(X)
@@ -950,7 +937,6 @@ farm.cov <- function (X, cv=TRUE, tau=2, verbose=FALSE){
     }
     else{CT = tau*apply(X,1,sd)*sqrt(n/log(p*n))
     muhatx = mu_robust_noCV( matrix(X, p, n), matrix(CT, p,1))
-    if (verbose){cat("calculating tuning parameters for X...\n")}
     CT = Cov_Huber_tune(X, tau)
     if (verbose){cat("calculating covariance matrix for X...\n")}
     covx =  Cov_Huber_noCV(matrix((X),p,n), matrix(muhatx, p, 1), matrix(CT,p,p))
@@ -977,6 +963,8 @@ farm.cov <- function (X, cv=TRUE, tau=2, verbose=FALSE){
 #' muhat = farm.mean(X)
 #'
 #' @references Huber, P.J. (1964). "Robust Estimation of a Location Parameter." The Annals of Mathematical Statistics, 35, 73–101.
+#' @references Fan, J., Ke, Y., Sun, Q. and Zhou, W-X. (2017). "FARM-Test: Factor-Adjusted Robust Multiple Testing with False Discovery Control", \url{https://arxiv.org/abs/1711.05386}.
+#' @references Zhou, W-X., Bose, K., Fan, J. and Liu, H. (2017). "A New Perspective on Robust M-Estimation: Finite Sample Theory and Applications to Dependence-Adjusted Multiple Testing," Annals of Statistics, to appear, \url{https://arxiv.org/abs/1711.05381}.
 #' @export
 farm.mean <- function(X, cv=TRUE, tau=2, verbose=FALSE){
   X = t(X)
